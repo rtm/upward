@@ -2,6 +2,7 @@
 
 var {defineProperty, create, keys, defineProperties} = Object;
 var {createTextNode, createElement} = document;
+var {join} = Array;
 
 var valueOf = v => v.valueOf();
 
@@ -40,7 +41,6 @@ export function Upwardable(v) {
 	return ret;
 };
 
-
 function upwardablePropertyDescriptor(val) {
 	var {get, set} = Upwardable(val);
 	return { get, set };
@@ -53,11 +53,15 @@ function defineUpwardableProperty(obj, prop) {
 
 export var isUpwardable = x => typeof x === 'object' && x.upward;
 
-var upward = (o, fn) => { console.log('upward', o, fn); o, o.upward && o.upward(fn); };
+var upward = (o, fn) => { console.group('upward'); console.dir(o); console.dir(fn); o.upward && o.upward(fn); console.groupEnd();};
 
 export function upwardify(fn, changefn = fn) {
 	return function(v) {
-		console.log("In upwardified fn", fn, changefn, v, v.valueOf());
+		console.group("In upwardified fn");
+		console.dir(fn);
+		console.dir(v);
+		console.dir(v.valueOf());
+		console.groupEnd();
 		upward(v, changefn.bind(this));
 		return fn.call(this, v.valueOf());
 	};
@@ -69,10 +73,21 @@ export function createUpwardableObject(o) {
 		return result;
 	}, {}));
 }
-	
-export function upwardableTextNode(text) {
-	return upwardify(createTextNode.bind(document));
+
+/** testing
+function upwardArray(a) {
+	var w = Upwardable(a);
+	a.forEach(elt => upward(elt, () => w.set(Array(a))));
+	return w;
 }
+*/
+
+var joiner = delimiter => function() { return join.call(this, delimiter); };
+
+export var upwardableTextNode = upwardify(
+	createTextNode.bind(document),
+	function(text) {this.nodeValue = text;}
+);
 
 var {appendChild, replaceChild, setAttribute} = HTMLElement.prototype;
 
@@ -86,9 +101,19 @@ CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
 	return this.insertRule(rule, idx);
 };
 
+var INPUT = function() {
+	var input = document.createElement('input');
+	input.assign(createUpwardableObject({val: null}));
+	input.addEventListener('input', function() { input.val = input.value; });
+	return input;
+};
+
 Node.prototype.toValue = _this;
 
-var obj = createUpwardableObject({ text: document.createTextNode("Hello, world.") });
+var obj = createUpwardableObject({ 
+	textnode: document.createTextNode("Hello, world."),
+	string: 'fuck'
+});
 
 
 var DIV = function() {
@@ -97,11 +122,13 @@ var DIV = function() {
 
 var button = document.createElement("button");
 button.appendChild(document.createTextNode("Press me"));
-button.addEventListener('click', function() {console.log(change); change(); });
 
 var component = {
 	root: 'app',
-	DOM: DIV().child(obj.text).child(button),
+	DOM: DIV()
+//		.child(obj.textnode)
+		.child(button)
+		.child(upwardableTextNode(obj.string)),
 	CSS: [],
 	listeners: {}
 };
@@ -114,5 +141,8 @@ Run(component);
 
 export var change = function() {
 	console.log("change");
-	obj.text=document.createTextNode("Hello, upward world.");
+	obj.textnode=document.createTextNode("Hello, upward world.");
+	obj.string = "shit";
 };
+
+button.addEventListener('click', change);
