@@ -1,6 +1,7 @@
 /* jshint esnext: true */
 
 import {createUpwardableObject, DIV, TEXT, BUTTON, INPUT} from 'upward';
+import {makeStyles} from 'style';
 
 var obj = createUpwardableObject({ 
 	textnode: document.createTextNode("Hello, world."),
@@ -27,12 +28,16 @@ var app = {
 		.child(input)
 		.child(TEXT(input.val))
 	,
-	CSS: [],
+	CSS: [
+		['body', {backgroundColor: 'cyan'}]
+	],
 	listeners: {}
 };
 
 var Run = function(app) {
-	document.getElementById(app.root).appendChild(app.DOM);
+	var root = document.getElementById(app.root);
+	root.appendChild(app.DOM);
+	makeStyles(root, app.CSS);
 };
 
 Run(app);
