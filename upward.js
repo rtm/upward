@@ -102,7 +102,6 @@ CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
 };
 
 export var INPUT = function() {
-	debugger;
 	var input = document.createElement('input');
 	defineUpwardableProperty(input, 'val', "");
 	input.addEventListener('change', function() { input.val = input.value; });
