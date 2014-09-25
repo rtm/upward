@@ -23,10 +23,10 @@ export function Upwardable(v) {
 	var upwards       = [];
 
 	var valueOf       = () => v === null || v === undefined ? v : v.valueOf();
-	var set           = nv => { console.log('set', upwards); send_upwards(nv); v = nv; return this; };
+	var set           = nv => { send_upwards(nv); v = nv; return this; };
 	var get           = () => ret;
 
-	var upward        = upward => { console.log('upward', upward); upwards.push(upward); };
+	var upward        = upward => { upwards.push(upward); };
 	var ununpward     = function() { return this; };
 	var send_upwards  = nv => upwards.forEach(fn => fn(nv.valueOf(), v.valueOf()));
 
@@ -43,25 +43,20 @@ export function Upwardable(v) {
 
 function upwardablePropertyDescriptor(val) {
 	var {get, set} = Upwardable(val);
-	return { get, set };
+	return { get, set, enumerable: true };
 }
 
-function defineUpwardableProperty(obj, prop) {
-	var val = obj[prop];
-	return isUpwardable(val) ? obj : defineProperty(obj, prop, upwardablePropertyDescriptor(val));
+function defineUpwardableProperty(obj, prop, val) {
+	return isUpwardable(val) ? val : defineProperty(obj, prop, upwardablePropertyDescriptor(val));
 }
 
-export var isUpwardable = x => typeof x === 'object' && x.upward;
+export var isUpwardable = x => x && typeof x === 'object' && x.upward;
 
-var upward = (o, fn) => { console.group('upward'); console.dir(o); console.dir(fn); o.upward && o.upward(fn); console.groupEnd();};
+var upward = (o, fn) => o.upward && o.upward(fn);
+
 
 export function upwardify(fn, changefn = fn) {
 	return function(v) {
-		console.group("In upwardified fn");
-		console.dir(fn);
-		console.dir(v);
-		console.dir(v.valueOf());
-		console.groupEnd();
 		upward(v, changefn.bind(this));
 		return fn.call(this, v.valueOf());
 	};
@@ -96,53 +91,35 @@ Object.assign(HTMLElement.prototype, {
 	attr: upwardify(chainify(setAttribute), setAttribute)
 });
 
+Object.assign(Node.prototype, {
+    value: upwardify(chainify(function(v) { this.nodeValue = v || ""; })),
+	toValue: _this
+});
+
 CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
 	this.deleteRule(idx);
 	return this.insertRule(rule, idx);
 };
 
-var INPUT = function() {
+export var INPUT = function() {
+	debugger;
 	var input = document.createElement('input');
-	input.assign(createUpwardableObject({val: null}));
-	input.addEventListener('input', function() { input.val = input.value; });
+	defineUpwardableProperty(input, 'val', "");
+	input.addEventListener('change', function() { input.val = input.value; });
 	return input;
+};
+
+export var BUTTON = function() {
+	return document.createElement('button');
 };
 
 Node.prototype.toValue = _this;
 
-var obj = createUpwardableObject({ 
-	textnode: document.createTextNode("Hello, world."),
-	string: 'fuck'
-});
-
-
-var DIV = function() {
+export var DIV = function() {
  	return document.createElement('div');
  };
 
-var button = document.createElement("button");
-button.appendChild(document.createTextNode("Press me"));
-
-var component = {
-	root: 'app',
-	DOM: DIV()
-//		.child(obj.textnode)
-		.child(button)
-		.child(upwardableTextNode(obj.string)),
-	CSS: [],
-	listeners: {}
+export var TEXT = function(text) {
+	return document.createTextNode("").value(text);
 };
 
-var Run = function(app) {
-	document.getElementById(app.root).appendChild(app.DOM);
-};
-
-Run(component);
-
-export var change = function() {
-	console.log("change");
-	obj.textnode=document.createTextNode("Hello, upward world.");
-	obj.string = "shit";
-};
-
-button.addEventListener('click', change);
