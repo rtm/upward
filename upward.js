@@ -1,34 +1,24 @@
 /* jshint esnext: true */
 
 var {defineProperty, create, keys, defineProperties} = Object;
-var {createTextNode, createElement} = document;
-var {join} = Array;
+var {join, push} = Array.prototype;
 
 var valueOf = v => v.valueOf();
 
-function _this() { return this; }
-
-//Object.prototype.map = function (fn) {
-//  return keys(this).reduce((result, k) => (result[k] = fn(this[k], k, this), result), {});
-//};
-
-//Object.prototype.valueOf = function() { return this.map(valueOf); };
-//RegExp.prototype.valueOf = Date.prototype.valueOf = _this;
-
 var chainify = fn => function() { fn.apply(this, arguments); return this; };
 
-export function Upwardable(v) {
+function Upwardable(v, data) {
   if (isUpwardable(v)) { return v; }
 
   var upwards       = [];
 
   var valueOf       = () => v === null || v === undefined ? v : v.valueOf();
-  var set           = nv => { send_upwards(nv); v = nv; return this; };
+  var set           = nv => { propagate(nv); v = nv; return this; };
   var get           = () => ret;
 
-  var upward        = upward => { upwards.push(upward); };
-  var ununpward     = function() { return this; };
-  var send_upwards  = nv => upwards.forEach(fn => fn(nv.valueOf(), v.valueOf()));
+  var upward        = push.bind(upwards);
+  var ununpward     = null;
+  var propagate     = nv => upwards.forEach(fn => fn(nv.valueOf(), v.valueOf(), data, this));
   
   var ret           = {get, set, valueOf, upward};
   
@@ -41,88 +31,40 @@ export function Upwardable(v) {
   return ret;
 }
 
-function upwardablePropertyDescriptor(val) {
-  var {get, set} = Upwardable(val);
+var isUpwardable = x => x && typeof x === 'object' && x.upward;
+
+function upwardablePropertyDescriptor(val, prop) {
+  var {get, set} = Upwardable(val, prop);
   return { get, set, enumerable: true };
 }
 
 function defineUpwardableProperty(obj, prop, val) {
-  return isUpwardable(val) ? val : defineProperty(obj, prop, upwardablePropertyDescriptor(val));
+  return isUpwardable(val) ? val : 
+    defineProperty(obj, prop, upwardablePropertyDescriptor(val, prop));
 }
-
-export var isUpwardable = x => x && typeof x === 'object' && x.upward;
 
 var upward = (o, fn) => o.upward && o.upward(fn);
 
 
-export function upwardify(fn, changefn = fn) {
+function upwardify(fn, changefn = fn) {
   return function(v) {
     upward(v, changefn.bind(this));
     return fn.call(this, v.valueOf());
   };
 }
 
-export function createUpwardableObject(o) {
+function upwardifyObject(o) {
   return defineProperties({}, keys(o).reduce((result, k) => {
-    result[k] = upwardablePropertyDescriptor(o[k]);
+    result[k] = upwardablePropertyDescriptor(o[k], k);
     return result;
   }, {}));
 }
 
-/** testing
-    function upwardArray(a) {
-    var w = Upwardable(a);
-    a.forEach(elt => upward(elt, () => w.set(Array(a))));
-    return w;
-    }
-*/
-
-var joiner = delimiter => function() { return join.call(this, delimiter); };
-
-export var upwardableTextNode = upwardify(
-  createTextNode.bind(document),
-  function(text) {this.nodeValue = text;}
-);
-
-var {appendChild, replaceChild, setAttribute} = HTMLElement.prototype;
-
-Object.assign(HTMLElement.prototype, {
-  child: upwardify(chainify(appendChild), replaceChild),
-  attr: upwardify(chainify(setAttribute), setAttribute)
-});
-
-Object.assign(Node.prototype, {
-  value: upwardify(chainify(function(v) { this.nodeValue = v || ""; })),
-  toValue: _this
-});
-
-CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
-  this.deleteRule(idx);
-  return this.insertRule(rule, idx);
+export {
+  Upwardable,
+  isUpwardable,
+  chainify,
+  upwardify,
+  upwardifyObject,
+  defineUpwardableProperty
 };
-
-export var INPUT = function() {
-  var input = document.createElement('input');
-  var propname = evt_type => `val_${evt_type}`;
-  var handler = { handleEvent: evt => input[propname(evt.type)] = input.value };
-  ['input', 'change'].forEach(evt_type => {
-    input.addEventListener(evt_type, handler);
-    defineUpwardableProperty(input, propname(evt_type), "");
-  });
-  return input;
-};
-
-export var BUTTON = function() {
-  return document.createElement('button');
-};
-
-Node.prototype.toValue = _this;
-
-export var DIV = function() {
-  return document.createElement('div');
-};
-
-export var TEXT = function(text) {
-  return document.createTextNode("").value(text);
-};
-
