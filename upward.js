@@ -1,70 +1,117 @@
-/* jshint esnext: true */
+var {keys, assign, defineProperty, defineProperties, getOwnPropertyDescriptor} = Object;
 
-var {defineProperty, create, keys, defineProperties} = Object;
-var {join, push} = Array.prototype;
+var upwardableConfig = {
+  LOGGING: true,
+  DEBUG: true
+};
 
-var valueOf = v => v.valueOf();
+function configUpwardable(opts) {
+  assign (upwardableConfig, opts);
+}
 
-var chainify = fn => function() { fn.apply(this, arguments); return this; };
+function log(...args) {
+  if (upwardableConfig.LOGGING) {
+    console.log(...args);
+  }
+}
 
-function Upwardable(v, data) {
+function _valueOf(v) {
+    return v == null ? v : v.valueOf();
+}
+
+function chainify(fn) {
+  return function() { fn.apply(this, arguments); return this; };
+}
+
+var upwardableCount = 0;
+
+function Upwardable(v, options = {}) {
   if (isUpwardable(v)) { return v; }
 
-  var upwards       = [];
+  var upwards   = [];
 
-  var valueOf       = () => v === null || v === undefined ? v : v.valueOf();
-  var set           = nv => { propagate(nv); v = nv; return this; };
-  var get           = () => ret;
+  var valueOf   =  () => _valueOf(v);
+  var set       = nv => { propagate(nv); v = nv; return this; };
+  var get       = () => ret;
 
-  var upward        = push.bind(upwards);
-  var ununpward     = null;
-  var propagate     = nv => upwards.forEach(fn => fn(nv.valueOf(), v.valueOf(), data, this));
-  
-  var ret           = {get, set, valueOf, upward};
-  
-  var onward        = function(f, ...args) {
-    function go() { return f.apply(this.valueOf(), ...args); }
-    upward(go);
-    return go();
-  };
-  
+  var upward    = fn => upwards.push(fn);
+  var propagate = nv => upwards.forEach(fn => fn(valueOf(nv), valueOf(v), this, options));
+
+  var ret       = {get, set, valueOf, upward};
+
+  if (upwardableConfig.DEBUG) {
+    ret.count  = upwardableCount++;
+  }
+
   return ret;
 }
 
-var isUpwardable = x => x && typeof x === 'object' && x.upward;
+function isUpwardable(x) {
+  return x && typeof x === 'object' && x.upward;
+}
 
-function upwardablePropertyDescriptor(val, prop) {
-  var {get, set} = Upwardable(val, prop);
+function addUpward(o, fn) {
+    return isUpwardable(o) && o.upward(fn);
+}
+
+function computedUpwardable(fn, deps) {
+  var result = Upwardable();
+  function set() { result.set(fn()); }
+  deps.forEach(v => addUpward(v, set));
+  set();
+  return result;
+}
+
+function upwardablePropertyDescriptor(o, p) {
+  var v = o[p];
+  if (isUpwardable(v)) {
+    return getOwnPropertyDescriptor(o, p);
+  }
+  var {get, set} = Upwardable(v, {o, p});
   return { get, set, enumerable: true };
 }
 
-function defineUpwardableProperty(obj, prop, val) {
-  return isUpwardable(val) ? val : 
-    defineProperty(obj, prop, upwardablePropertyDescriptor(val, prop));
+function defineUpwardableProperty(o, p) {
+  return defineProperty(o, p, upwardablePropertyDescriptor(o, p));
 }
-
-var upward = (o, fn) => o.upward && o.upward(fn);
-
 
 function upwardify(fn, changefn = fn) {
   return function(v) {
-    upward(v, changefn.bind(this));
+    addUpward(v, changefn.bind(this));
     return fn.call(this, v.valueOf());
   };
 }
 
 function upwardifyObject(o) {
   return defineProperties({}, keys(o).reduce((result, k) => {
-    result[k] = upwardablePropertyDescriptor(o[k], k);
+    result[k] = upwardablePropertyDescriptor(o, k);
     return result;
   }, {}));
 }
 
+assign(Function.prototype, {
+  chainify: function Function$chainify(fn) { 
+    return chainify(this); 
+  },
+  upwardify: function Function$upwardify(changefn) {
+    return upwardify.apply(0, this, changefn || this);
+  }
+});
+
+assign(Object.prototype, {
+  upwardify: function Object$upwardify() {
+    return upwardifyObject(this);
+  }
+});
+
 export {
   Upwardable,
   isUpwardable,
+  addUpward,
+  computedUpwardable,
   chainify,
   upwardify,
   upwardifyObject,
-  defineUpwardableProperty
+  defineUpwardableProperty,
+  configUpwardable
 };
