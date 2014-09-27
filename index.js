@@ -41,7 +41,3 @@ RunUpward ({
     ['body', {backgroundColor: 'wheat'}]
   ]
 });
-
-console.dir(obj.string);
-console.log(obj.string.valueOf());
-console.log(uts`Eat shit ${obj.string}`.valueOf());

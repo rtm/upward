@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import {upwardify, chainify, defineUpwardableProperty} from 'upward';
+import {Upwardable, upwardify, chainify} from 'upward';
 
 var {createTextNode, createElement} = document;
 var {appendChild, replaceChild, setAttribute} = HTMLElement.prototype;
@@ -23,10 +23,10 @@ CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
 var INPUT = function() {
   var input = document.createElement('input');
   var propname = evt_type => `val_${evt_type}`;
-  var handler = { handleEvent: evt => input[propname(evt.type)] = input.value };
+  var handler = { handleEvent(evt) { input[propname(evt.type)] = input.value } };
   ['input', 'change'].forEach(evt_type => {
     input.addEventListener(evt_type, handler);
-    defineUpwardableProperty(input, propname(evt_type), "");
+    Upwardable("").define(input, propname(evt_type));
   });
   return input;
 };
