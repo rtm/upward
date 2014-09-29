@@ -1,26 +1,12 @@
 import {computedUpwardable} from 'upward';
 
-var compose = (strings, ...values) => 
-  strings.reduce(
-    (result, string, i) => result += string + (i < values.length ? values[i].valueOf() : ""),
-    ""
-  )
-;
+var compose = (strings, ...values) => {
+  values.push('');
+  return [].concat(...strings.map((e, i) => [e, values[i].valueOf()]));
+};
 
-var uts = (strings, ...values) => 
-  computedUpwardable(
-    () => compose(strings, ...values), 
-    values
-  )
-;
-
-var uts_eval = (strings, ...values) =>
-  computedUpwardable(
-    () => eval(compose(strings, ...values)),
-    values
-  )
-;
-
+var uts      = (strings, ...values) => computedUpwardable(() =>      compose(strings, ...values),  values);
+var uts_eval = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
 
 export {
   uts,

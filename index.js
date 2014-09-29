@@ -1,16 +1,16 @@
 /* jshint esnext: true */
 
 import {RunUpward} from 'app';
-import {upwardifyObject} from 'upward';
+import {upwardifyProperties} from 'upward';
 import {DIV, TEXT, BUTTON, INPUT} from 'dom';
 import {uts} from 'uts';
 import 'event';
 
-var data = upwardifyObject({
+var data = upwardifyProperties({
   name: "Bob"
 });
 
-var obj = upwardifyObject({ 
+var obj = upwardifyProperties({ 
   textnode: document.createTextNode("Hello, world."),
   string: uts`Hello, ${data.name}`,
   buttonText: "Press me"
@@ -41,3 +41,5 @@ RunUpward ({
     ['body', {backgroundColor: 'wheat'}]
   ]
 });
+
+

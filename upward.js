@@ -1,18 +1,23 @@
 var {keys, assign, defineProperty} = Object;
 
+// ### Configuration
+
+// Control upward configuration with `LOGGING` and `DEBUG` flags.
 var upwardConfig = {
   LOGGING: true,
   DEBUG: true
 };
 
-function objectToString(o) {
-  return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
-}
-
+// Keep a counter which identifies upwardables for debugging purposes.
 var id = 0;
 
-function configUpwardable(opts) {
+// Set configuration options.
+function configureUpwardable(opts) {
   assign (upwardConfig, opts);
+}
+
+function objectToString(o) {
+  return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
 }
 
 function log(...args) {
@@ -21,10 +26,26 @@ function log(...args) {
   }
 }
 
+// Generic version of `valueOf` which works for anything.
 function valueOf(v) {
     return v == null ? v : v.valueOf();
 }
 
+// Analog of `Array#map` for objects.
+function mapObject(o, fn, ctxt) {
+  return keys(o).reduce((result, k) => result[k] = fn.call(ctxt, o[k]), result);
+}
+
+// Return an object all of the values of which are evaluated.
+function valueObject(o) {
+  return mapObject(o, valueOf);
+}
+
+function objectValues(o) {
+  return keys(o).map(k => o[k]);
+}
+
+// Transform a function so that it always returns `this`.
 function chainify(fn) {
   return function(...args) { fn.call(this, ...args); return this; };
 }
@@ -63,18 +84,24 @@ function Upwardable(v, options = {}, upwards = []) {
   return upwardable;
 }
 
+// Check if something is upwardable, by looking for its `upward` property.
 function isUpwardable(u) {
   return u && typeof u === 'object' && u.upward;
 }
 
+// Make something upwardable if it isn't already.
 function castUpwardable(u) {
   return isUpwardable(u) ? u : Upwardable(u);
 }
 
+// Safely set an upward relationship, or not..
 function upward(o, fn) {
   return isUpwardable(o) && o.upward(fn);
 }
 
+// Create an upwardable whose value is given by a function.
+// When any of the specified dependencies change, the value is recomputed,
+// triggering the upward behavior.
 function computedUpwardable(fn, deps) {
   var result = Upwardable();
   function set() { result.val = fn(); }
@@ -83,6 +110,9 @@ function computedUpwardable(fn, deps) {
   return result;
 }
 
+// Transform a function to make it upward-aware.
+// The first time, it calls the passed-in function, maintaining context.
+// When things change, it calls an alternative function.
 function upwardify(fn, changefn = fn) {
   return function(v) {
     upward(v, changefn.bind(this));
@@ -90,23 +120,46 @@ function upwardify(fn, changefn = fn) {
   };
 }
 
-function upwardifyProperty(o, p) {
-  castUpwardable(o[p]).define(o, p);
+// `upwardifyWithObjectParam` creates a function which takes a hash as its parameter.
+// On the first call, the underlying function is called with the cooked hash.
+// When properties in the hash change, a `changefn` is called with the key and new value.
+function upwardifyWithObjectParam(fn, changefn) {
+  return function(o) {
+    upwardifyProperties(o);
+    keys(o).forEach(k => upward(o[k], nv => changefn(k, nv)));
+    return fn.call(this, valueOfObject(o));
+  };
 }
 
-function upwardifyObject(o) {
-  keys(o).forEach(k => upwardifyProperty(o, k));
+// A common case for functions taking a hash as argument is to want to merge (assign)
+// the property/value pairs into an underlying hash, 
+// which should then be updated when the hash changes.
+// `upwardifyAssign` turns a hash into a function which modifies it.
+// It is passed on a function yielding the hash to be assigned to.
+function upwardifiedAssign(fn) {
+  return upwardifyWithObjectParam(
+    oo => assign(fn.call(this), oo),
+    (p, v) => fn.call(this)[p] = v
+  );
+}
+    
+// `upwardifyProperty` modifies a single property on an object for upwardability.
+// This is mainly used from 'upwardifyProperties` below.
+function upwardifyProperty(o, p) {
+  castUpwardable(o[p]).define(o, p);
   return o;
 }
 
-assign(Function.prototype, {
-  chainify(fn)  { return chainify(this); },
-  U(changefn)   { return upwardify.call(0, this, changefn); }
-});
-
-assign(Object.prototype, {
-  U()           { return upwardifyObject(this); }
-});
+// `upwardifyProperties` modifies all properties in an object, in place, for upwardability.
+// A non-enumerable `upwardified` property is added to the object.
+// Note this is *not* the same as making the object itself upwardable.
+function upwardifyProperties(o) {
+  if (!o.upwardified) {
+    keys(o).forEach(k => upwardifyProperty(o, k));
+    defineProperty(o, 'upwardified', { value: true });
+  }
+  return o;
+}
 
 export {
   Upwardable,
@@ -115,6 +168,6 @@ export {
   computedUpwardable,
   chainify,
   upwardify,
-  upwardifyObject,
-  configUpwardable
+  upwardifyProperties,
+  configureUpwardable
 };
