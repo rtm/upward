@@ -1,4 +1,5 @@
 // Convenience.
+import {laterify} from 'Fun';
 var {create, keys, assign, defineProperty} = Object;
 
 // ### Configuration
@@ -42,13 +43,13 @@ function valueObject(o) {
   return mapObject(o, valueOf);
 }
 
-function objectValues(o) {
-  return keys(o).map(k => o[k]);
+// Return an aray all of the values of which are evaluated.
+function valueArray(a) {
+  return a.map(valueOf);
 }
 
-// Transform a function so that it always returns `this`.
-function chainify(fn) {
-  return function(...args) { fn.call(this, ...args); return this; };
+function objectValues(o) {
+  return keys(o).map(k => o[k]);
 }
 
 // Unused?
@@ -60,7 +61,7 @@ function makeUpwardableProperty(o, p) {
 
 // The heart and soul of the upward library.
 // An object which remembers its value and upward destinations.
-function Upwardable(v, options = {}, upwards = []) {
+function Upwardable(v, {once, later, disable} = {}, upwards = []) {
   console.assert("Cannot make upwardable out of upwardable", !isUpwardable(v));
 
   function toString() { return `upwardable on ${objectToString(options)}`; }
@@ -70,14 +71,21 @@ function Upwardable(v, options = {}, upwards = []) {
   // The getter returns the upwardable itself.
   // The setter notifies upward dependencies, and sets the internal value.
   // The property must be enumerable so we copy or `assign` it.
+  var send = laterify(() =>
+    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), upwardable, options))
+  );
+
   var accessor = {
     get: function()   { 
       reporters[reporters.length-1](u);
       return u; 
     },
     set: function(nv) {
-      upwards.forEach(fn => fn(valueOf(nv), valueOf(v), this, options));
-      v = nv; 
+      if (!disable) {
+        send(later);
+        v = nv;
+        disable = once;
+      }
     },
     enumerable: true
   };
@@ -208,11 +216,6 @@ var upwardifyTemplate = (strings, ...values) => computedUpwardable(() =>      co
 var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
 
 export {
-  uts,          uts as S
-  uts_eval
-}
-
-export {
   Upwardable,                   Upwardable as U,
   computedUpwardable,   computedUpwardable as C,
   upwardifyProperties, upwardifyProperties as P,
@@ -222,7 +225,6 @@ export {
 
   isUpwardable,
   upward,
-  chainify,
   upwardify,
   configureUpwardable
 };
