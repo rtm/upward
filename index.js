@@ -1,18 +1,17 @@
 /* jshint esnext: true */
 
 import {RunUpward} from 'app';
-import {upwardifyProperties} from 'upward';
+import {P, C, V, S} from 'upward';
 import {DIV, TEXT, BUTTON, INPUT} from 'dom';
-import {uts} from 'uts';
 import 'event';
 
-var data = upwardifyProperties({
+var data = P({
   name: "Bob"
 });
 
-var obj = upwardifyProperties({ 
+var obj = P({ 
   textnode: document.createTextNode("Hello, world."),
-  string: uts`Hello, ${data.name}`,
+  string: S`Hello, ${data.name}`,
   buttonText: "Press me"
 });
 
@@ -23,7 +22,7 @@ var change = function() {
   data.name = "Sakiko";
 };
 var button = BUTTON()
-	.child(TEXT(obj.buttonText))
+	.child(TEXT(C(_ => obj.buttonText.toUpperCase())))
 	.on({click: change});
 
 var input = INPUT();

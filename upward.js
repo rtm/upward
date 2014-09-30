@@ -1,4 +1,5 @@
-var {keys, assign, defineProperty} = Object;
+// Convenience.
+var {create, keys, assign, defineProperty} = Object;
 
 // ### Configuration
 
@@ -50,17 +51,30 @@ function chainify(fn) {
   return function(...args) { fn.call(this, ...args); return this; };
 }
 
+// Unused?
 function makeUpwardableProperty(o, p) {
   return Upwardable(o[p], {o, p}).defineAsProperty(o, p);
 }
 
+// ### Upwardable
+
+// The heart and soul of the upward library.
+// An object which remembers its value and upward destinations.
 function Upwardable(v, options = {}, upwards = []) {
   console.assert("Cannot make upwardable out of upwardable", !isUpwardable(v));
 
   function toString() { return `upwardable on ${objectToString(options)}`; }
 
+  // Provide an accessor (getter/setter) to apply to object properties
+  // (with `#define`).
+  // The getter returns the upwardable itself.
+  // The setter notifies upward dependencies, and sets the internal value.
+  // The property must be enumerable so we copy or `assign` it.
   var accessor = {
-    get: function()   { return upwardable; },
+    get: function()   { 
+      reporters[reporters.length-1](u);
+      return u; 
+    },
     set: function(nv) {
       upwards.forEach(fn => fn(valueOf(nv), valueOf(v), this, options));
       v = nv; 
@@ -68,20 +82,44 @@ function Upwardable(v, options = {}, upwards = []) {
     enumerable: true
   };
 
-  var upwardable = {
+  // The upwardable consists of four properties, `valueOf`, `upward`, `define`, and `val`.
+  // `#valueOf` returns the value of the underlying value.
+  // `#upward` adds an upward dependency.
+  // Usually called via the `upward` routine which ensures upwardability.
+  // `#define` applies to the accessor to a specified object property.
+  var u = assign(create(upwardablePrototype), {
     valueOf()         { return valueOf(v); },
     upward(fn)        { upwards.push(fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
-  };
+  });
 
-  upwardable.define(upwardable, 'val');
+  u.define(u, 'val');
   
   if (upwardConfig.DEBUG) {
-    assign(upwardable, {id, toString});
+    assign(u, {id, toString});
     id++;
   }
 
-  return upwardable;
+  return u;
+}
+
+var reporters = [() => undefined];
+
+var upwardablePrototype = {
+  toUpperCase: function() {
+    return computedUpwardable(
+      function() { return valueOf(this).toUpperCase(); },
+      this
+    );
+  }
+};
+
+function upwardReport(fn, reporter) {
+  var result;
+  reporters.push(reporter);
+  result = fn();
+  reporters.pop();
+  return result;
 }
 
 // Check if something is upwardable, by looking for its `upward` property.
@@ -100,14 +138,14 @@ function upward(o, fn) {
 }
 
 // Create an upwardable whose value is given by a function.
-// When any of the specified dependencies change, the value is recomputed,
+// When any of the dependencies change, the value is recomputed,
 // triggering the upward behavior.
-function computedUpwardable(fn, deps) {
-  var result = Upwardable();
-  function set() { result.val = fn(); }
-  deps.forEach(v => upward(v, set));
-  set();
-  return result;
+function computedUpwardable(fn, ctxt) {
+  fn = fn.bind(ctxt);
+  reporters.push(udep => upward(udep, () => u.val = fn()));
+  var u = Upwardable(fn());
+  reporters.pop();
+  return u;
 }
 
 // Transform a function to make it upward-aware.
@@ -161,13 +199,30 @@ function upwardifyProperties(o) {
   return o;
 }
 
+var compose = (strings, ...values) => {
+  values.push('');
+  return [].concat(...strings.map((e, i) => [e, values[i].valueOf()]));
+};
+
+var upwardifyTemplate = (strings, ...values) => computedUpwardable(() =>      compose(strings, ...values),  values);
+var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
+
 export {
-  Upwardable,
+  uts,          uts as S
+  uts_eval
+}
+
+export {
+  Upwardable,                   Upwardable as U,
+  computedUpwardable,   computedUpwardable as C,
+  upwardifyProperties, upwardifyProperties as P,
+  valueOf,                         valueOf as V,
+  upwardifyTemplate,     upwardifyTemplate as S,
+  upwardifyTemplateFormula,
+
   isUpwardable,
   upward,
-  computedUpwardable,
   chainify,
   upwardify,
-  upwardifyProperties,
   configureUpwardable
 };

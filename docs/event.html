@@ -65,15 +65,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Define a prototypical <code>handleEvent</code> on <code>EventListener</code>s.
-This dispatches events to a method of the same name.
-Event-handling methods can examine <code>this.context</code> to get the underlying <code>this</code>.</p>
+              <p>Sugar.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> EventListenerPrototype = {
-  handleEvent(evt) { <span class="hljs-keyword">this</span>[evt.type](evt); }
-};</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> {create, keys, assign} = <span class="hljs-built_in">Object</span>;</pre></div></div>
             
         </li>
         
@@ -84,19 +80,33 @@ Event-handling methods can examine <code>this.context</code> to get the underlyi
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p><code>on</code> is placed on <code>EventTargets</code> (meaning HTML elements), 
-taking a hash of handlers keyed by event name.</p>
+              <p>Define a prototypical <code>handleEvent</code> for event listeners,
+which dispatches events to a method of the same name.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> EventListenerPrototype = {
+  handleEvent(evt) { <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>[evt.type](evt); }
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><code>on</code> is a method on <code>EventTarget</code>s (meaning HTML elements), 
+which is passed event handlers in the form of a hash keyed by event name.</p>
 
             </div>
             
             <div class="content"><div class='highlight'><pre>EventTarget.prototype.on = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(handlers)</span> </span>{
-  <span class="hljs-keyword">var</span> listener = <span class="hljs-built_in">Object</span>.create(EventListenerPrototype);
-  <span class="hljs-built_in">Object</span>.assign(listener, handlers, {context: <span class="hljs-keyword">this</span>});
-
-  <span class="hljs-built_in">Object</span>.keys(handlers).forEach(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt_name)</span> </span>{
-    <span class="hljs-keyword">this</span>.addEventListener(evt_name, listener);
-  }, <span class="hljs-keyword">this</span>);
-
+  <span class="hljs-keyword">var</span> listener = create(EventListenerPrototype);
+  assign(listener, handlers, {context: <span class="hljs-keyword">this</span>});
+  keys(handlers).forEach(evt_type =&gt; <span class="hljs-keyword">this</span>.addEventListener(evt_type, listener));
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
 };</pre></div></div>
             

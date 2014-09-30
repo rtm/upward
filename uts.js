@@ -9,6 +9,6 @@ var uts      = (strings, ...values) => computedUpwardable(() =>      compose(str
 var uts_eval = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
 
 export {
-  uts,
+  uts,          uts as S
   uts_eval
 }

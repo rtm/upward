@@ -20,27 +20,70 @@ It is a purely JS world.
 
 ### Hello world
 
-    var model = upwardifyProperties({ msg: "Hi, Bob." });
+		import {P} from 'upward';
+    import {TEXT, BUTTON} from 'dom';
+
+    var model = P({ msg: "Hi, Bob." });
     document.body.appendChild(TEXT(model.msg));
 
     var button = BUTTON().event('click', function() {
         model.msg = "Hello, world.";
     });
 
-`upwardifyProperties` arranges for the properties (in this case, `msg`)
+`P` (for "properties") arranges for the properties (in this case, `msg`)
 to be upwarded to upward-aware functions to which they are passed,
 such as `TEXT` in the following line.
 So when the user presses the button, and changes the value of `model.msg`,
 the display automatically updates itself.
 
+For conciseness, many upward functions are single uppercase letters.
+If you prefer, you many import them under any alternative name you want.
+
 ### Template strings
 
 Upward properties may also be used with ES6 string templates ("quasi-literals"):
 
-    document.body.appendChild(TEXT(uts`I say, "${model.msg}".`));
+    import {S} from 'upward';     
+    document.body.appendChild(TEXT(S`I say, "${model.msg}".`));
 
-The `uts` is a template string helper which "upwardizes" the property references within the template string.
- and automatically
+The `S` is a template string helper which "upwardizes" the property references within the template string
+(surrounded in backticks)..
+THe content of the text mode is automatically updated whenever the property changes.
+
+### Computed functions
+
+We can define computed values which are automatically updated when their inputs change:
+
+    import {C} from 'upward';
+    document.body.appendChild(TEXT(C(_ => model.msg + ", he said.")));
+
+Here `C` stands for "computed".
+
+### Taking values
+
+To make all this work, `model.msg` is actually represented by a special kind of object.
+That object is created when the `P(msg: "msg")` call is made.
+I can use `model.msg` in a context where a string primitive is expected, and things will work normally.
+In other cases, however, I may need to tell JS to explictly use the special object's value.
+That is the purpose of the `V` function (for "value"). 
+We can use it as follows:
+
+    TEXT(C(_ => V(model.msg).toUpperCase()))
+
+As a matter of style and readability, we use `_` to represent a "don't care" argument list
+to ES6 arrow functions.
+
+In English what the above says, is
+
+ 1. Create an "upwardified" (responsive) text node,
+ 1. whose value is computed by an "upwardified" (responsive) function, which 
+ 1. takes the value of the "upwardified" (responsive) property
+ 1. and uppercases it.
+
+In actuality, `toUpperCase` and other useful functions are defined directly on upwardables,
+allowing you instead to say:
+
+    TEXT(C(_ => model.msg.toUpperCase()))
 
 ### Defining your own upward-aware functions
 

@@ -12,23 +12,20 @@
 // }
 // ```
 
-// Define a prototypical `handleEvent` on `EventListener`s.
-// This dispatches events to a method of the same name.
-// Event-handling methods can examine `this.context` to get the underlying `this`.
+// Convenience.
+var {create, keys, assign} = Object;
+
+// Define a prototypical `handleEvent` for event listeners,
+// which dispatches events to a method of the same name.
 var EventListenerPrototype = {
-  handleEvent(evt) { this[evt.type](evt); }
+  handleEvent(evt) { return this[evt.type](evt); }
 };
 
-
-// `on` is placed on `EventTargets` (meaning HTML elements), 
-// taking a hash of handlers keyed by event name.
+// `on` is a method on `EventTarget`s (meaning HTML elements), 
+// which is passed event handlers in the form of a hash keyed by event name.
 EventTarget.prototype.on = function(handlers) {
-  var listener = Object.create(EventListenerPrototype);
-  Object.assign(listener, handlers, {context: this});
-
-  Object.keys(handlers).forEach(function(evt_name) {
-    this.addEventListener(evt_name, listener);
-  }, this);
-
+  var listener = create(EventListenerPrototype);
+  assign(listener, handlers, {context: this});
+  keys(handlers).forEach(evt_type => this.addEventListener(evt_type, listener));
   return this;
 };

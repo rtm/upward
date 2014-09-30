@@ -27,7 +27,8 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>Convenience.</p>
+
             </div>
             
             <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> {keys, assign, defineProperty} = <span class="hljs-built_in">Object</span>;</pre></div></div>
@@ -175,27 +176,101 @@
             
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">chainify</span><span class="hljs-params">(fn)</span> </span>{
   <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(...args)</span> </span>{ fn.call(<span class="hljs-keyword">this</span>, ...args); <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>; };
-}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Unused?</p>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeUpwardableProperty</span><span class="hljs-params">(o, p)</span> </span>{
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeUpwardableProperty</span><span class="hljs-params">(o, p)</span> </span>{
   <span class="hljs-keyword">return</span> Upwardable(o[p], {o, p}).defineAsProperty(o, p);
-}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h3 id="upwardable">Upwardable</h3>
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Upwardable</span><span class="hljs-params">(v, options = {}, upwards = [])</span> </span>{
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>The heart and soul of the upward library.
+An object which remembers its value and upward destinations.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Upwardable</span><span class="hljs-params">(v, options = {}, upwards = [])</span> </span>{
   <span class="hljs-built_in">console</span>.assert(<span class="hljs-string">"Cannot make upwardable out of upwardable"</span>, !isUpwardable(v));
 
-  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toString</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> `upwardable on ${objectToString(options)}`; }
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toString</span><span class="hljs-params">()</span> </span>{ <span class="hljs-keyword">return</span> `upwardable on ${objectToString(options)}`; }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Provide an accessor (getter/setter) to apply to object properties
+(with <code>#define</code>).
+The getter returns the upwardable itself.
+The setter notifies upward dependencies, and sets the internal value.
+The property must be enumerable so we copy or <code>assign</code> it.</p>
 
-  <span class="hljs-keyword">var</span> accessor = {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> accessor = {
     get: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span>   </span>{ <span class="hljs-keyword">return</span> upwardable; },
     set: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(nv)</span> </span>{
       upwards.forEach(fn =&gt; fn(valueOf(nv), valueOf(v), <span class="hljs-keyword">this</span>, options));
       v = nv; 
     },
     enumerable: <span class="hljs-literal">true</span>
-  };
+  };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p>The upwardable consists of four properties, <code>valueOf</code>, <code>upward</code>, <code>define</code>, and <code>val</code>.
+<code>#valueOf</code> returns the value of the underlying value.
+<code>#upward</code> adds an upward dependency.
+Usually called via the <code>upward</code> routine which ensures upwardability.
+<code>#define</code> applies to the accessor to a specified object property.</p>
 
-  <span class="hljs-keyword">var</span> upwardable = {
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> upwardable = {
     valueOf()         { <span class="hljs-keyword">return</span> valueOf(v); },
     upward(fn)        { upwards.push(fn); },
     define(o, p)      { <span class="hljs-keyword">return</span> defineProperty(o, p, accessor); },
@@ -214,11 +289,11 @@
         </li>
         
         
-        <li id="section-10">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Check if something is upwardable, by looking for its <code>upward</code> property.</p>
 
@@ -231,11 +306,11 @@
         </li>
         
         
-        <li id="section-11">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>Make something upwardable if it isn’t already.</p>
 
@@ -248,11 +323,11 @@
         </li>
         
         
-        <li id="section-12">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>Safely set an upward relationship, or not..</p>
 
@@ -265,11 +340,11 @@
         </li>
         
         
-        <li id="section-13">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
               <p>Create an upwardable whose value is given by a function.
 When any of the specified dependencies change, the value is recomputed,
@@ -288,11 +363,11 @@ triggering the upward behavior.</p>
         </li>
         
         
-        <li id="section-14">
+        <li id="section-19">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-19">&#182;</a>
               </div>
               <p>Transform a function to make it upward-aware.
 The first time, it calls the passed-in function, maintaining context.
@@ -310,11 +385,11 @@ When things change, it calls an alternative function.</p>
         </li>
         
         
-        <li id="section-15">
+        <li id="section-20">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-20">&#182;</a>
               </div>
               <p><code>upwardifyWithObjectParam</code> creates a function which takes a hash as its parameter.
 On the first call, the underlying function is called with the cooked hash.
@@ -333,34 +408,35 @@ When properties in the hash change, a <code>changefn</code> is called with the k
         </li>
         
         
-        <li id="section-16">
+        <li id="section-21">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-21">&#182;</a>
               </div>
               <p>A common case for functions taking a hash as argument is to want to merge (assign)
 the property/value pairs into an underlying hash, 
 which should then be updated when the hash changes.
-<code>upwardifyAssign</code> turns a hash into a function which modifies it.</p>
+<code>upwardifyAssign</code> turns a hash into a function which modifies it.
+It is passed on a function yielding the hash to be assigned to.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">upwardifiedAssign</span><span class="hljs-params">(o)</span> </span>{
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">upwardifiedAssign</span><span class="hljs-params">(fn)</span> </span>{
   <span class="hljs-keyword">return</span> upwardifyWithObjectParam(
-    oo =&gt; assign(o, oo),
-    (p, v) =&gt; o[p] = v
+    oo =&gt; assign(fn.call(<span class="hljs-keyword">this</span>), oo),
+    (p, v) =&gt; fn.call(<span class="hljs-keyword">this</span>)[p] = v
   );
 }</pre></div></div>
             
         </li>
         
         
-        <li id="section-17">
+        <li id="section-22">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-22">&#182;</a>
               </div>
               <p><code>upwardifyProperty</code> modifies a single property on an object for upwardability.
 This is mainly used from ‘upwardifyProperties` below.</p>
@@ -375,11 +451,11 @@ This is mainly used from ‘upwardifyProperties` below.</p>
         </li>
         
         
-        <li id="section-18">
+        <li id="section-23">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-18">&#182;</a>
+                <a class="pilcrow" href="#section-23">&#182;</a>
               </div>
               <p><code>upwardifyProperties</code> modifies all properties in an object, in place, for upwardability.
 A non-enumerable <code>upwardified</code> property is added to the object.
@@ -390,7 +466,7 @@ Note this is <em>not</em> the same as making the object itself upwardable.</p>
             <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">upwardifyProperties</span><span class="hljs-params">(o)</span> </span>{
   <span class="hljs-keyword">if</span> (!o.upwardified) {
     keys(o).forEach(k =&gt; upwardifyProperty(o, k));
-    setProperty(o, <span class="hljs-string">'upwardified'</span>, { value: <span class="hljs-literal">true</span> });
+    defineProperty(o, <span class="hljs-string">'upwardified'</span>, { value: <span class="hljs-literal">true</span> });
   }
   <span class="hljs-keyword">return</span> o;
 }
@@ -404,8 +480,7 @@ export {
   upwardify,
   upwardifyProperties,
   configureUpwardable
-};
-L</pre></div></div>
+};</pre></div></div>
             
         </li>
         
