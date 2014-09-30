@@ -3,6 +3,7 @@
 
 // Bookkeeping and initialization.
 import {Upwardable, upwardify, chainify} from 'upward';
+import {chainify} from 'Fun';
 
 var {createTextNode, createElement} = document;
 var {appendChild, replaceChild, setAttribute} = HTMLElement.prototype;
@@ -58,5 +59,26 @@ var DIV = function() {
 var TEXT = function(text) {
   return document.createTextNode("").value(text);
 };
+
+// Provide a `reverse` method for strings.
+String.prototype.reverse = function() {
+  return this.split().reverse().join('');
+};
+
+// Allow the String prototype methods to be applied to Text nodes.
+
+// These are methods that overwrite the node value.
+['concat', 'replace', 'slice', 'substr', 'substring', 'toUpperCase', 'toLowerCase', 'toLocaleUpperCase', 'toLocaleLowerCase', 'trim', 'trimLeft', 'trimRight', 'revese']
+  .forEach(method => Text.prototype[method] = function() {
+    return this.nodeValue = String.prototype[method].apply(this.nodeValue, arguments);
+  })
+;
+
+// These are methods that do not overwrite the node value.
+['charAt', 'charCodeAt', 'indexOf', 'lastIndexOf', 'match', 'search', 'split']
+  .forEach(method => Text.prototype[method] = function() {
+    return String.prototype[method].apply(this.nodeValue, arguments);
+  })
+;
 
 export {INPUT, BUTTON, DIV, TEXT};

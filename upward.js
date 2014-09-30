@@ -1,3 +1,4 @@
+import {laterify} from 'Fun';
 var {keys, assign, defineProperty} = Object;
 
 // ### Configuration
@@ -41,35 +42,42 @@ function valueObject(o) {
   return mapObject(o, valueOf);
 }
 
-function objectValues(o) {
-  return keys(o).map(k => o[k]);
+// Return an aray all of the values of which are evaluated.
+function valueArray(a) {
+  return a.map(valueOf);
 }
 
-// Transform a function so that it always returns `this`.
-function chainify(fn) {
-  return function(...args) { fn.call(this, ...args); return this; };
+function objectValues(o) {
+  return keys(o).map(k => o[k]);
 }
 
 function makeUpwardableProperty(o, p) {
   return Upwardable(o[p], {o, p}).defineAsProperty(o, p);
 }
 
-function Upwardable(v, options = {}, upwards = []) {
+function Upwardable(v, {once, later, disable} = {}, upwards = []) {
   console.assert("Cannot make upwardable out of upwardable", !isUpwardable(v));
 
   function toString() { return `upwardable on ${objectToString(options)}`; }
 
+  var send = laterify(() =>
+    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), upwardable, options));
+  );
+
   var accessor = {
     get: function()   { return upwardable; },
     set: function(nv) {
-      upwards.forEach(fn => fn(valueOf(nv), valueOf(v), this, options));
-      v = nv; 
+      if (!disable) {
+        send(later);
+        v = nv;
+        disable = once;
+      }
     },
     enumerable: true
   };
 
   var upwardable = {
-    valueOf()         { return valueOf(v); },
+    valueOf()        { return valueOf(v); },
     upward(fn)        { upwards.push(fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
   };
@@ -166,7 +174,6 @@ export {
   isUpwardable,
   upward,
   computedUpwardable,
-  chainify,
   upwardify,
   upwardifyProperties,
   configureUpwardable
