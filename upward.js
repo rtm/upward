@@ -1,5 +1,4 @@
 // Convenience.
-import {laterify} from 'Fun';
 var {create, keys, assign, defineProperty} = Object;
 
 // ### Configuration
@@ -16,6 +15,40 @@ var id = 0;
 // Set configuration options.
 function configureUpwardable(opts) {
   assign (upwardConfig, opts);
+}
+
+// Functional utilities
+// --------------------
+
+// Create a delayed version of a function.
+function laterify(fn, {delay = 10} = {}) {
+  return function() {
+		return setTimeout(() => fn.apply(this, arguments), delay);
+	}
+}
+
+// Transform a function so that it always returns `this`.
+function chainify(fn) {
+  return function(...args) { fn.call(this, ...args); return this; };
+}
+
+// Make a function which returns itself.
+// This supports the odd syntax fn(x)(y).
+function selfify(fn) {
+  return function selfified() {
+     fn.apply(this, arguments);
+     return selfified;
+  };
+}
+
+// Make a function which memozies its result.
+function memoify(fn, {hash = x => x, cache = {}} = {}) {
+  function memoified(...args) {
+    var key = hash(...args);
+    return key in cache ? cache[key] : cache[key] = fn.call(this, ...args);
+  }
+  memoified.clear = () => cache = {};
+  return memoified;
 }
 
 function objectToString(o) {
@@ -61,20 +94,18 @@ function makeUpwardableProperty(o, p) {
 
 // The heart and soul of the upward library.
 // An object which remembers its value and upward destinations.
-function Upwardable(v, {once, later, disable} = {}, upwards = []) {
+function Upwardable(v, options = {}, upwards = []) {
   console.assert("Cannot make upwardable out of upwardable", !isUpwardable(v));
 
   function toString() { return `upwardable on ${objectToString(options)}`; }
+
+	var {once, later, disable} = options;
 
   // Provide an accessor (getter/setter) to apply to object properties
   // (with `#define`).
   // The getter returns the upwardable itself.
   // The setter notifies upward dependencies, and sets the internal value.
   // The property must be enumerable so we copy or `assign` it.
-  var send = laterify(() =>
-    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), upwardable, options))
-  );
-
   var accessor = {
     get: function()   { 
       reporters[reporters.length-1](u);
@@ -82,7 +113,7 @@ function Upwardable(v, {once, later, disable} = {}, upwards = []) {
     },
     set: function(nv) {
       if (!disable) {
-        send(later);
+				upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
         v = nv;
         disable = once;
       }
