@@ -9,5 +9,17 @@
     </script>
     <script type="module" src="./index.js"></script>
 	<div id="app"></div>
+
+	<h4>The <code>HTML</code> template helper</h4>
+  <p>
+		The <code>HTML</code> helper allows you to construct HTML strings.
+    The text below is constructed this way, via <code>HTML`&lt;span&gt;1 + 1 = ${1+1}&lt;/span&gt;`</code>.
+  </p>
+	<div id="html-helper"></div>
+  <script type="module">
+    import {HTML} from '../src/U';
+    document.getElementById('html-helper').appendChild(HTML`<span>1 + 1 = ${1+1}</span>`);
+  </script>
+
   </body>
 </html>

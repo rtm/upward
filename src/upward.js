@@ -1,7 +1,8 @@
 // Convenience.
 var {create, keys, assign, defineProperty} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
-var {appendChild} = Node;
+var {appendChild} = Node.prototype;
+var {forEach} = Array.prototype;
 
 // ### Configuration
 
@@ -313,10 +314,10 @@ EventTarget.prototype.on = function(handlers) {
 // String templates
 // ----------------
 
-//Utility routine to compose a string by interspersing literals and values.
+// Utility routine to compose a string by interspersing literals and values.
 var compose = (strings, ...values) => {
   values.push('');
-  return [].concat(...strings.map((e, i) => [e, values[i].valueOf()]));
+  return [].concat(...strings.map((e, i) => [e, values[i].valueOf()])).join('');
 };
 
 // Template helper which detects upwardified parameters and adds notifiers.
@@ -325,6 +326,19 @@ var upwardifyTemplate = (strings, ...values) => computedUpwardable(() =>      co
 // Template helper which detects upwardified parameters and adds notifiers.
 var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
 
+// Template helper which handles HTML; return a document fragment.
+// Example:
+// ```
+// document.body.appendChild(HTML`<span>${foo}</span><span>${bar}</span>`);
+// ```
+function HTML(strings, ...values) {
+	var dummy = document.createElement('div');
+	var fragment = document.createDocumentFragment();
+	dummy.innerHTML = compose(strings, ...values);
+	forEach.call(dummy.childNodes, appendChild, fragment);
+	return fragment;
+}
+
 export {
   Upwardable,
   computedUpwardable,
@@ -332,6 +346,7 @@ export {
   valueOf,
   upwardifyTemplate,
   upwardifyTemplateFormula,
+	HTML,
 	createElt,
 
   isUpwardable,
@@ -339,5 +354,7 @@ export {
   upwardify,
   configureUpwardable,
 
-  chainify
+  chainify,
+
+	makeClassName
 };
