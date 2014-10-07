@@ -1,25 +1,67 @@
 <!DOCTYPE html>
 <html>
+
+	<head>
+		<style>
+			.code {
+			  white-space: pre;
+			  font-family: monospace;
+        background: pink;
+        margin-left: 40px;
+        padding: 12px;
+      }
+      .result {
+        background: beige;
+			  margin: 12px 40px;
+      }
+		</style>
+	</head>
+	
   <body>
     <h1 id="message">Test App</h1>
     <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
     <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+    <script src="helper.js"></script>
     <script>
       traceur.options.experimental = true;
     </script>
     <script type="module" src="./index.js"></script>
-	<div id="app"></div>
 
-	<h4>The <code>HTML</code> template helper</h4>
-  <p>
-		The <code>HTML</code> helper allows you to construct HTML strings.
-    The text below is constructed this way, via <code>HTML`&lt;span&gt;1 + 1 = ${1+1}&lt;/span&gt;`</code>.
-  </p>
-	<div id="html-helper"></div>
-  <script type="module">
-    import {HTML} from '../src/U';
-    document.getElementById('html-helper').appendChild(HTML`<span>1 + 1 = ${1+1}</span>`);
-  </script>
+  <div id="app"></div>
+
+	<section id="upwarded-properties">
+		<h3>Upwarded properties</h3>
+		<p class="desc">
+			Here we construct a DOM text node whose value is upwardable.
+			We increment the value every second, and the DOM is automatically updated.
+		</p>
+		<script type="module">
+			import dom from 'upwarded-properties';
+			sample("upwarded-properties", dom);
+		</script>
+	</section>
+
+	<section id="input">
+		<h3>Input fields</h3>
+		<p class="desc">
+			The value of an input field may be dynamically accessed via <code>input.val_input</code>.
+		</p>
+		<script type="module">
+			import dom from 'input';
+			sample("input", dom);
+		</script>
+	</section>
+
+	<section id="html-helper">
+		<h3>The <code>HTML</code> template helper</h3>
+		<p class="desc">
+			The <code>HTML</code> helper allows you to construct HTML strings.
+		</p>
+		<script type="module">
+			import dom from 'html-helper';
+			sample("html-helper", dom);
+		</script>
+	</section>
 
   </body>
 </html>
