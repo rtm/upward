@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Mocha Tests</title>
+		<link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+	</head>
+  <body>
+    <h1 id="message">Mocha Tests</h1>
+    <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+    <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+    <script>
+      traceur.options.experimental = true;
+    </script>
+
+		<div id="mocha"></div>
+<!--		<script src="jquery.js"></script>-->
+		<script src="../node_modules/chai/chai.js"></script>
+		<script src="../node_modules/mocha/mocha.js"></script>
+		<script src="../bower_components/requirejs/require.js"></script>
+		<script>mocha.setup('bdd')</script>
+		<script>
+			mocha.checkLeaks();
+			mocha.globals(['jQuery']);
+			mocha.run();
+		</script>    
+		<script src="./test-all.js"></script>
+<!--	<script src="./string_test-compile.js"></script>-->
+	<div id="app"></div>
+  </body>
+</html>

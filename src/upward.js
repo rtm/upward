@@ -1,5 +1,7 @@
 // Convenience.
 var {create, keys, assign, defineProperty} = Object;
+var {createElement, createTextNode, createDocumentFragment} = document;
+var {appendChild} = Node;
 
 // ### Configuration
 
@@ -16,6 +18,20 @@ var id = 0;
 function configureUpwardable(opts) {
   assign (upwardConfig, opts);
 }
+
+// String utilities
+// ----------------
+
+function camelify(str) {
+	return str.replace(/[-_][a-z]/g, (_, letter) => letter.toUpperCase());
+}
+
+function dasherify(str) {
+  return str.replace(/([a-z])([A-Z])/, (_, let1, let2) => let1 + '-' + let2.toLowerCase());
+}
+
+String.prototype.camelify = function() { return camelify(this); };
+String.prototype.dasherify = function() { return dasherify(this); };
 
 // Functional utilities
 // --------------------
@@ -72,7 +88,7 @@ function mapObject(o, fn, ctxt) {
 }
 
 // Return an object all of the values of which are evaluated.
-function valueObject(o) {
+function valueOfObject(o) {
   return mapObject(o, valueOf);
 }
 
@@ -200,7 +216,7 @@ function upwardify(fn, changefn = fn) {
 // `upwardifyWithObjectParam` creates a function which takes a hash as its parameter.
 // On the first call, the underlying function is called with the cooked hash.
 // When properties in the hash change, a `changefn` is called with the key and new value.
-function upwardifyWithObjectParam(fn, changefn) {
+function upwardifyWithObjectParam(fn, changefn = fn) {
   return function(o) {
     upwardifyProperties(o);
     keys(o).forEach(k => upward(o[k], nv => changefn(k, nv)));
@@ -238,24 +254,90 @@ function upwardifyProperties(o) {
   return o;
 }
 
+
+// DOM Building
+// ------------
+
+// Build a class string from an object with camelized keys and boolean values.
+// Example:
+// ```
+// createElt('div', {className: makeClassname({myClass: true})})
+// <div class="my-class"/>
+// ```
+// Aliased to CLASS.
+var makeClassName = upwardifyWithObjectParam(
+	o => 
+		keys(o)
+		.filter(k => o[k])
+		.map(dasherify)
+		.join(' ')
+);
+
+// Build a DOM node from tagname, attributes and children.
+function createElt(tagName, attrs = {}, children = []) {
+	var e = createElement(tagName);
+	(children || []).forEach(appendChild, e);
+	assign(e.attributes, attrs);
+	return e;
+}
+
+// Event handling
+// ==============
+
+// Events are handled by calling `on` on an element, and passing a hash of handlers.
+//
+// Example:
+// ```
+// BUTTON().on({click: handleButtonClick});
+//
+// function handleButtonClick(evt) {
+//     // this.context is the button
+// }
+// ```
+
+// Define a prototypical `handleEvent` for event listeners,
+// which dispatches events to a method of the same name.
+var EventListenerPrototype = {
+  handleEvent(evt) { return this[evt.type](evt); }
+};
+
+// `on` is a method on `EventTarget`s (meaning HTML elements), 
+// which is passed event handlers in the form of a hash keyed by event name.
+EventTarget.prototype.on = function(handlers) {
+  var listener = create(EventListenerPrototype);
+  assign(listener, handlers, {context: this});
+  keys(handlers).forEach(evt_type => this.addEventListener(evt_type, listener));
+  return this;
+};
+
+// String templates
+// ----------------
+
+//Utility routine to compose a string by interspersing literals and values.
 var compose = (strings, ...values) => {
   values.push('');
   return [].concat(...strings.map((e, i) => [e, values[i].valueOf()]));
 };
 
+// Template helper which detects upwardified parameters and adds notifiers.
 var upwardifyTemplate = (strings, ...values) => computedUpwardable(() =>      compose(strings, ...values),  values);
+
+// Template helper which detects upwardified parameters and adds notifiers.
 var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
 
 export {
-  Upwardable,                   Upwardable as U,
-  computedUpwardable,   computedUpwardable as C,
-  upwardifyProperties, upwardifyProperties as P,
-  valueOf,                         valueOf as V,
-  upwardifyTemplate,     upwardifyTemplate as S,
+  Upwardable,
+  computedUpwardable,
+  upwardifyProperties,
+  valueOf,
+  upwardifyTemplate,
   upwardifyTemplateFormula,
+	createElt,
 
   isUpwardable,
   upward,
   upwardify,
-  configureUpwardable
+  configureUpwardable,
+
+  chainify
 };

@@ -1,9 +1,5 @@
-/* jshint esnext: true */
-
-import {RunUpward} from 'app';
-import {P, C, V, S} from 'upward';
-import {DIV, TEXT, BUTTON, INPUT} from 'dom';
-import 'event';
+import {RunUpward} from '../src/app';
+import {P, C, V, S, DIV, TEXT, BUTTON, INPUT} from '../src/U';
 
 var data = P({
   name: "Bob"

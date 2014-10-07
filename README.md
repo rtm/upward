@@ -1,4 +1,6 @@
-Upward is a JavaScript framework for synchronizing data through your application. It works by introducing an `Upwardable` object which represents the watched state of an object, and `upwardified` functions which take upwardable objects and know how to re-invoke themselves when they change.
+Upward is a JavaScript framework for synchronizing data through your application. It works by introducing an `Upwardable` object which represents a value which can propagate changes upwards, and and `upwardified` functions which take upwardable arguments and know how to re-invoke themselves when they change.
+
+"Upward" is an acronym for "Upward Propagation With ARgument Detection", if you insist.
 
 ### Introduction
 
@@ -20,7 +22,7 @@ It is a purely JS world.
 
 ### Hello world
 
-		import {P} from 'upward';
+		import {P} from 'U';
     import {TEXT, BUTTON} from 'dom';
 
     var model = P({ msg: "Hi, Bob." });
@@ -32,8 +34,8 @@ It is a purely JS world.
 
 `P` (for "properties") arranges for the properties (in this case, `msg`)
 to be upwarded to upward-aware functions to which they are passed,
-such as `TEXT` in the following line.
-So when the user presses the button, and changes the value of `model.msg`,
+such as `TEXT` in the succeeding line.
+So when the user presses the button, which changes the value of `model.msg`,
 the display automatically updates itself.
 
 For conciseness, many upward functions are single uppercase letters.
@@ -43,7 +45,7 @@ If you prefer, you many import them under any alternative name you want.
 
 Upward properties may also be used with ES6 string templates ("quasi-literals"):
 
-    import {S} from 'upward';     
+    import {S} from 'U';     
     document.body.appendChild(TEXT(S`I say, "${model.msg}".`));
 
 The `S` is a template string helper which "upwardizes" the property references within the template string
@@ -54,7 +56,7 @@ THe content of the text mode is automatically updated whenever the property chan
 
 We can define computed values which are automatically updated when their inputs change:
 
-    import {C} from 'upward';
+    import {C} from 'U';
     document.body.appendChild(TEXT(C(_ => model.msg + ", he said.")));
 
 Here `C` stands for "computed".
@@ -84,6 +86,44 @@ In actuality, `toUpperCase` and other useful functions are defined directly on u
 allowing you instead to say:
 
     TEXT(C(_ => model.msg.toUpperCase()))
+
+### Creating DOM
+
+DOM elements are created with the `E` routine, which is called with a tag name, 
+an attributes hash, and a children array.
+
+    var div = E('div', {title: "I am a div"}, [children]);
+
+Classes on an element are specified as a `className` attribute, whose value is created by the
+CLASS routine, which takes a hash whose keys are camelized class names, with boolean values:
+
+    var div = E('div', {className: CLASS({active: model.active})});
+
+This approach allows various class names to be dynamically specified or removed 
+by changing the value of the `model.active` property.
+
+As shown above, text nodes are created using `TEXT`.
+
+The third argument to `E`, which specifies an array of children, is dynamic, so:
+
+    E('div', {}, model.items.map(i => E('span', {}, [TEXT(i.text)])))
+
+This corresponds roughly to something like the below in a templating language:
+
+    <div>
+        {{#each model.items}}
+            <span>text</span>
+        {{/each}}
+    </div>
+
+and functions identically in the sense that changes to `model.items` are automatically reflected,
+as are changes in the `test` property of items.
+
+In-line styles are specified using the `style` attribute, as expected:
+
+    E('div', {style: {backgroundColor: model.color}})
+
+where again, any change to `model.color` will be reflected automatically.
 
 ### Defining your own upward-aware functions
 

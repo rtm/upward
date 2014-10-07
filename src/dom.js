@@ -2,8 +2,7 @@
 // ===========================
 
 // Bookkeeping and initialization.
-import {Upwardable, upwardify} from 'upward';
-import {chainify} from 'Fun';
+import {Upwardable, upwardify, chainify} from './upward';
 
 
 var {createTextNode, createElement} = document;
