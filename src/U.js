@@ -18,3 +18,7 @@ export {
 	DIV,
 	TEXT
 } from './Dom';
+
+export {
+  valueOf
+} from './Obj';

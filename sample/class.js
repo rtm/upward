@@ -1,2 +1,3 @@
 import {DIV} from '../src/U';
-export default DIV().class({myClass: true});
+var view = { show: true };
+export default DIV().class({show: view.show});

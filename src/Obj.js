@@ -4,6 +4,11 @@
 // Setup
 var {keys} = Object;
 
+// Generic version of `valueOf` which works for anything.
+function valueOf(v) {
+    return v == null ? v : v.valueOf();
+}
+
 // User-friendly representation of an objectd.
 function objectToString(o) {
   return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
@@ -37,6 +42,7 @@ export {
   mapObject,
   valueOfObject,
   valueArray,
-  objectValues
+  objectValues,
+	valueOf
 };
 

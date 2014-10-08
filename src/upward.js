@@ -1,17 +1,12 @@
 // Convenience.
 
-import {objectToString, valueOfObject} from './Obj';
+import {objectToString, valueOf, valueOfObject} from './Obj';
 import {upwardConfig, upwardableId}    from './Cfg';
 
 var {create, keys, assign, defineProperty} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
 var {appendChild} = Node.prototype;
 var {forEach} = Array.prototype;
-
-// Generic version of `valueOf` which works for anything.
-function valueOf(v) {
-    return v == null ? v : v.valueOf();
-}
 
 // Unused?
 function makeUpwardableProperty(o, p) {
@@ -256,6 +251,7 @@ export {
   valueOf,
   upwardifyTemplate,
   upwardifyTemplateFormula,
+	upwardifyWithObjectParam,
   HTML,
   createElt,
 

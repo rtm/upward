@@ -2,7 +2,8 @@
 // ===========================
 
 // Bookkeeping and initialization.
-import {Upwardable, upwardify} from './upward';
+import {Upwardable, upwardify, upwardifyWithObjectParam} from './upward';
+
 import {chainify, swapify}     from './Fun';
 import {dasherify}             from './Str';
 import {mapObject}             from './Obj';
@@ -35,7 +36,7 @@ Object.assign(HTMLElement.prototype, {
 	// TBI
 
 	// `class` sets and removes classes on the element, based on a bool-valued hash
-	class: upwardify(chainify(setClass), toggleClass)
+	class: upwardifyWithObjectParam(chainify(setClass), toggleClass)
 });
 
 // ### New methods on Node
