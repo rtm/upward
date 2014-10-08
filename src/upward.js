@@ -1,105 +1,16 @@
 // Convenience.
+
+import {objectToString, valueOfObject} from './Obj';
+import {upwardConfig, upwardableId}    from './Cfg';
+
 var {create, keys, assign, defineProperty} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
 var {appendChild} = Node.prototype;
 var {forEach} = Array.prototype;
 
-// ### Configuration
-
-// Control upward configuration with `LOGGING` and `DEBUG` flags.
-var upwardConfig = {
-  LOGGING: true,
-  DEBUG: true
-};
-
-// Keep a counter which identifies upwardables for debugging purposes.
-var id = 0;
-
-// Set configuration options.
-function configureUpwardable(opts) {
-  assign (upwardConfig, opts);
-}
-
-// String utilities
-// ----------------
-
-function camelify(str) {
-	return str.replace(/[-_][a-z]/g, (_, letter) => letter.toUpperCase());
-}
-
-function dasherify(str) {
-  return str.replace(/([a-z])([A-Z])/, (_, let1, let2) => let1 + '-' + let2.toLowerCase());
-}
-
-String.prototype.camelify = function() { return camelify(this); };
-String.prototype.dasherify = function() { return dasherify(this); };
-
-// Functional utilities
-// --------------------
-
-// Create a delayed version of a function.
-function laterify(fn, {delay = 10} = {}) {
-  return function() {
-		return setTimeout(() => fn.apply(this, arguments), delay);
-	}
-}
-
-// Transform a function so that it always returns `this`.
-function chainify(fn) {
-  return function(...args) { fn.call(this, ...args); return this; };
-}
-
-// Make a function which returns itself.
-// This supports the odd syntax fn(x)(y).
-function selfify(fn) {
-  return function selfified() {
-     fn.apply(this, arguments);
-     return selfified;
-  };
-}
-
-// Make a function which memozies its result.
-function memoify(fn, {hash = x => x, cache = {}} = {}) {
-  function memoified(...args) {
-    var key = hash(...args);
-    return key in cache ? cache[key] : cache[key] = fn.call(this, ...args);
-  }
-  memoified.clear = () => cache = {};
-  return memoified;
-}
-
-function objectToString(o) {
-  return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
-}
-
-function log(...args) {
-  if (upwardConfig.LOGGING) {
-    console.log('UPWARDIFY:\t', ...args);
-  }
-}
-
 // Generic version of `valueOf` which works for anything.
 function valueOf(v) {
     return v == null ? v : v.valueOf();
-}
-
-// Analog of `Array#map` for objects.
-function mapObject(o, fn, ctxt) {
-  return keys(o).reduce((result, k) => result[k] = fn.call(ctxt, o[k]), result);
-}
-
-// Return an object all of the values of which are evaluated.
-function valueOfObject(o) {
-  return mapObject(o, valueOf);
-}
-
-// Return an aray all of the values of which are evaluated.
-function valueArray(a) {
-  return a.map(valueOf);
-}
-
-function objectValues(o) {
-  return keys(o).map(k => o[k]);
 }
 
 // Unused?
@@ -116,7 +27,7 @@ function Upwardable(v, options = {}, upwards = []) {
 
   function toString() { return `upwardable on ${objectToString(options)}`; }
 
-	var {once, later, disable} = options;
+  var {once, later, disable} = options;
 
   // Provide an accessor (getter/setter) to apply to object properties
   // (with `#define`).
@@ -130,7 +41,7 @@ function Upwardable(v, options = {}, upwards = []) {
     },
     set: function(nv) {
       if (!disable) {
-				upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
+        upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
         v = nv;
         disable = once;
       }
@@ -152,8 +63,7 @@ function Upwardable(v, options = {}, upwards = []) {
   u.define(u, 'val');
   
   if (upwardConfig.DEBUG) {
-    assign(u, {id, toString});
-    id++;
+    assign(u, {id: upwardableId(), toString});
   }
 
   return u;
@@ -267,19 +177,19 @@ function upwardifyProperties(o) {
 // ```
 // Aliased to CLASS.
 var makeClassName = upwardifyWithObjectParam(
-	o => 
-		keys(o)
-		.filter(k => o[k])
-		.map(dasherify)
-		.join(' ')
+  o => 
+    keys(o)
+    .filter(k => o[k])
+    .map(dasherify)
+    .join(' ')
 );
 
 // Build a DOM node from tagname, attributes and children.
 function createElt(tagName, attrs = {}, children = []) {
-	var e = createElement(tagName);
-	(children || []).forEach(appendChild, e);
-	assign(e.attributes, attrs);
-	return e;
+  var e = createElement(tagName);
+  (children || []).forEach(appendChild, e);
+  assign(e.attributes, attrs);
+  return e;
 }
 
 // Event handling
@@ -332,11 +242,11 @@ var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => 
 // document.body.appendChild(HTML`<span>${foo}</span><span>${bar}</span>`);
 // ```
 function HTML(strings, ...values) {
-	var dummy = document.createElement('div');
-	var fragment = document.createDocumentFragment();
-	dummy.innerHTML = compose(strings, ...values);
-	forEach.call(dummy.childNodes, appendChild, fragment);
-	return fragment;
+  var dummy = document.createElement('div');
+  var fragment = document.createDocumentFragment();
+  dummy.innerHTML = compose(strings, ...values);
+  forEach.call(dummy.childNodes, appendChild, fragment);
+  return fragment;
 }
 
 export {
@@ -346,15 +256,12 @@ export {
   valueOf,
   upwardifyTemplate,
   upwardifyTemplateFormula,
-	HTML,
-	createElt,
+  HTML,
+  createElt,
 
   isUpwardable,
   upward,
   upwardify,
-  configureUpwardable,
 
-  chainify,
-
-	makeClassName
+  makeClassName
 };

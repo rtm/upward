@@ -1,4 +1,4 @@
-import {makeStyles} from './style';
+import {makeStyles} from './Css';
 
 export function RunUpward(app) {
   var root = document.getElementById(app.root);

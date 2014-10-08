@@ -17,4 +17,4 @@ export {
 	BUTTON,
 	DIV,
 	TEXT
-} from './dom';
+} from './Dom';

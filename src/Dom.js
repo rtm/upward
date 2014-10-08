@@ -2,22 +2,40 @@
 // ===========================
 
 // Bookkeeping and initialization.
-import {Upwardable, upwardify, chainify} from './upward';
-
+import {Upwardable, upwardify} from './upward';
+import {chainify, swapify}     from './Fun';
+import {dasherify}             from './Str';
+import {mapObject}             from './Obj';
 
 var {createTextNode, createElement} = document;
 var {appendChild, replaceChild, setAttribute} = HTMLElement.prototype;
 
 // DOM class prototype extensions
 // ------------------------------
+
 // ### New methods on HTMLElement
 // We add convenience methods to the `HTMLElement` prototype.
+
+// Toggle a class on an element
+function toggleClass(cls, b) { 
+	this.classList.toggle(dasherify(cls), b); 
+}
+
+// Set classes on an object based on boolean-valued hash of camelCase names
+function setClass(cls_hash) {
+	mapObject(cls_hash, swapify(toggleClass), this);
+}
+
 Object.assign(HTMLElement.prototype, {
   // `child` calls `appendChild` the first time, then `replaceChild`.
   child: upwardify(chainify(appendChild), replaceChild),
   // `attr` sets the attribute on the element.
-  attr: upwardify(chainify(setAttribute), setAttribute)
+  attr: upwardify(chainify(setAttribute), setAttribute),
   // `attrs` takes a hash and sets the relevant attributes.
+	// TBI
+
+	// `class` sets and removes classes on the element, based on a bool-valued hash
+	class: upwardify(chainify(setClass), toggleClass)
 });
 
 // ### New methods on Node

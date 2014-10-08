@@ -1,4 +1,4 @@
-import {RunUpward} from '../src/app';
+import {RunUpward} from '../src/App';
 import {P, C, V, S, DIV, TEXT, BUTTON, INPUT} from '../src/U';
 
 var data = P({
