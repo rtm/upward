@@ -1,20 +1,28 @@
-function sample(id, dom) {
-	var elt = document.getElementById(id);
+function sample(id) {
 
-	// code block
-	var xhr = new XMLHttpRequest;
-	xhr.open('GET', id+'.js', false);
-  xhr.send(null);
+  function setup(dom) {
+		var elt = document.getElementById(id);
 
-  var code = document.createElement('div');
-	elt.appendChild(code);
-	code.className = 'code';
-	code.appendChild(document.createTextNode(xhr.responseText));
-
-
-	// result block
-	var result = document.createElement('div');
-	elt.appendChild(result);
-	result.className = 'result';
-	result.appendChild(dom);
+		// code block
+		var xhr = new XMLHttpRequest;
+		xhr.open('GET', id+'.js', false);
+		xhr.send(null);
+		
+		var code = document.createElement('div');
+		elt.appendChild(code);
+		code.className = 'code';
+		code.appendChild(document.createTextNode(xhr.responseText));
+		
+		// result block
+		var result = document.createElement('div');
+		elt.appendChild(result);
+		result.className = 'result';
+		result.appendChild(dom);
+	}
+	
+	System.import('./'+id).then(
+		function(module) { setup(module.default); },
+		function(err) {console.log("Cannot import module", id, err); }
+	);
+	
 }

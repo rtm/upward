@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html>
 
-	<head>
-		<style>
-			.code {
-			  white-space: pre;
-			  font-family: monospace;
+  <head>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      h3 {
+        background: brown;
+        color: white;
+			  padding: 6px;
+      }
+      .code {
+        white-space: pre;
+        font-family: monospace;
         background: pink;
-        margin-left: 40px;
+        margin: 12px 40px;
         padding: 12px;
       }
       .result {
         background: beige;
-			  margin: 12px 40px;
+        margin: 12px 40px;
+        padding: 12px;
       }
-		</style>
-	</head>
-	
+    </style>
+  </head>
+  
   <body>
     <h1 id="message">Test App</h1>
     <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
@@ -29,39 +38,38 @@
 
   <div id="app"></div>
 
-	<section id="upwarded-properties">
-		<h3>Upwarded properties</h3>
-		<p class="desc">
-			Here we construct a DOM text node whose value is upwardable.
-			We increment the value every second, and the DOM is automatically updated.
-		</p>
-		<script type="module">
-			import dom from 'upwarded-properties';
-			sample("upwarded-properties", dom);
-		</script>
-	</section>
+  <section id="upwarded-properties">
+    <h3>Upwarded properties</h3>
+    <p class="desc">
+      Here we construct a DOM text node whose value is upwardable.
+      We increment the value every second, and the DOM is automatically updated.
+    </p>
+  </section>
 
-	<section id="input">
-		<h3>Input fields</h3>
-		<p class="desc">
-			The value of an input field may be dynamically accessed via <code>input.val_input</code>.
-		</p>
-		<script type="module">
-			import dom from 'input';
-			sample("input", dom);
-		</script>
-	</section>
+  <section id="input">
+    <h3>Input fields</h3>
+    <p class="desc">
+      The value of an input field may be dynamically accessed via <code>input.val_input</code>.
+    </p>
+  </section>
 
-	<section id="html-helper">
-		<h3>The <code>HTML</code> template helper</h3>
-		<p class="desc">
-			The <code>HTML</code> helper allows you to construct HTML strings.
-		</p>
-		<script type="module">
-			import dom from 'html-helper';
-			sample("html-helper", dom);
-		</script>
-	</section>
+  <section id="computed">
+    <h3>Computed values</h3>
+    <p class="desc">
+      The <code>C</code> function can be used to transform dynamic values.
+    </p>
+  </section>
+
+  <section id="html-helper">
+    <h3>The <code>HTML</code> template helper</h3>
+    <p class="desc">
+      The <code>HTML</code> helper allows you to construct HTML strings.
+    </p>
+  </section>
+
+  <script>
+		["upwarded-properties", "input", "html-helper", "computed"].forEach(sample);
+  </script>
 
   </body>
 </html>
