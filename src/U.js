@@ -16,7 +16,8 @@ export {
   INPUT,
 	BUTTON,
 	DIV,
-	TEXT
+	TEXT,
+  SPAN
 } from './Dom';
 
 export {

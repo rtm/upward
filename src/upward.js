@@ -125,7 +125,7 @@ function upwardify(fn, changefn = fn) {
 function upwardifyWithObjectParam(fn, changefn = fn) {
   return function(o) {
     upwardifyProperties(o);
-    keys(o).forEach(k => upward(o[k], nv => changefn(k, nv)));
+    keys(o).forEach(k => upward(o[k], nv => changefn.call(this, k, nv)));
     return fn.call(this, valueOfObject(o));
   };
 }

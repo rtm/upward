@@ -36,7 +36,7 @@ Object.assign(HTMLElement.prototype, {
 	// TBI
 
 	// `class` sets and removes classes on the element, based on a bool-valued hash
-	class: upwardifyWithObjectParam(chainify(setClass), toggleClass)
+	classes: upwardifyWithObjectParam(chainify(setClass), toggleClass)
 });
 
 // ### New methods on Node
@@ -64,14 +64,22 @@ var INPUT = function() {
 };
 
 // ### Buttons
-var BUTTON = function() {
-  return document.createElement('button');
+var BUTTON = function(label, handler) {
+	var button = document.createElement('button');
+	if (label) { button.child(TEXT(label)); }
+  if (handler) { button.on({click: handler}); }
+  return button;
 };
 
 
 // ### DIV
 var DIV = function() {
   return document.createElement('div');
+};
+
+// ### SPAN
+var SPAN = function() {
+  return document.createElement('span');
 };
 
 // ### TextNode
@@ -100,4 +108,4 @@ String.prototype.reverse = function() {
   })
 ;
 
-export {INPUT, BUTTON, DIV, TEXT};
+export {INPUT, BUTTON, DIV, TEXT, SPAN};
