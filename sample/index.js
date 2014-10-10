@@ -19,7 +19,7 @@ var change = function() {
 };
 var button = BUTTON()
 	.child(TEXT(C(_ => obj.buttonText.toUpperCase())))
-	.on({click: change});
+	.events({click: change});
 
 var input = INPUT();
 

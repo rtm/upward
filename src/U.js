@@ -1,15 +1,11 @@
+// Re-export external interfaces, so clients can import from this single module.
+
+import './Evt';
+
 export {
 	Upwardable as               U,
   computedUpwardable as       C,
-  upwardifyProperties as      P,
-  valueOf as                  V,
-
-  upwardifyTemplate as        S,
-  upwardifyTemplateFormula as S$,
-  HTML,
-
-	createElt as                E,
-  makeClassName as            CLASS,
+  upwardifyProperties as      P
 } from './upward';
 
 export {
@@ -21,5 +17,11 @@ export {
 } from './Dom';
 
 export {
-  valueOf
+  valueOf as                  V
 } from './Obj';
+
+export {
+  upwardifyTemplate as        S,
+  upwardifyTemplateFormula as S$,
+	HTML
+} from './Tmp';

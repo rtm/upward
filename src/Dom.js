@@ -67,7 +67,7 @@ var INPUT = function() {
 var BUTTON = function(label, handler) {
 	var button = document.createElement('button');
 	if (label) { button.child(TEXT(label)); }
-  if (handler) { button.on({click: handler}); }
+  if (handler) { button.events({click: handler}); }
   return button;
 };
 
@@ -108,4 +108,43 @@ String.prototype.reverse = function() {
   })
 ;
 
-export {INPUT, BUTTON, DIV, TEXT, SPAN};
+// DOM Building
+// ------------
+
+// Build a class string from an object with camelized keys and boolean values.
+// Example:
+// ```
+// createElt('div', {className: makeClassname({myClass: true})})
+// <div class="my-class"/>
+// ```
+// Aliased to CLASS.
+var makeClassName = upwardifyWithObjectParam(
+  o => 
+    keys(o)
+    .filter(k => o[k])
+    .map(dasherify)
+    .join(' ')
+);
+
+// Build a DOM node from tagname, attributes and children.
+function createElt(tagName, attrs = {}, children = []) {
+  var e = createElement(tagName);
+  (children || []).forEach(appendChild, e);
+  assign(e.attributes, attrs);
+  return e;
+}
+
+// Template helper which handles HTML; return a document fragment.
+// Example:
+// ```
+// document.body.appendChild(HTML`<span>${foo}</span><span>${bar}</span>`);
+// ```
+function HTML(strings, ...values) {
+  var dummy = document.createElement('div');
+  var fragment = document.createDocumentFragment();
+  dummy.innerHTML = compose(strings, ...values);
+  forEach.call(dummy.childNodes, appendChild, fragment);
+  return fragment;
+}
+
+export {INPUT, BUTTON, DIV, TEXT, SPAN, HTML};
