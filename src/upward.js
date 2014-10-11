@@ -68,16 +68,20 @@ var reporters = [() => undefined];
 // Is this necessary any longer?
 var upwardablePrototype = {};
 
-function addUpwardablePrototypeMethod(name) {
+// Add a prototype method to Upwardable that takes the value as `this`,
+// and uses the return value as the new value.
+// @TODO: factor out basic notion of upwardifying function.
+function addUpwardablePrototypeTransformingMethod(name) {
 	upwardablePrototype[name] = function() {
-    return computedUpwardable(
-      function() { return this.val[name](); },
-      this
-    );
+		console.assert(valueOf(this)[name], `'${name}' not defined on '${this}'`);
+		var get = v => v[name]();
+		var u = Upwardable(get(valueOf(this)));
+		upward(this.val, nv => u.val = get(nv));
+		return u;
 	};
 }
 		
-['toUpperCase'].forEach(addUpwardablePrototypeMethod);
+['toUpperCase'].forEach(addUpwardablePrototypeTransformingMethod);
 
 function upwardReport(fn, reporter) {
   var result;
