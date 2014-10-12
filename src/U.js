@@ -25,3 +25,7 @@ export {
   upwardifyTemplateFormula as S$,
 	HTML
 } from './Tmp';
+
+export {
+  createStyleSheet
+} from './Css';
