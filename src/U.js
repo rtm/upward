@@ -27,5 +27,6 @@ export {
 } from './Tmp';
 
 export {
-  createStyleSheet
+  createCSSStyleSheet,
+	insertCSSStyleRules
 } from './Css';

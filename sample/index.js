@@ -33,7 +33,7 @@ RunUpward ({
     .child(TEXT(input.val_input))
   ,
   CSS: [
-    ['body', {backgroundColor: 'wheat'}]
+//    ['body', {backgroundColor: 'wheat'}]
   ]
 });
 

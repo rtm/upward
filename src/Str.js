@@ -5,7 +5,7 @@ import {upwardConfig} from './Cfg';
 
 // `my-class` => `myClass`
 function camelify(str) {
-  return str.replace(/[-_]([a-z])/g, (_, letter) => letter.toUpperCase());
+  return str.replace(/[-_]+([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
 // `myClass` => `my-class`

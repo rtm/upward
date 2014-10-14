@@ -16,11 +16,11 @@ function makeUpwardableProperty(o, p) {
 // The heart and soul of the upward library.
 // An object which remembers its value and upward destinations.
 function Upwardable(v, options = {}, upwards = []) {
-  console.assert("Cannot make upwardable out of upwardable", !isUpwardable(v));
 
   function toString() { return `upwardable on ${objectToString(options)}`; }
-
   var {once, later, disable} = options;
+
+	if (isUpwardable(v)) { return upwardableFromUpwardable(v); }
 
   // Provide an accessor (getter/setter) to apply to object properties
   // (with `#define`).
@@ -60,6 +60,15 @@ function Upwardable(v, options = {}, upwards = []) {
   }
 
   return u;
+}
+
+// There are legitimate use cases for an upwardable based on an upwardable.
+// In this case, the inferior upwardable simply reports changes to the superior one.
+function upwardableFromUpwardable(u) {
+	console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.")
+  var u2 = Upwardable(valueOf(u));
+  upward(u, nv => u2.val = nv);
+  return u2;
 }
 
 var reporters = [() => undefined];

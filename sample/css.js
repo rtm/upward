@@ -1,9 +1,54 @@
-import {createStyleSheet} from '../src/U';
+import {P, createCSSStyleSheet, insertCSSStyleRules} from '../src/U';
+var {assign, keys} = Object;
 
-createStyleSheet()
-  .rule("body",   { fontFamily : 'sans-serif' })
-  .rule("h3",     { backgroundColor: 'brown', color: 'white', padding: '6px'})
-  .rule(".code",  { whiteSpace: 'pre', fontFamily: 'monospace', backgroundColor: 'pink', margin: '12px 40px', padding: '12px'})
-  .rule(".result", { backgroundColor: 'beige', margin: '12px 40px', padding: '12px'})
-  .rule(".hide",   { display: 'none'})
-;
+var theme = P({
+});
+
+var setTheme = t => assign(theme, themes[t]);
+var getThemeNames = _ => keys(themes);
+
+var themes = {
+	sunset: {
+		bodyBackgroundColor: "wheat"
+	}
+};
+
+setTheme("sunset");
+
+insertCSSStyleRules(createCSSStyleSheet(), [
+
+  ["body", { 
+		fontFamily : 'sans-serif',
+		backgroundColor: theme.bodyBackgroundColor
+	}],
+
+  ["h3", { 
+		backgroundColor: 'brown', 
+		color: 'white', 
+		padding: '6px'
+	}],
+
+  [".code", { 
+		whiteSpace: 'pre', 
+		fontFamily: 'monospace', 
+		backgroundColor: 'pink', 
+		margin: '12px 40px', 
+		padding: '12px'
+	}],
+
+  [".result", { 
+		backgroundColor: 'beige', 
+		margin: '12px 40px', 
+		padding: '12px'
+	}],
+
+  [".hide", { 
+		display: 'none'
+	}]
+
+]);
+
+export {
+  setTheme,
+  getThemeNames
+}
