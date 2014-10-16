@@ -1,8 +1,10 @@
 // Functional utilities
 // --------------------
 
+import {upwardConfig} from './Cfg';
+
 // Create a delayed version of a function.
-function laterify(fn, {delay = 10} = {}) {
+function tickify(fn, {delay = 10} = {}) {
   return function() {
 		return setTimeout(() => fn.apply(this, arguments), delay);
 	}
@@ -39,11 +41,63 @@ function memoify(fn, {hash = x => x, cache = {}} = {}) {
   return memoified;
 }
 
+// Make a function which some pre-filled arguments.
+function argify(fn, ...args1) {
+	return function(...args2) {
+		return fn.call(this, ...args1, ...args2);
+  };
+}
+
+// Make a function which inverts the result.
+function invertify(fn) {
+	return function() {
+		return !fn.apply(this, arguments);
+	};
+}
+
+// Function which returns its argument.
+function identity() {
+	return x => x;
+}
+
+// Function which always returns the same value.
+function fixed(c) {
+  return _ => c;
+}
+
+// Function which inverts its argument.
+function invert(c) {
+	return !c;
+}
+
+// Call a function, if it's a function.
+function maybe(fn) {
+	return typeof fn === 'function' ? fn() : fn;
+}
+
+// Provide versions on function prototype that can be called as
+// function.swapify(1, 2).
+if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
+  [tickify, chainify, selfify, memoify, swapify, argify, invertify]
+		.forEach(fn => Function.prototype[fn.name] = function(...args) {
+			return fn(this)(...args);
+		});
+}
+
+
+
 export {
-  laterify,
+  tickify,
   chainify,
 	selfify,
   memoify,
-	swapify
+	swapify,
+  argify,
+	invertify,
+
+  identity,
+	invert,
+  maybe,
+  fixed
 };
 

@@ -1,4 +1,5 @@
 import {dasherify} from './Str';
+import {mirrorProperties} from './upward';
 
 var scopedSupported = 'scoped' in document.createElement('style');
 
@@ -76,7 +77,7 @@ function insertCSSStyleRule(sheet, [selectors, styles]) {
 	var rule = sheet.rules[idx];
 
 	if (typeof styles === 'string') { rule.style = styles; } 
-	else { Object.assign(rule.style, styles);	}
+	else { mirrorProperties(rule.style, styles); }
 
 	return rule;
 };

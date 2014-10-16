@@ -3,7 +3,7 @@
 import {objectToString, valueOf, valueOfObject} from './Obj';
 import {upwardConfig, upwardableId}    from './Cfg';
 
-var {create, keys, assign, defineProperty} = Object;
+var {create, keys, assign, defineProperty, observe} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
 
 // Unused?
@@ -147,6 +147,20 @@ function upwardifyWithObjectParam(fn, changefn = fn) {
   };
 }
 
+function mirrorProperties(dest, src) {
+	assign(dest, src);
+  observe(src, recs => recs.forEach(
+		rec => {
+			var name = rec.name;
+			switch (rec.type) {
+			case "add": case "update": dest[name] = src[name]; break;
+			case "delete": dest[name] = "";
+			}
+		}
+	));
+}
+
+
 // A common case for functions taking a hash as argument is to want to merge (assign)
 // the property/value pairs into an underlying hash, 
 // which should then be updated when the hash changes.
@@ -169,10 +183,22 @@ function upwardifyProperty(o, p) {
 // `upwardifyProperties` modifies all properties in an object, in place, for upwardability.
 // A non-enumerable `upwardified` property is added to the object.
 // Note this is *not* the same as making the object itself upwardable.
+// Objects whose properties have been upwardified are recorded in a weakset.
+
+var upwardifiedObjects = new WeakSet();
+
+function addUpwardifiedObject(o) {
+	upwardifiedObjects.add(o);
+}
+
+function isUpwardifiedObject(o) {
+  return upwardifiedObjects.has(o);
+}
+
 function upwardifyProperties(o) {
-  if (!o.upwardified) {
+  if (!isUpwardifiedObject(o)) {
     keys(o).forEach(k => upwardifyProperty(o, k));
-    defineProperty(o, 'upwardified', { value: true });
+    addUpwardifiedObject(o);
   }
   return o;
 }
@@ -184,5 +210,6 @@ export {
 	upwardifyWithObjectParam,
   isUpwardable,
   upward,
-  upwardify
+  upwardify,
+	mirrorProperties
 };
