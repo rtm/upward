@@ -3,11 +3,14 @@
 
 import {upwardConfig} from './Cfg';
 
+var {call, bind, apply} = Function.prototype;
+var {defineProperty} = Object;
+
 // Create a delayed version of a function.
 function tickify(fn, {delay = 10} = {}) {
   return function() {
 		return setTimeout(() => fn.apply(this, arguments), delay);
-	}
+	};
 }
 
 // Transform a function so that it always returns `this`.
@@ -48,11 +51,23 @@ function argify(fn, ...args1) {
   };
 }
 
+// Return the function if it is on.
+function maybeify(fn) {
+	return typeof fn === 'function' ? fn : fixed(fn);
+}
+
 // Make a function which inverts the result.
 function invertify(fn) {
 	return function() {
 		return !fn.apply(this, arguments);
 	};
+}
+
+// Make a function which takes fewer args
+function trimify(fn, n = 1) {
+  return function(...args) {
+    return fn.call(this, ...args.slice(0, n));
+  }
 }
 
 // Function which returns its argument.
@@ -70,21 +85,20 @@ function invert(c) {
 	return !c;
 }
 
-// Call a function, if it's a function.
-function maybe(fn) {
-	return typeof fn === 'function' ? fn() : fn;
+// Place a function transformer on the Function prototype.
+// This allows it be used as fn.swapify(1,2).
+function prototypeize(fn, name = fn.name) {
+  defineProperty(Function.prototype, name, {
+    get: function() { return fn(this); }
+  });
 }
 
 // Provide versions on function prototype that can be called as
 // function.swapify(1, 2).
 if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
-  [tickify, chainify, selfify, memoify, swapify, argify, invertify]
-		.forEach(fn => Function.prototype[fn.name] = function(...args) {
-			return fn(this)(...args);
-		});
+  [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify]
+		.forEach(trimify(prototypeize));
 }
-
-
 
 export {
   tickify,
@@ -94,10 +108,10 @@ export {
 	swapify,
   argify,
 	invertify,
+  maybeify,
 
   identity,
 	invert,
-  maybe,
   fixed
 };
 

@@ -33,8 +33,23 @@ function valueArray(a) {
   return a.map(valueOf);
 }
 
+// Return an array of the object's values.
 function objectValues(o) {
   return keys(o).map(k => o[k]);
+}
+
+// Generator for object's key/value pairs.
+function *objectPairs(o) {
+  keys(o).forEach(k => yield [k, o[k]]);
+}
+
+// "Empty" the object, optionally keeping structure of subobjects.
+function emptyObject(o, {keep = {}}) {
+  for (var [k, v] of objectPairs(o)) {
+    var ctor = v && v.constructor;
+    if (keep && ctor === Object) emptyObject(v);
+    else o[k] = ctor && ctor();
+  });
 }
 
 export {
@@ -43,6 +58,7 @@ export {
   valueOfObject,
   valueArray,
   objectValues,
-	valueOf
+	valueOf,
+  emptyObject
 };
 

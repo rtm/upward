@@ -1,7 +1,8 @@
 // Convenience.
 
 import {objectToString, valueOf, valueOfObject} from './Obj';
-import {upwardConfig, upwardableId}    from './Cfg';
+import {upwardConfig, upwardableId} from './Cfg';
+import {maybe} from './Fun';
 
 var {create, keys, assign, defineProperty, observe} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
@@ -203,6 +204,46 @@ function upwardifyProperties(o) {
   return o;
 }
 
+// Make an observation handler, given a target and an object of handlers
+// with function-valued keys such as "add", "delete", and "update".
+var observationHandlerPrototype = {
+  handle(changes) { 
+    changes.forEach(change => {
+      var {object, type, name, oldValue} = change;
+      this[type](name, object, oldValue);
+    })
+  }
+}
+  
+function makeObservationHandler(target, handlers) {
+  return assign(create(observationHandlerPrototype), handlers).handle;
+}
+
+// To update classes, use the classList interface.
+function classListObservationHandlers(classList) {
+  var add    = function(name, o) { classList.toggle(o[name]); };
+  var _delete = function(name) { classList.remove(name); };
+  return {add, change: add, delete: _delete};
+}
+
+// To update styles, do not delete deleted properties, but rather set to the null string.
+function styleObservationHandlers(style) {
+  var add     = function(name, o) { style[name] = o[name]; };
+  var _delete = function(name)    { style[name] = ""; };
+  return {add, change: add, delete: _delete};
+}
+
+function DatasetObservationHandlers(dataset) {
+  var add    = function(name, o) { dataset[name] = o[name]; };
+  var _delete = function(name) { delete dataset[name]; };
+  return {add, change: add, delete: _delete};
+}
+
+// Invoke Object.observe with only the types available to be handled.
+function observeObject(o, handler) {
+  observe(o, handler, keys(handler));
+}
+  
 export {
   Upwardable,
   computedUpwardable,
