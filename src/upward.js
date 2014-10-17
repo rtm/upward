@@ -2,6 +2,7 @@
 
 import {objectToString, valueOf, valueOfObject} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
+import {tickify} from './Fun';
 
 var {create, keys, assign, defineProperty} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;

@@ -1,5 +1,5 @@
 import {dasherify} from './Str';
-import {mirrorProperties} from './upward';
+import {mirrorProperties} from './Obs';
 
 var scopedSupported = 'scoped' in document.createElement('style');
 

@@ -110,9 +110,11 @@ function prototypeize(fn, name = fn.name) {
 
 // Provide versions on function prototype that can be called as
 // function.swapify(1, 2).
-if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
+var setFunctionMethods;
+if (false && !setFunctionMethods && upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
   [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify, selfthisify, repeatify]
 		.forEach(trimify(prototypeize));
+  setFunctionMethods = true;
 }
 
 export {

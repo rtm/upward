@@ -13,9 +13,16 @@
     <script>
       traceur.options.experimental = true;
     </script>
-    <script type="module" src="./index.js"></script>
+<!--    <script type="module" src="./index.js"></script> -->
 
   <div id="app"></div>
+
+  <section id="children">
+    <h3>Manipulating DOM children</h3>
+    <p class="desc">
+      We automatically mainpulate DOM elements.
+    </p>
+  </section>
 
   <section id="upwarded-properties">
     <h3>Upwarded properties</h3>
@@ -56,7 +63,9 @@
 
   <script>
 		window.addEventListener("DOMContentLoaded", function() {
-      ["upwarded-properties", "input", "html-helper", "computed", "class"].forEach(sample);
+//      ["upwarded-properties", "input", "html-helper", "computed", "class"]
+      ['children']
+  		.forEach(sample);
     });
   </script>
 

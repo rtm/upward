@@ -8,10 +8,9 @@ var {keys, create, assign, observe, unobserve} = Object;
 // with function-valued keys such as "add", "delete", and "update".
 var observerPrototype = {
   handle(changes) { 
-    changes.forEach(change => {
-      var {object, type, name, oldValue} = change;
-      this[type](change);
-    })
+    changes.forEach(change => 
+      this[change.type](change)
+    )
   }
 }
   
@@ -30,14 +29,14 @@ function unobserveObject(o, handler) {
 }
   
 // Keep an object in sync with another.
-function keepObjectUpdated(src, dest = {}) {
+function mirrorProperties(src, dest = {}) {
 	function set(name) { dest[name] = src[name]; }
 	function _delete(name) { delete dest[name]; }
 	
 	var handlers = { add: set, update: set, delete: _delete};
 	
 	assign(dest, src);
-	observe(src, makeObservationHandler(handlers));
+	observe(src, makeObserver(handlers));
 	return dest;
 }
 
@@ -45,5 +44,5 @@ export {
 	makeObserver,
 	observeObject,
 	unobserveObject,
-	keepObjectUpdated
+	mirrorProperties
 };
