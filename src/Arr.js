@@ -1,34 +1,31 @@
+import {observeObject} from './Obj';
+
+var {observe} = Array;
+var {keys} = Object;
+
+// Observe an array based on a handlers object.
+function observeArray(a, handlers) {
+  return observe(a, handlers, keys(handlers));
+}
+
 // Create a mapped array which is kept in sync via observation.
-
-var observingMapHandler = {
-  add    ({name, object}) { result[name] = fn.call(ctxt, object[name]) },
-  update({name, object}) { result[name] = fn.call(ctxt, object[name]) },
-  delete ({name})         { delete result[name]; }
-  splice({object, index, removed, addedCount}) {
-    result.splice(
-      index, 
-      removed.length, 
-        ...object.slice(index, index + addedCount).map(fn, ctxt)
-    );
-  }
-};
-    
+// Replace changed values, delete deleted values, and mirror splices.
 function observingMap(a, fn, ctxt) {
-  var result = a.map(fn, ctxt);
 
-  function observer({type, name, object, index, removed, addedCount}) {
-    switch(type) {
-    case "update": case "add":
-      result[name] = fn.call(ctxt, object[name]); 
-      break;
-    case "delete": 
-      delete result[name]; 
-      break;
-    case "splice":
+  function add({name, object}) { result[name] = fn.call(ctxt, object[name]) }
+
+  var handler = {
+    add,
+    update: add,
+    delete ({name}) { delete result[name]; }
+    splice({object, index, removed, addedCount}) {
+      var added = ...object.slice(index, index + addedCount).map(fn, ctxt);
+      result.splice(index, removed.length, added);
     }
-  }
-
-  Array.observe(a, recs => recs.forEach(observer), ['splice', 'update', 'delete']);
+  };
+    
+  var result = a.map(fn, ctxt);
+  observe(a, makeObserverHandler(handler));
   return result;
 }
 
@@ -42,7 +39,7 @@ function runningMap(a, fn, init) {
   return a.map(v => init = fn(v, init));
 }
 
-function plus(a,b) { return a + b; }
+function plus(a, b) { return a + b; }
 
 // Create an array of running totals.
 function runningTotal(a) {
@@ -50,19 +47,18 @@ function runningTotal(a) {
 }
 
 // Given a Boolean filter array, keep an array up to date.
-function runningFilter(a, filter) {
+// When a value changes, splice the element in or out.
+function observingFilter(a, filter) {
   var result = a.filter((_, i) => filter[i]);
 
-  function observer({type, name, object, index, oldvalue}) {
-    var pos = runningTotal(filter);
-    if (object[index]) {
-      result.splice(pos, 0, a[index]);
-    } else {
-      result.splice(pos, 1);
-    }
-  }
+  var handlers = {
+    update({name, object}) {
+      var pos = runningTotal(filter);
+      if (object[name]) { result.splice(pos, 0, a[name]); }
+      else { result.splice(pos, 1); }
+  };
 
-  Object.observe(filter, recs => recs.forEach(observer), ['update']);
+  observeObject(filter, makeObserverHandlers(handlers));
   return result;
 }
 
