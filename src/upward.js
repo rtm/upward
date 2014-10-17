@@ -4,7 +4,7 @@ import {objectToString, valueOf, valueOfObject} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
 import {maybe} from './Fun';
 
-var {create, keys, assign, defineProperty, observe} = Object;
+var {create, keys, assign, defineProperty, observe, unobserve} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
 
 // Unused?
@@ -23,6 +23,10 @@ function Upwardable(v, options = {}, upwards = []) {
 
 	if (isUpwardable(v)) { return upwardableFromUpwardable(v); }
 
+	var send_upward = tickify(function(nv) {
+    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
+	});
+
   // Provide an accessor (getter/setter) to apply to object properties
   // (with `#define`).
   // The getter returns the upwardable itself.
@@ -35,7 +39,7 @@ function Upwardable(v, options = {}, upwards = []) {
     },
     set: function(nv) {
       if (!disable) {
-        upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
+				send_upward(nv);
         v = nv;
         disable = once;
       }
@@ -215,7 +219,7 @@ var observationHandlerPrototype = {
   }
 }
   
-function makeObservationHandler(target, handlers) {
+function makeObservationHandler(handlers) {
   return assign(create(observationHandlerPrototype), handlers).handle;
 }
 
@@ -233,15 +237,26 @@ function styleObservationHandlers(style) {
   return {add, change: add, delete: _delete};
 }
 
-function DatasetObservationHandlers(dataset) {
-  var add    = function(name, o) { dataset[name] = o[name]; };
+function datasetObservationHandlers(dataset) {
+  var add     = function(name, o) { dataset[name] = o[name]; };
   var _delete = function(name) { delete dataset[name]; };
+  return {add, change: add, delete: _delete};
+}
+
+// To update attributes, the {set/remove}Attribute API.
+function attributeObservationhandlers(elt) {
+	var add     = function(name, o) { elt.setAttribute(name, o[name]); }
+  var _delete = function(name)    { elt.deleteAttribute(name);       }
   return {add, change: add, delete: _delete};
 }
 
 // Invoke Object.observe with only the types available to be handled.
 function observeObject(o, handler) {
   observe(o, handler, keys(handler));
+}
+  
+function unobserveObject(o, handler) {
+  unobserve(o, handler);
 }
   
 export {

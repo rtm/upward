@@ -127,10 +127,68 @@ var makeClassName = upwardifyWithObjectParam(
 );
 
 // Build a DOM node from tagname, attributes and children.
-function createElt(tagName, attrs = {}, children = []) {
+function createElt(tagName = 'div', attrs = {}, children = []) {
   var e = createElement(tagName);
-  (children || []).forEach(appendChild, e);
-  assign(e.attributes, attrs);
+  children.forEach(appendChild, e);
+
+	var handlerMakers = {
+		style:     styleObsevationHandlers
+		dataset:   datasetObsevationHandlers
+		class:     classObsevationHandlers
+		attribute: attributeObsevationHandlers
+	};
+	var clearers = {
+		style     (e) { e.style = ""; },
+		dataset   (e) { keys(e.dataset).forEach(k => delete e.dataset[k]); },
+    class     (e) { e.className = ""; },
+    attribute (e) { for ([name] of e.attributes) { e.removeAttribute(name); } }
+	},
+
+	var handlers = {};
+
+	var attrHandler = makeObservationHandler({
+	
+	function setAttrsObserver() {
+		observer(attrs, function(changes) {
+			changes.forEach(function({name, type, oldValue, object}) {
+				switch (type) {
+				case "delete":
+					clearers[type]();
+				case "style":
+				case "dataset":
+				case "class":
+					switch (type) {
+					case "add":
+					case "update":
+						resetHandler(name, object[name], oldValue);
+					case "delete":
+					  unsetHandler(name, oldValue);
+					}
+					break;
+				default:
+					case "delete":
+            cle
+				}
+			});
+		});
+	}
+		
+	function unsetHandler(type, v) {
+		if (v)  { unobserve(v,  handlers[type]); }
+	}
+  function setHandler(type, nv, v) {
+		if (nv) { observe  (nv, handlers[type] = handlerMakers[type](e));	}
+	}
+	function resetHandler(type, nv, v) {
+    unsetHandler(type, v );
+    setHandler  (type, nv);
+	}
+
+  keys(handlerMakers).forEach(type => setHandler(type, attrs[type]));
+
+	upward(attrs, DO SOMEITHNG);
+
+
   return e;
 }
 
@@ -146,5 +204,33 @@ function HTML(strings, ...values) {
   forEach.call(dummy.childNodes, appendChild, fragment);
   return fragment;
 }
+
+// To update classes, use the classList interface.
+function classListObservationHandlers(elt) {
+  var add    = function(name, o) { elt.classList.toggle(o[name]); };
+  var _delete = function(name) { elt.classList.remove(name); };
+  return {add, change: add, delete: _delete};
+}
+
+// To update styles, do not delete deleted properties, but rather set to the null string.
+function styleObservationHandlers(elt) {
+  var add     = function(name, o) { elt.style[name] = o[name]; };
+  var _delete = function(name)    { elt.style[name] = ""; };
+  return {add, change: add, delete: _delete};
+}
+
+function datasetObservationHandlers(elt) {
+  var add     = function(name, o) { elt.dataset[name] = o[name]; };
+  var _delete = function(name) { delete elt.dataset[name]; };
+  return {add, change: add, delete: _delete};
+}
+
+// To update attributes, the {set/remove}Attribute API.
+function attributeObservationHandlers(elt) {
+	var add     = function(name, o) { elt.setAttribute(name, o[name]); }
+  var _delete = function(name)    { elt.deleteAttribute(name);       }
+  return {add, change: add, delete: _delete};
+}
+
 
 export {INPUT, BUTTON, DIV, TEXT, SPAN, HTML};

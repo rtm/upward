@@ -1,10 +1,12 @@
 // Functional utilities
 // --------------------
 
+// Housekeeping.
 import {upwardConfig} from './Cfg';
 
 var {call, bind, apply} = Function.prototype;
 var {defineProperty} = Object;
+var {forEach, map} = Array.prototype;
 
 // Create a delayed version of a function.
 function tickify(fn, {delay = 10} = {}) {
@@ -15,11 +17,12 @@ function tickify(fn, {delay = 10} = {}) {
 
 // Transform a function so that it always returns `this`.
 function chainify(fn) {
-  return function(...args) { fn.call(this, ...args); return this; };
+  return function(...args) {
+		fn.call(this, ...args); return this;
+	};
 }
 
-// Make a function which returns itself.
-// This supports the odd syntax fn(x)(y).
+// Make a function which returns itself, allowing syntax `fn(x)(y)`.
 function selfify(fn) {
   return function selfified() {
      fn.apply(this, arguments);
@@ -44,14 +47,14 @@ function memoify(fn, {hash = x => x, cache = {}} = {}) {
   return memoified;
 }
 
-// Make a function which some pre-filled arguments.
+// Make a function with some pre-filled arguments.
 function argify(fn, ...args1) {
 	return function(...args2) {
 		return fn.call(this, ...args1, ...args2);
   };
 }
 
-// Return the function if it is on.
+// Return the function if it is one.
 function maybeify(fn) {
 	return typeof fn === 'function' ? fn : fixed(fn);
 }
@@ -63,11 +66,23 @@ function invertify(fn) {
 	};
 }
 
-// Make a function which takes fewer args
+// Make a function which throws away some args.
 function trimify(fn, n = 1) {
   return function(...args) {
     return fn.call(this, ...args.slice(0, n));
   }
+}
+
+// Make a function bound to itself, allowing function to access itself with `this`.
+function selfthisify(fn) {
+  return fn.bind(fn);
+}
+
+// Make a function which calls some function for each argument, returning array of results.
+function repeatify(fn) {
+  return function() {
+		return map.call(arguments, fn, this);
+	};
 }
 
 // Function which returns its argument.
@@ -96,7 +111,7 @@ function prototypeize(fn, name = fn.name) {
 // Provide versions on function prototype that can be called as
 // function.swapify(1, 2).
 if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
-  [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify]
+  [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify, selfthisify, repeatify]
 		.forEach(trimify(prototypeize));
 }
 
@@ -109,9 +124,14 @@ export {
   argify,
 	invertify,
   maybeify,
+	selfthisify,
+	repeatify,
 
   identity,
 	invert,
   fixed
 };
+
+
+
 

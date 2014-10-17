@@ -28,6 +28,11 @@ function valueOfObject(o) {
   return mapObject(o, valueOf);
 }
 
+// Get a value down inside an object, based on a "path" (array of property names).
+function valueFromPath(o, path = []) {
+	return path.reduce((ret, seg) => ret && typeof ret === 'object' && ret[seg], o);
+}
+
 // Return an aray all of the values of which are evaluated.
 function valueArray(a) {
   return a.map(valueOf);
@@ -38,12 +43,13 @@ function objectValues(o) {
   return keys(o).map(k => o[k]);
 }
 
-// Generator for object's key/value pairs.
+// Generator for object's key/value pairs. Usage: `for ([key, val] of objectPairs(o))`.
 function *objectPairs(o) {
   keys(o).forEach(k => yield [k, o[k]]);
 }
 
 // "Empty" the object, optionally keeping structure of subobjects.
+// Numbers turn to zero, booleans to false, arrays are emptied, etc.
 function emptyObject(o, {keep = {}}) {
   for (var [k, v] of objectPairs(o)) {
     var ctor = v && v.constructor;
@@ -59,6 +65,7 @@ export {
   valueArray,
   objectValues,
 	valueOf,
-  emptyObject
+  emptyObject,
+	valueFromPath
 };
 
