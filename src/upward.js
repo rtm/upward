@@ -2,9 +2,8 @@
 
 import {objectToString, valueOf, valueOfObject} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
-import {maybe} from './Fun';
 
-var {create, keys, assign, defineProperty, observe, unobserve} = Object;
+var {create, keys, assign, defineProperty} = Object;
 var {createElement, createTextNode, createDocumentFragment} = document;
 
 // Unused?
@@ -152,19 +151,6 @@ function upwardifyWithObjectParam(fn, changefn = fn) {
   };
 }
 
-function mirrorProperties(dest, src) {
-	assign(dest, src);
-  observe(src, recs => recs.forEach(
-		rec => {
-			var name = rec.name;
-			switch (rec.type) {
-			case "add": case "update": dest[name] = src[name]; break;
-			case "delete": dest[name] = "";
-			}
-		}
-	));
-}
-
 
 // A common case for functions taking a hash as argument is to want to merge (assign)
 // the property/value pairs into an underlying hash, 
@@ -208,57 +194,6 @@ function upwardifyProperties(o) {
   return o;
 }
 
-// Make an observation handler, given a target and an object of handlers
-// with function-valued keys such as "add", "delete", and "update".
-var observationHandlerPrototype = {
-  handle(changes) { 
-    changes.forEach(change => {
-      var {object, type, name, oldValue} = change;
-      this[type](name, object, oldValue);
-    })
-  }
-}
-  
-function makeObservationHandler(handlers) {
-  return assign(create(observationHandlerPrototype), handlers).handle;
-}
-
-// To update classes, use the classList interface.
-function classListObservationHandlers(classList) {
-  var add    = function(name, o) { classList.toggle(o[name]); };
-  var _delete = function(name) { classList.remove(name); };
-  return {add, change: add, delete: _delete};
-}
-
-// To update styles, do not delete deleted properties, but rather set to the null string.
-function styleObservationHandlers(style) {
-  var add     = function(name, o) { style[name] = o[name]; };
-  var _delete = function(name)    { style[name] = ""; };
-  return {add, change: add, delete: _delete};
-}
-
-function datasetObservationHandlers(dataset) {
-  var add     = function(name, o) { dataset[name] = o[name]; };
-  var _delete = function(name) { delete dataset[name]; };
-  return {add, change: add, delete: _delete};
-}
-
-// To update attributes, the {set/remove}Attribute API.
-function attributeObservationhandlers(elt) {
-	var add     = function(name, o) { elt.setAttribute(name, o[name]); }
-  var _delete = function(name)    { elt.deleteAttribute(name);       }
-  return {add, change: add, delete: _delete};
-}
-
-// Invoke Object.observe with only the types available to be handled.
-function observeObject(o, handler) {
-  observe(o, handler, keys(handler));
-}
-  
-function unobserveObject(o, handler) {
-  unobserve(o, handler);
-}
-  
 export {
   Upwardable,
   computedUpwardable,

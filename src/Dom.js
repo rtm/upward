@@ -132,10 +132,10 @@ function createElt(tagName = 'div', attrs = {}, children = []) {
   children.forEach(appendChild, e);
 
 	var handlerMakers = {
-		style:     styleObsevationHandlers
-		dataset:   datasetObsevationHandlers
-		class:     classObsevationHandlers
-		attribute: attributeObsevationHandlers
+		style:     styleObservationHandlers
+		dataset:   datasetObservationHandlers
+		class:     classObservationHandlers
+		attribute: attributeObservationHandlers
 	};
 	var clearers = {
 		style     (e) { e.style = ""; },
