@@ -60,7 +60,26 @@ function keepObjectUpdated(src, dest = {}) {
 	return dest;
 }
 
-function observedAssign(args) {
+// Combine objects a la `Object.assign`, but also for subobjects.
+function nestedAssign(...args) {
+  return args.reduce(
+		(ret, arg) => {
+			keys(arg).forEach(
+				k => {
+					var val = arg[k];
+					if (k in ret && typeof ret[k] === 'object' && val &&typeof val === 'object') {
+						Object.assign(ret[k], val);
+					} else {
+						ret[k] = val;
+					}
+				});
+			return ret;
+		},
+		{}
+	);
+}
+
+function observingAssign(args) {
 	
 }
 
