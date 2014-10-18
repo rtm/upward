@@ -48,25 +48,6 @@ function emptyObject(o, {keep = {}}) {
   }
 }
 
-// Make an observation handler, given a target and an object of handlers
-// with function-valued keys such as "add", "delete", and "update".
-var observationHandlerPrototype = {
-  handle(changes) { 
-    changes.forEach(change => {
-      var {object, type, name, oldValue} = change;
-      this[type](name, object, oldValue);
-    })
-  }
-}
-  
-function makeObservationHandler(handlers) {
-  return assign(create(observationHandlerPrototype), handlers).handle;
-}
-
-// Invoke Object.observe with only the types available to be handled.
-function observeObject  (o, handler) { observe  (o, handler, keys(handler)); }
-function unobserveObject(o, handler) { unobserve(o, handler); }
-  
 // Keep an object in sync with another.
 function keepObjectUpdated(src, dest = {}) {
 	function set(name) { dest[name] = src[name]; }
@@ -75,8 +56,12 @@ function keepObjectUpdated(src, dest = {}) {
 	var handlers = { add: set, update: set, delete: _delete};
 	
 	assign(dest, src);
-	observe(src, makeObservationHandler(handlers));
+	observe(src, makeObserver(handlers));
 	return dest;
+}
+
+function observedAssign(args) {
+	
 }
 
 export {
@@ -87,10 +72,6 @@ export {
   objectValues,
 	valueOf,
   emptyObject,
-	valueFromPath,
-
-	makeObservationHandler,
-	observeObject,
-	unobserveObject
+	valueFromPath
 };
 

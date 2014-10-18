@@ -73,6 +73,16 @@ function trimify(fn, n = 1) {
   }
 }
 
+// Make a version of the function which logs entry and exit.
+function logify(fn) {
+	return function() {
+		console.log("entering", fn.name);
+		var ret = fn.apply(this, arguments);
+		console.log("leaving", fn.name);
+		return ret;
+	};
+}
+
 // Make a function bound to itself, allowing function to access itself with `this`.
 function selfthisify(fn) {
   return fn.bind(fn);
@@ -110,11 +120,9 @@ function prototypeize(fn, name = fn.name) {
 
 // Provide versions on function prototype that can be called as
 // function.swapify(1, 2).
-var setFunctionMethods;
-if (false && !setFunctionMethods && upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
-  [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify, selfthisify, repeatify]
+if (!Function.prototype.tickify && upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
+  [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify, selfthisify, repeatify, logify]
 		.forEach(trimify(prototypeize));
-  setFunctionMethods = true;
 }
 
 export {
@@ -128,6 +136,7 @@ export {
   maybeify,
 	selfthisify,
 	repeatify,
+	logify,
 
   identity,
 	invert,

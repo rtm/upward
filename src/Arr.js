@@ -1,4 +1,5 @@
 import {observeObject, makeObserver} from '../src/Obs';
+import {logify} from '../src/Fun';
 
 var {observe} = Array;
 var {keys} = Object;
@@ -29,19 +30,19 @@ function observingMap(a, fn, ctxt) {
 
 // Order an array and keep it ordered as things change.
 function observingOrder(a, order) { 
-	return observingMap(order, i => a[i]); 
+  return observingMap(order, i => a[i]); 
 }
 
 // Create an array of running totals, etc.
 function runningMap(a, fn, init) { 
-	return a.map(v => init = fn(v, init)); 
+  return a.map(v => init = fn(v, init)); 
 }
 
 function plus(a, b) { return a + b; }
 
 // Create an array of running totals.
 function runningTotal(a) { 
-	return runningMap(a, plus); 
+  return runningMap(a, plus); 
 }
 
 // Given a Boolean filter array, keep an array up to date.
@@ -54,19 +55,56 @@ function observingFilter(a, filter) {
       var pos = runningTotal(filter);
       if (object[name]) { result.splice(pos, 0, a[name]); }
       else { result.splice(pos, 1); }
-		}
+    }
   };
 
   observeObject(filter, makeObserver(handlers));
   return result;
 }
 
-// Allow observing map to be applied to array through prototype.
-Object.assign(Array.prototype, {
-	as(fn) {
-		return observingMap(this, fn);
+// Create an array of unique values.
+function uniqueize(a) {
+  return a.filter((elt, i) => a.indexOf(elt) === i);
+}
+
+// Filter an array in place, based on predicate with same signature as `Array#filter`.
+function filterInPlace(a, fn, ctxt) {
+	for (var i = 0; i < a.length; i++) {
+		if (!fn.call(ctxt, a[i], i, a)) {
+			a.splice(i--, 1); 
+		}
 	}
-});
+  return a;
+}
+
+// Maintain an array in unique state.
+function keepUnique(a) {
+  function isUnique(elt, i, a) { return !i || a.lastIndexOf(elt, i-1) === -1; }
+  function check({name: i})    { if (i !== 'length' && !isUnique(a[i])) { a.splice(i, 1); } }
+
+  var handlers = { update: check, add: check };
+
+  filterInPlace(a, isUnique);
+  observeObject(a, makeObserver(handlers));
+  return a;
+}
+
+// Find all occurrences of element in an array, return indices.
+// @NOTUSED
+function indexesOf(a, elt) {
+  var ret = [], index = 0;
+  while ((index = a.indexOf(elt, index)) !== -1) {
+    ret.push(index++);
+  }
+  return ret;
+}
+
+// Allow observing map to be applied to array through prototype.
+if (!Array.prototype.as) {
+	Object.defineProperties(Array.prototype, {
+		as: {	value(fn) {	return observingMap(this, fn); } }
+	});
+}
 
 export {
   observingMap,
