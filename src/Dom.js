@@ -118,7 +118,13 @@ function setChildren(e, children) {
 }
 
 // Build a DOM node from tagname, attributes and children.
-function createElt(tagName = 'div', attrs = {}, children = []) {
+function createElt(...args) {
+	var tagName = 'div', attrs = {}, children = [];
+
+	if (typeof args[0] === 'string') { tagName = args.shift(); }
+	if (args[0] && args[0].constructor === Object) { attrs = args.shift(); }
+  children = args[0];
+
   var e = document.createElement(tagName);
 	setChildren(e, children);
 	return e;

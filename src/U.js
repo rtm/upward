@@ -1,6 +1,7 @@
 // Re-export external interfaces, so clients can import from this single module.
 
 import './Evt';
+import './Arr';
 
 export {
 	Upwardable as               U,
@@ -13,7 +14,8 @@ export {
 	BUTTON,
 	DIV,
 	TEXT,
-  SPAN
+  SPAN,
+  createElt as                E
 } from './Dom';
 
 export {

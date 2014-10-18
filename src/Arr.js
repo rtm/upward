@@ -61,6 +61,13 @@ function observingFilter(a, filter) {
   return result;
 }
 
+// Allow observing map to be applied to array through prototype.
+Object.assign(Array.prototype, {
+	as(fn) {
+		return observingMap(this, fn);
+	}
+});
+
 export {
   observingMap,
   observingOrder

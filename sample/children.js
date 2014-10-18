@@ -1,14 +1,9 @@
-import {observingMap} from '../src/Arr';
-import {DIV, BUTTON} from '../src/U';
-import {createElt} from '../src/Dom';
+import {E, BUTTON, TEXT} from '../src/U';
 
 var a = [1, 2, 3, 4, 5];
+var reverse = () => a.reverse();
 
-function transform(x) {
-	return document.createTextNode(x);
-}
-
-export default createElt('div', {}, [
-	BUTTON("Reverse", function() { a.reverse(); }),
-	createElt('div', {}, observingMap(a, transform))
+export default E([
+	BUTTON("Reverse", reverse),
+	E(a.as(TEXT))
 ]);
