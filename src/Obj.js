@@ -14,11 +14,28 @@ function objectToString(o) {
 
 // Analog of `Array#map` for objects.
 function mapObject(o, fn, ctxt) {
-  return keys(o).reduce(
-		(result, k) => {
-			result[k] = fn.call(ctxt, o[k], k, o);
-			return result;
-		}, {});
+	var result = {};
+	for ([key, val] of objectPairs(o)) {
+		result[key] = val;
+	}
+	return result;
+}
+
+// "Invert" an object.
+function invertObject(o) {
+	var result = {};
+	for ([key, val] of objectPairs(o)) {
+		result[val] = key;
+	}
+	return result;
+}
+
+// Analog of `Array#reduce` for objects.
+function reduceObject(o, fn, init) {
+	for ([key, val] of objectPairs(o)) {
+		init = fn(init, val, key, o);
+	}
+	return init;
 }
 
 // Return an object all of the values of which are evaluated.

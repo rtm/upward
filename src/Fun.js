@@ -4,11 +4,19 @@
 // Housekeeping.
 import {upwardConfig} from './Cfg';
 
-var {call, bind, apply} = Function.prototype;
-var {defineProperty} = Object;
-var {forEach, map} = Array.prototype;
+var {prototype}                        = Function;
+var {call, bind, apply}                = prototype;
+var {defineProperty, defineProperties} = Object;
+var {forEach, map}                     = Array.prototype;
 
-// Create a delayed version of a function.
+// Compose functions, calling from right to left.
+function compose(...fns) {
+  return function(x) {
+    return fns.reduceRight((result, val) => val(result), x);
+	};
+}
+
+// Create a function which runs on next tick.
 function tickify(fn, {delay = 10} = {}) {
   return function() {
 		return setTimeout(() => fn.apply(this, arguments), delay);
@@ -18,7 +26,8 @@ function tickify(fn, {delay = 10} = {}) {
 // Transform a function so that it always returns `this`.
 function chainify(fn) {
   return function(...args) {
-		fn.call(this, ...args); return this;
+		fn.call(this, ...args); 
+		return this;
 	};
 }
 
@@ -37,8 +46,15 @@ function swapify(fn) {
   };
 }
 
+// Make a function which drops some leading arguments.
+function dropify(fn, n = 1) {
+	return function(...args) {
+		return fn.call(this, [...args].slice(n));
+	};
+}
+
 // Make a function which memozies its result.
-function memoify(fn, {hash = x => x, cache = {}} = {}) {
+function memoify(fn, {hash = identity, cache = {}} = {}) {
   function memoified(...args) {
     var key = hash(...args);
     return key in cache ? cache[key] : cache[key] = fn.call(this, ...args);
@@ -111,26 +127,33 @@ function invert(c) {
 }
 
 // Place a function transformer on the Function prototype.
-// This allows it be used as fn.swapify(1,2).
+// This allows it be used as `fn.swapify(1,2)`.
 function prototypeize(fn, name = fn.name) {
-  defineProperty(Function.prototype, name, {
+  defineProperty(prototype, name, {
     get: function() { return fn(this); }
   });
 }
 
 // Provide versions on function prototype that can be called as
 // function.swapify(1, 2).
-if (!Function.prototype.tickify && upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
-  [tickify, chainify, selfify, memoify, swapify, argify, invertify, trimify, selfthisify, repeatify, logify]
-		.forEach(trimify(prototypeize));
+if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
+	let flag = 'UPWARD_MODIFIED_BUILTIN_PROPERTIES';
+	if (!prototype[flag]) {
+		[tickify, chainify, selfify, memoify, swapify, dropify, argify, invertify, trimify, selfthisify, repeatify, logify]
+			.forEach(trimify(prototypeize));
+		defineProperty(prototype, flag, { value: true });
+	}
 }
 
 export {
+  compose,
+
   tickify,
   chainify,
 	selfify,
   memoify,
 	swapify,
+	dropify,
   argify,
 	invertify,
   maybeify,

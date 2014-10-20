@@ -2,10 +2,9 @@
 
 import {objectToString, valueOf, valueOfObject} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
-import {tickify} from './Fun';
+import {tickify, maybeify} from './Fun';
 
 var {create, keys, assign, defineProperty} = Object;
-var {createElement, createTextNode, createDocumentFragment} = document;
 
 // Unused?
 function makeUpwardableProperty(o, p) {
@@ -34,7 +33,8 @@ function Upwardable(v, options = {}, upwards = []) {
   // The property must be enumerable so we copy or `assign` it.
   var accessor = {
     get: function()   { 
-      reporters[reporters.length-1](u);
+			var capturer = capturers[0];
+      if (capturer && !capturer.has(u)) { capturer.set(u, null); }
       return u; 
     },
     set: function(nv) {
@@ -55,6 +55,7 @@ function Upwardable(v, options = {}, upwards = []) {
   var u = assign(create(upwardablePrototype), {
     valueOf()         { return valueOf(v); },
     upward(fn)        { upwards.push(fn); },
+    unupward(fn)      { upwards.omit(fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
   });
 
@@ -76,7 +77,6 @@ function upwardableFromUpwardable(u) {
   return u2;
 }
 
-var reporters = [() => undefined];
 
 // For convenience, allow methods on values to be applied directly to upwardables.
 // Is this necessary any longer?
@@ -97,12 +97,13 @@ function addUpwardablePrototypeTransformingMethod(name) {
 		
 ['toUpperCase'].forEach(addUpwardablePrototypeTransformingMethod);
 
-function upwardReport(fn, reporter) {
-  var result;
-  reporters.push(reporter);
-  result = fn();
-  reporters.pop();
-  return result;
+// Perform capture of upward references encountered during a computation.
+// Return tuple of result of computation and WeakMap of upwardables.
+var capturers = [];
+
+function upwardCapture(fn, capturer = new Map()) {
+  capturers.unshift(capturer);
+  return [fn(), capturers.shift()];
 }
 
 // Check if something is upwardable, by looking for its `upward` property.
@@ -118,6 +119,11 @@ function castUpwardable(u) {
 // Safely set an upward relationship, or not..
 function upward(o, fn) {
   return isUpwardable(o) && o.upward(fn);
+}
+
+// Remove an upward relationship.
+function unupward(o, fn) {
+  return isUpwardable(o) && o.unupward(fn);
 }
 
 // Create an upwardable whose value is given by a function.
@@ -202,6 +208,8 @@ export {
 	upwardifyWithObjectParam,
   isUpwardable,
   upward,
+  unupward,
   upwardify,
-	mirrorProperties
+	mirrorProperties,
+	upwardCapture
 };
