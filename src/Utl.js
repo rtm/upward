@@ -43,6 +43,15 @@ function omit(a, elt) {
   return a;
 }
 
+// reverse an array in place
+function reverse(a) {
+  var len = a.length;
+  for (var i = 0; i < Math.floor(len/2); i++) {
+    [a[i], a[len-i-1]] = [a[len-i-1], a[i]];
+  }
+  return a;
+}
+
 function makeSortfunc(key, desc) {
   return function(a, b) {
     var akey = key(a), key = key(b);
@@ -95,6 +104,7 @@ export {
   swap,
   append,
   omit,
+  reverse,
   makeSortfunc,
   uniqueize,
   indexesOf,

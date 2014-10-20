@@ -1,7 +1,7 @@
 import {observeObject, makeObserver} from '../src/Obs';
 import {tickify, logify, swapify} from '../src/Fun';
 import {upwardCapture, upward, unupward} from './upward';
-import {sum} from './Utl';
+import {sum, reverse} from './Utl';
 import {valueOf} from './Obj';
 
 var {observe} = Array;
@@ -71,6 +71,56 @@ function keepSliced(a, from, to) {
     }
     
   }
+}
+
+// Keep an array in descending or ascending order.
+function keepDirection(a, up) {
+  var _up = valueOf(up);
+  var _a;
+  var result = [];
+  
+  // Calculate corresponding position in possible reversed array.
+  function pos(i) {
+    return _up ? i : result.length - 1 - i;
+  }
+
+  // Set things up, at beginning or when array changes.
+  function setup(a) {
+    if (_a) { Array.unobserve(_a, observer); }
+    var len = _a.length;
+    for (i = 0; i < len; i++) {
+      result[i] = _a[pos(i)];
+    }
+    result.length = len;
+    Array.observe(_a, observer);
+  }
+
+  // When direction changes, reverse the array.
+  upward(up, function(v) {
+    if (v !== _up) {
+      reverse(result); // reverse in place
+      _up = v;
+    }
+  });
+
+  // When input array changes, set up over again.
+  upward(a, setup);
+  
+  var handlers = {
+    update({name}) { result[pos(name)] = _a[name]; },
+    splice ({index, removed, addedcount}) {
+      var added = _a.slice(index, index + addedCount);
+      if (_up) {
+        result.splice(index, removed.length, added);
+      } else {
+        result.splice(pos(index) - removed.length, removed.length, added.reverse());
+      }
+    }
+  };
+
+  var observer = makeObserver(handlers);
+  setup(valueOf(a));
+  return result;
 }
 
 // Order an array and keep it ordered as things change.
@@ -186,7 +236,8 @@ if (!Array.prototype.as) {
     as: { value(fn)         { return keepMapped  (this, fn);         } },
     by: { value(key, order) { return keepSorted  (this, key, order); } },
     if: { value(condition)  { return keepFiltered(this, condition);  } },
-    of: { value(to, from)   { return keepSliced  (this, to, from);   } }
+    of: { value(to, from)   { return keepSliced  (this, to, from);   } },
+    up: { value(up)         { return keepDirection (up);             } }
   });
 }
 
