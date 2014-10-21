@@ -4,7 +4,7 @@ import {upwardCapture, upward, unupward} from './upward';
 import {sum, reverse} from './Utl';
 import {valueOf} from './Obj';
 
-var {observe} = Array;
+var {observe, splice} = Array;
 var {keys}    = Object;
 
 // Transform function taking O.o change record into one with forEach signature.
@@ -73,22 +73,23 @@ function keepSliced(a, from, to) {
   }
 }
 
-// Keep an array in descending or ascending order.
-function keepDirection(a, up) {
+// Keep an array in original, or reversed order.
+function keepReversed(a, up) {
   var _up = valueOf(up);
   var _a;
   var result = [];
   
   // Calculate corresponding position in possible reversed array.
   function pos(i) {
-    return _up ? i : result.length - 1 - i;
+    return _up ? i : _a.length - 1 - i;
   }
 
   // Set things up, at beginning or when array changes.
   function setup(a) {
     if (_a) { Array.unobserve(_a, observer); }
+    _a = a;
     var len = _a.length;
-    for (i = 0; i < len; i++) {
+    for (let i = 0; i < len; i++) {
       result[i] = _a[pos(i)];
     }
     result.length = len;
@@ -108,12 +109,12 @@ function keepDirection(a, up) {
   
   var handlers = {
     update({name}) { result[pos(name)] = _a[name]; },
-    splice ({index, removed, addedcount}) {
+    splice ({index, removed, addedCount}) {
       var added = _a.slice(index, index + addedCount);
       if (_up) {
-        result.splice(index, removed.length, added);
+        result.splice(index, removed.length, ...added);
       } else {
-        result.splice(pos(index) - removed.length, removed.length, added.reverse());
+        result.splice(pos(index) - removed.length, removed.length, ...added.reverse());
       }
     }
   };
@@ -233,11 +234,11 @@ function keepUnique(a) {
 // Allow in-place modifier functions to be applied to array as `this`.
 if (!Array.prototype.as) {
   Object.defineProperties(Array.prototype, {
-    as: { value(fn)         { return keepMapped  (this, fn);         } },
-    by: { value(key, order) { return keepSorted  (this, key, order); } },
-    if: { value(condition)  { return keepFiltered(this, condition);  } },
-    of: { value(to, from)   { return keepSliced  (this, to, from);   } },
-    up: { value(up)         { return keepDirection (up);             } }
+    as: { value(fn)         { return keepMapped   (this, fn);         } },
+    by: { value(key, order) { return keepSorted   (this, key, order); } },
+    if: { value(condition)  { return keepFiltered (this, condition);  } },
+    of: { value(to, from)   { return keepSliced   (this, to, from);   } },
+    up: { value(up)         { return keepReversed (this, up);         } }
   });
 }
 
@@ -246,7 +247,3 @@ export {
   observingOrder
 };
 
-var a = [1,2,3];
-var map = x => x*x;
-var r = a.as(map);
-console.log(r);

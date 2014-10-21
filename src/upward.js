@@ -33,9 +33,7 @@ function Upwardable(v, options = {}, upwards = []) {
   // The property must be enumerable so we copy or `assign` it.
   var accessor = {
     get: function()   { 
-			var capturer = capturers[0];
-      if (capturer && !capturer.has(u)) { capturer.set(u, null); }
-      return u; 
+			return capture(u);
     },
     set: function(nv) {
       if (!disable) {
@@ -98,12 +96,21 @@ function addUpwardablePrototypeTransformingMethod(name) {
 ['toUpperCase'].forEach(addUpwardablePrototypeTransformingMethod);
 
 // Perform capture of upward references encountered during a computation.
-// Return tuple of result of computation and WeakMap of upwardables.
+// Return tuple of result of computation and list of upwardables.
+// @TODO Use WeakSet for better GC-ability.
 var capturers = [];
 
 function upwardCapture(fn, capturer = new Map()) {
   capturers.unshift(capturer);
   return [fn(), capturers.shift()];
+}
+
+// Mark an upwardable as captured. Called from `get` accessor.
+function capture(u) {
+  if (capturers.length) {
+    capturers[0].push(u);
+  }
+  return u;
 }
 
 // Check if something is upwardable, by looking for its `upward` property.
@@ -182,21 +189,22 @@ function upwardifyProperty(o, p) {
 // A non-enumerable `upwardified` property is added to the object.
 // Note this is *not* the same as making the object itself upwardable.
 // Objects whose properties have been upwardified are recorded in a weakset.
+// @TODO: use a WeakSet for this to avoid polluting object.
 
-var upwardifiedObjects = new WeakSet();
+var upwardifiedObjectProp = '__upwardifed';
 
-function addUpwardifiedObject(o) {
-	upwardifiedObjects.add(o);
+function markUpwardifiedObject(o) {
+  defineProperty(o, upwardifiedObjectProp, { value: true });
 }
 
 function isUpwardifiedObject(o) {
-  return upwardifiedObjects.has(o);
+  return o[upwardifiedObjectProp];
 }
 
 function upwardifyProperties(o) {
   if (!isUpwardifiedObject(o)) {
     keys(o).forEach(k => upwardifyProperty(o, k));
-    addUpwardifiedObject(o);
+    markUpwardifiedObject(o);
   }
   return o;
 }
