@@ -1,11 +1,11 @@
 import {observeObject, makeObserver} from '../src/Obs';
 import {tickify, logify, swapify} from '../src/Fun';
-import {upwardCapture, upward, unupward} from './upward';
+import {upwardCapture, upward, unupward, upwardablePrototype} from './upward';
 import {sum, reverse} from './Utl';
-import {valueOf} from './Obj';
+import {valueOf, mapObject} from './Obj';
 
 var {observe, splice} = Array;
-var {keys}    = Object;
+var {keys, defineProperty, defineProperties} = Object;
 
 // Transform function taking O.o change record into one with forEach signature.
 function signaturize(fn, ctxt) {
@@ -97,7 +97,7 @@ function keepReversed(a, up) {
     return up ? i : a.length - 1 - i;
   }
 
-  // Set the elements in place when array or direction changes.
+  // Set the elements in place.
   function set() {
     var len = a.length;
     for (let i = 0; i < len; i++) {
@@ -238,19 +238,38 @@ function keepUnique(a) {
   return a;
 }
 
-// Allow in-place modifier functions to be applied to array as `this`.
-if (!Array.prototype.as) {
-  Object.defineProperties(Array.prototype, {
-    as: { value(fn)         { return keepMapped   (this, fn);         } },
-    by: { value(key, order) { return keepSorted   (this, key, order); } },
-    if: { value(condition)  { return keepFiltered (this, condition);  } },
-    of: { value(to, from)   { return keepSliced   (this, to, from);   } },
-    up: { value(up)         { return keepReversed (this, up);         } }
-  });
-}
+// Place the methods on the Array and Upwardable prototype.
+var methodMap = {
+  as: keepMapped,
+  by: keepSorted,
+  if: keepFiltered,
+  of: keepSliced,
+  up: keepReversed
+};
 
+var arrayProtoMunged = "__UPWARD_METHODS";
+
+var methodDescriptors = mapObject(methodMap, v => ({
+  value(...args) { return v(this, ...args); }})
+);
+
+if (!Array.prototype[arrayProtoMunged]) {
+  [
+    Array.prototype,
+    upwardablePrototype
+  ]
+    .forEach(
+      proto => defineProperties(proto, methodDescriptors)
+    )
+  ;
+  defineProperty(Array.prototype, arrayProtoMunged, {value: true});
+}
+    
 export {
-  observingMap,
-  observingOrder
+  keepMapped,
+  keepSorted,
+  keepFiltered,
+  keepSliced,
+  keepReversed
 };
 

@@ -75,7 +75,6 @@ function upwardableFromUpwardable(u) {
   return u2;
 }
 
-
 // For convenience, allow methods on values to be applied directly to upwardables.
 // Is this necessary any longer?
 var upwardablePrototype = {};
@@ -92,7 +91,7 @@ function addUpwardablePrototypeTransformingMethod(name) {
 		return u;
 	};
 }
-		
+
 ['toUpperCase'].forEach(addUpwardablePrototypeTransformingMethod);
 
 // Perform capture of upward references encountered during a computation.
@@ -177,7 +176,7 @@ function upwardifiedAssign(fn) {
     (p, v) => fn.call(this)[p] = v
   );
 }
-    
+
 // `upwardifyProperty` modifies a single property on an object for upwardability.
 // This is mainly used from 'upwardifyProperties` below.
 function upwardifyProperty(o, p) {
@@ -219,5 +218,6 @@ export {
   unupward,
   upwardify,
 	mirrorProperties,
-	upwardCapture
+	upwardCapture,
+  upwardablePrototype
 };

@@ -15,8 +15,8 @@ function objectToString(o) {
 // Analog of `Array#map` for objects.
 function mapObject(o, fn, ctxt) {
 	var result = {};
-	for ([key, val] of objectPairs(o)) {
-		result[key] = val;
+	for (var [key, val] of objectPairs(o)) {
+		result[key] = fn.call(ctxt, val);
 	}
 	return result;
 }
