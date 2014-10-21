@@ -1,4 +1,4 @@
-import {computedUpwardable} from './upward';
+import {computedUpwardable} from './Upw';
 
 var {appendChild} = Node.prototype;
 var {forEach} = Array.prototype;

@@ -92,6 +92,16 @@ function runningTotal(a) {
   return runningMap(a, plus); 
 }
 
+// Filter an array in place, based on predicate with same signature as `Array#filter`.
+function filterInPlace(a, fn, ctxt) {
+  for (var i = 0; i < a.length; i++) {
+    if (!fn.call(ctxt, a[i], i, a)) {
+      a.splice(i--, 1); 
+    }
+  }
+  return a;
+}
+
 // Allow in-place modifier functions to be applied to array as `this`.
 if (!Array.prototype.tail) {
   Object.defineProperties(Array.prototype, {
@@ -116,5 +126,7 @@ export {
   uniqueize,
   indexesOf,
   runningMap,
-  runningTotal
+  runningTotal,
+  filterInPlace,
+  makeSortFunc
 };

@@ -7,7 +7,7 @@ export {
   Upwardable as                U,
   computedUpwardable as        C,
   upwardifyProperties as       P
-} from './upward';
+} from './Upw';
 
 export {
   INPUT,

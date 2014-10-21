@@ -65,41 +65,6 @@ function emptyObject(o, {keep = {}}) {
   }
 }
 
-// Keep an object in sync with another.
-function keepObjectUpdated(src, dest = {}) {
-	function set(name) { dest[name] = src[name]; }
-	function _delete(name) { delete dest[name]; }
-	
-	var handlers = { add: set, update: set, delete: _delete};
-	
-	assign(dest, src);
-	observe(src, makeObserver(handlers));
-	return dest;
-}
-
-// Combine objects a la `Object.assign`, but also for subobjects.
-function nestedAssign(...args) {
-  return args.reduce(
-		(ret, arg) => {
-			keys(arg).forEach(
-				k => {
-					var val = arg[k];
-					if (k in ret && typeof ret[k] === 'object' && val &&typeof val === 'object') {
-						Object.assign(ret[k], val);
-					} else {
-						ret[k] = val;
-					}
-				});
-			return ret;
-		},
-		{}
-	);
-}
-
-function observingAssign(args) {
-	
-}
-
 export {
   objectToString,
   mapObject,

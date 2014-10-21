@@ -1,4 +1,7 @@
-Upward is a JavaScript framework for synchronizing data through your application. It works by introducing an `Upwardable` object which represents a value which can propagate changes upwards, and and `upwardified` functions which take upwardable arguments and know how to re-invoke themselves when they change.
+Upward is a JavaScript framework where you declare how things should be,
+and it makes sure things are like that and stay that way.
+With upward, JavaScript becomes a "declarative", rather than an "imperative" language.
+Upward is an all-JavaScript framework, so all your CSS and HTML is written in JavaScript as well.
 
 "Upward" is an acronym for "Upward Propagation With ARgument Detection", if you insist.
 
@@ -14,25 +17,33 @@ logic inside mark-up, and mark-up inside logic.
 In ridiculous cases, we have logic and styles inside mark-up inside logic.
 We have build a tangled web of templating languages, libraries like jQuery,
 and CSS preprocessors.
+We have monstrous config files fed to black box add-ons which do magical stuff.
+
 They make our systems hard to write, debug, and maintain, and complicated and slow to build.
 
 In Upward, in contrast, everything is logic.
 Mark-up and styling is all described by logic.
 It is a purely JS world.
 
+Upward is not an MVC framework, nor a library.
+It is a context for declaring objects and transformations and keeping them up to date.
+Its power obviates much of the need for MVC concepts.
+Upward does not make any assumptions about what you want to do.
+It is ultimately unopinionated.
+
 ### Hello world
 
-		import {P} from 'U';
-    import {TEXT, BUTTON} from 'dom';
+		import {O} from '../src/U';
+    import {TEXT, BUTTON} from '../src/Dom';
 
-    var model = P({ msg: "Hi, Bob." });
+    var model = O({ msg: "Hi, Bob." });
     document.body.appendChild(TEXT(model.msg));
 
-    var button = BUTTON().event('click', function() {
+    var button = BUTTON("Press me", function() {
         model.msg = "Hello, world.";
     });
 
-`P` (for "properties") arranges for the properties (in this case, `msg`)
+`O` (for "object") arranges for the properties (in this case, `msg`)
 to be upwarded to upward-aware functions to which they are passed,
 such as `TEXT` in the succeeding line.
 So when the user presses the button, which changes the value of `model.msg`,
@@ -40,6 +51,22 @@ the display automatically updates itself.
 
 For conciseness, many upward functions are single uppercase letters.
 If you prefer, you many import them under any alternative name you want.
+
+### Lists
+
+Here is a simple upward program which display a list of integers wherever you insert the DOM element:
+
+    DIV(sequence(3).as(TEXT))
+
+Right, that's all. Now let's say we want to reverse the order:
+
+    DIV(sequence(3).down().as(TEXT))
+
+Perhaps we want to filter this to show only the odd numbers:
+
+    DIV(sequence.if(v => v%2).down().as(TEXT))
+
+is all we need.
 
 ### Template strings
 
@@ -130,4 +157,6 @@ where again, any change to `model.color` will be reflected automatically.
 ### Writing HTML and CSS
 
 
+
+It works by introducing an `Upwardable` object which represents a value which can propagate changes upwards, and and `upwardified` functions which take upwardable arguments and know how to re-invoke themselves when they change.
 

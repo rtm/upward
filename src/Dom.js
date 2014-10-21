@@ -2,11 +2,11 @@
 // ===========================
 
 // Bookkeeping and initialization.
-import {Upwardable, upwardify, upwardifyWithObjectParam} from './upward';
+import {Upwardable, upwardify, upwardifyWithObjectParam} from './Upw';
 
-import {chainify, swapify, argify} from './Fun';
-import {dasherify}                 from './Str';
-import {mapObject}                 from './Obj';
+import {chainify, swapify, argify}   from './Fun';
+import {dasherify}                   from './Str';
+import {mapObject}                   from './Obj';
 import {observeObject, makeObserver} from './Obs';
 
 var {createTextNode, createElement} = document;
