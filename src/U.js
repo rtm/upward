@@ -4,9 +4,10 @@ import './Evt';
 import './Arr';
 
 export {
-	Upwardable as               U,
-  computedUpwardable as       C,
-  upwardifyProperties as      P
+	Upwardable as                 U,
+  computedUpwardable as        C,
+  upwardifyProperties as       P,
+  upwardifiedObject as         O
 } from './upward';
 
 export {
@@ -15,15 +16,15 @@ export {
 	DIV,
 	TEXT,
   SPAN,
-  createElt as                E
+  createElt as                 E
 } from './Dom';
 
 export {
-  valueOf as                  V
+  valueOf as                   V
 } from './Obj';
 
 export {
-  upwardifyTemplate as        S,
+  upwardifyTemplate as         S,
   upwardifyTemplateFormula as S$,
 	HTML
 } from './Tmp';

@@ -1,10 +1,11 @@
 // Convenience.
 
-import {objectToString, valueOf, valueOfObject} from './Obj';
+import {objectToString, valueOf, valueOfObject, mapObject} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
 import {tickify, maybeify} from './Fun';
 
 var {create, keys, assign, defineProperty} = Object;
+var {push, unshift} = Array.prototype;
 
 // Unused?
 function makeUpwardableProperty(o, p) {
@@ -51,7 +52,7 @@ function Upwardable(v, options = {}, upwards = []) {
   // Usually called via the `upward` routine which ensures upwardability.
   // `#define` applies to the accessor to a specified object property.
   var u = assign(create(upwardablePrototype), {
-    valueOf()         { return valueOf(v); },
+    valueOf()        { return valueOf(v); },
     upward(fn)        { upwards.push(fn); },
     unupward(fn)      { upwards.omit(fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
@@ -69,7 +70,7 @@ function Upwardable(v, options = {}, upwards = []) {
 // There are legitimate use cases for an upwardable based on an upwardable.
 // In this case, the inferior upwardable simply reports changes to the superior one.
 function upwardableFromUpwardable(u) {
-	console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.")
+	console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.");
   var u2 = Upwardable(valueOf(u));
   upward(u, nv => u2.val = nv);
   return u2;
@@ -208,6 +209,62 @@ function upwardifyProperties(o) {
   return o;
 }
 
+// Define an object with upwardified properties, which keeps itself updated.
+function addUpwardifiedObject(pusher) {
+
+  return function(o) {
+    
+    // Find the most recent version of a property.
+    function getter(p) {
+      var result;
+      for (let obj of this.objs()) {
+        if (obj.hasOwnProperty(p)) { result = valueOf(obj[p]); break; }
+      }
+      return result;
+    }
+    
+    // Place a key in the kept object.
+    function processKey(v, k) {
+      if (v && typeof v === 'object') {
+        if (k in this) { this[k].and(v); }
+        else { this[k] = new upwardifiedObject(v); }
+      } else {
+        if (k in this) { this[k].val = this.get(k); }
+        else { 
+          defineProperty(this, k, getter(k));
+          upward(v, this[k]);
+        }
+      }
+    }
+    
+    function update(v, k) {
+      processKey(v, k);
+    }
+    
+    var handlers = {
+      add: signaturify(processKey),
+      update: signaturify(update),
+      delete: signaturify(_delete)
+    };
+    Object.observe(o, makeObserver(handlers));
+    
+    pusher.call(this.objs, o);
+    mapObject(o, processKey);
+    return this;
+  };
+}
+
+assign(upwardifiedObject.prototype, {
+  and: addUpwardifiedObject(unshift),
+  or: addUpwardifiedObject(push)
+});
+
+function upwardifiedObject(o) {
+  this.objs = [];
+  return this.and(o);
+}
+
+
 export {
   Upwardable,
   computedUpwardable,
@@ -219,5 +276,6 @@ export {
   upwardify,
 	mirrorProperties,
 	upwardCapture,
-  upwardablePrototype
+  upwardablePrototype,
+  upwardifiedObject
 };
