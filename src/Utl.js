@@ -43,6 +43,13 @@ function omit(a, elt) {
   return a;
 }
 
+// Replace one element in an array with another.
+function replace(a, elt1, elt2) {
+  var idx = a.indexOf(elt1);
+  if (idx !== -1) { a[idx] = elt2; }
+  return a;
+}
+
 // reverse an array in place
 function reverse(a) {
   var len = a.length;

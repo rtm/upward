@@ -4,17 +4,16 @@ import './Evt';
 import './Arr';
 
 export {
-	Upwardable as                 U,
+  Upwardable as                U,
   computedUpwardable as        C,
-  upwardifyProperties as       P,
-  upwardifiedObject as         O
+  upwardifyProperties as       P
 } from './upward';
 
 export {
   INPUT,
-	BUTTON,
-	DIV,
-	TEXT,
+  BUTTON,
+  DIV,
+  TEXT,
   SPAN,
   createElt as                 E
 } from './Dom';
@@ -25,11 +24,15 @@ export {
 
 export {
   upwardifyTemplate as         S,
-  upwardifyTemplateFormula as S$,
-	HTML
+  upwardifyTemplateFormula as  S$,
+  HTML
 } from './Tmp';
 
 export {
   createCSSStyleSheet,
-	insertCSSStyleRules
+  insertCSSStyleRules
 } from './Css';
+
+export {
+  keepAssigned as              O
+} from './Ass';

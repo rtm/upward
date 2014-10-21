@@ -108,6 +108,7 @@ export {
   objectValues,
 	valueOf,
   emptyObject,
-	valueFromPath
+	valueFromPath,
+  objectPairs
 };
 

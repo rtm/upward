@@ -1,4 +1,4 @@
-import {P, E, BUTTON, TEXT, V} from '../src/U';
+import {P, E, BUTTON, TEXT, V, O} from '../src/U';
 
 var a = [1, 2, 3, 4, 5];
 
@@ -22,3 +22,9 @@ var model = P({order: true});
 
 var map = x => x*x;
 var r = a.up(model.order);
+
+var o = O({a:1});
+console.log(o.and);
+o = O({a:1}).and({b:2});
+console.log(o);
+console.log(V(o.a), V(o.b));

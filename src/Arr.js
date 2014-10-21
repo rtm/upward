@@ -7,13 +7,6 @@ import {valueOf, mapObject} from './Obj';
 var {observe, splice} = Array;
 var {keys, defineProperty, defineProperties} = Object;
 
-// Transform function taking O.o change record into one with forEach signature.
-function signaturize(fn, ctxt) {
-  return function({name, object}) {
-    return fn.call(ctxt, object[name], name, object);
-  };
-}
-
 // Create a mapped array which is kept in sync via observation.
 // Replace changed values, delete deleted values, and mirror splices.
 function keepMapped(a, fn, ctxt) {

@@ -23,7 +23,6 @@ function makeObserver(handlers) {
 
 // Invoke Object.observe with only the types available to be handled.
 function observeObject(o, observer) { 
-	console.log("adding handler to", o, observer, observer.keys);
 	observe (o, observer, observer.keys);
 }
 

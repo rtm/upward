@@ -1,8 +1,8 @@
 // Convenience.
 
-import {objectToString, valueOf, valueOfObject, mapObject} from './Obj';
+import {objectToString, valueOf, valueOfObject, mapObject, objectPairs} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
-import {tickify, maybeify} from './Fun';
+import {tickify, maybeify, propGetter} from './Fun';
 
 var {create, keys, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;
@@ -37,7 +37,7 @@ function Upwardable(v, options = {}, upwards = []) {
 			return capture(u);
     },
     set: function(nv) {
-      if (!disable) {
+      if (!disable && v !== nv) {
 				send_upward(nv);
         v = nv;
         disable = once;
@@ -208,62 +208,6 @@ function upwardifyProperties(o) {
   }
   return o;
 }
-
-// Define an object with upwardified properties, which keeps itself updated.
-function addUpwardifiedObject(pusher) {
-
-  return function(o) {
-    
-    // Find the most recent version of a property.
-    function getter(p) {
-      var result;
-      for (let obj of this.objs()) {
-        if (obj.hasOwnProperty(p)) { result = valueOf(obj[p]); break; }
-      }
-      return result;
-    }
-    
-    // Place a key in the kept object.
-    function processKey(v, k) {
-      if (v && typeof v === 'object') {
-        if (k in this) { this[k].and(v); }
-        else { this[k] = new upwardifiedObject(v); }
-      } else {
-        if (k in this) { this[k].val = this.get(k); }
-        else { 
-          defineProperty(this, k, getter(k));
-          upward(v, this[k]);
-        }
-      }
-    }
-    
-    function update(v, k) {
-      processKey(v, k);
-    }
-    
-    var handlers = {
-      add: signaturify(processKey),
-      update: signaturify(update),
-      delete: signaturify(_delete)
-    };
-    Object.observe(o, makeObserver(handlers));
-    
-    pusher.call(this.objs, o);
-    mapObject(o, processKey);
-    return this;
-  };
-}
-
-assign(upwardifiedObject.prototype, {
-  and: addUpwardifiedObject(unshift),
-  or: addUpwardifiedObject(push)
-});
-
-function upwardifiedObject(o) {
-  this.objs = [];
-  return this.and(o);
-}
-
 
 export {
   Upwardable,

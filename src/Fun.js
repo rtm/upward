@@ -111,6 +111,20 @@ function repeatify(fn) {
 	};
 }
 
+// Transform function taking O.o change record into one with forEach signature.
+function changeRecordSignaturify(fn, ctxt) {
+  return function({name, object}) {
+    return fn.call(ctxt, object[name], name, object);
+  };
+}
+
+// Make a function which returns a property on `this`.
+function propGetter(p) {
+  return function() {
+    return this[p];
+  };
+}
+
 // Function which returns its argument.
 function identity() {
 	return x => x;
@@ -159,13 +173,12 @@ export {
   maybeify,
 	selfthisify,
 	repeatify,
+  changeRecordSignaturify,
 	logify,
+
+  propGetter,
 
   identity,
 	invert,
   fixed
 };
-
-
-
-
