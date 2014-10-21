@@ -75,43 +75,46 @@ function keepSliced(a, from, to) {
 
 // Keep an array in original, or reversed order.
 function keepReversed(a, up) {
-  var _up = valueOf(up);
-  var _a;
   var result = [];
-  
+
+  // Array has changed; switch to new one and recalc.
+  function changeArray(_a) {
+    Array.unobserve(a, observer);
+    a = _a;
+    set();
+    Array.observe(a, observer);
+  }
+
+  // Direction has changed; recalc.
+  function changeUp(_up) {
+    if (up === _up) { return; }
+    up = _up;
+    set();
+  }
+    
   // Calculate corresponding position in possible reversed array.
   function pos(i) {
-    return _up ? i : _a.length - 1 - i;
+    return up ? i : a.length - 1 - i;
   }
 
-  // Set things up, at beginning or when array changes.
-  function setup(a) {
-    if (_a) { Array.unobserve(_a, observer); }
-    _a = a;
-    var len = _a.length;
+  // Set the elements in place when array or direction changes.
+  function set() {
+    var len = a.length;
     for (let i = 0; i < len; i++) {
-      result[i] = _a[pos(i)];
+      result[i] = a[pos(i)];
     }
     result.length = len;
-    Array.observe(_a, observer);
   }
-
-  // When direction changes, reverse the array.
-  upward(up, function(v) {
-    if (v !== _up) {
-      reverse(result); // reverse in place
-      _up = v;
-    }
-  });
-
-  // When input array changes, set up over again.
-  upward(a, setup);
+  
+  // Watch for changes in array or direction.
+  upward(up, changeUp);
+  upward(a,  changeArray);
   
   var handlers = {
-    update({name}) { result[pos(name)] = _a[name]; },
+    update({name}) { result[pos(name)] = a[name]; },
     splice ({index, removed, addedCount}) {
-      var added = _a.slice(index, index + addedCount);
-      if (_up) {
+      var added = a.slice(index, index + addedCount);
+      if (up) {
         result.splice(index, removed.length, ...added);
       } else {
         result.splice(pos(index) - removed.length, removed.length, ...added.reverse());
@@ -119,8 +122,12 @@ function keepReversed(a, up) {
     }
   };
 
+  a  = valueOf(a);
+  up = valueOf(up);
+
   var observer = makeObserver(handlers);
-  setup(valueOf(a));
+  set();
+  Array.observe(a, observer);
   return result;
 }
 
