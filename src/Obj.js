@@ -38,6 +38,14 @@ function reduceObject(o, fn, init) {
 	return init;
 }
 
+function objectFromPairs(keys, vals) {
+  var result = {};
+  for (let i = 0, len = keys.length; i < len; i++) {
+    result[keys[i]] = vals[i];
+  }
+  return result;
+}
+
 // Return an object all of the values of which are evaluated.
 function valueOfObject(o) { return mapObject(o, valueOf); }
 

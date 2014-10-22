@@ -2,6 +2,7 @@
 // =======================
 
 import {mapObject} from './Obj';
+import {fixed} from './Fun';
 
 // Generate a sequence of integers.
 function *seq(to, from = 0) {
@@ -59,6 +60,10 @@ function reverse(a) {
     [a[i], a[len-i-1]] = [a[len-i-1], a[i]];
   }
   return a;
+}
+
+function repeat(n, v) {
+  return seq(n).map(fixed(v));
 }
 
 function makeSortfunc(key, desc) {
@@ -145,6 +150,7 @@ export {
   omit,
   replace,
   reverse,
+  repeat,
   makeSortfunc,
   copyOnto,
   uniqueize,

@@ -5,7 +5,8 @@
 import {copyOnto} from './Utl';
 import {makeObserver, observeObject} from './Obs';
 
-var {max} = Math;
+var {max}    = Math;
+var {assign} = Object;
     
 // Keep an array sliced as it changes.
 export default function keepSliced(a, from, to) {
@@ -20,13 +21,14 @@ export default function keepSliced(a, from, to) {
       if (old) {
         unobseveObject(old, observer);
       }
-      observeObject(params.a, observer);
+      observeObject(v, observer);
     }
   }
   
   // Redo the slice, when paramters have changed.
   function go() {
-    copyOnto(params.a.slice(params.from, params.to), result);
+    {a, from, to} = params;
+    copyOnto(a.slice(from, to), result);
   }
 
   var paramHandlers = { add: paramChanged, update: paramChanged, end: go };
@@ -72,9 +74,6 @@ export default function keepSliced(a, from, to) {
   upward(to,   to => params.to = to);
 
   // Initialize params, which kicks off computation.
-  params.a    = valueOf(a);
-  params.to   = valueOf(to);
-  params.from = valueOf(from);
-
+  assign(params, mapObject({a, to, from}, valueOf);
   return result;
 }
