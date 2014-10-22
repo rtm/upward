@@ -6,9 +6,13 @@ var {keys, create, assign, observe, unobserve} = Object;
 
 // Make an observation handler, given a target and an object of handlers
 // with function-valued keys such as "add", "delete", and "update".
+// Map the signature to match `Array#forEach`, with changerec as 4th arg.
 var observerPrototype = {
   handle(changes) {
-    changes.forEach(change => this[change.type](change))
+    changes.forEach(change => {
+      var {type, object, name} = change;
+      this[type](object[name], name, object, change);
+    });
 	}
 };
 

@@ -3,7 +3,6 @@
 
 import {upward, upwardCapture}   from './Upw';
 import {valueOf}                 from './Obj';
-import {changeRecordSignaturify} from './Fun';
 
 var {observe} = Array.prototype;
 
@@ -36,8 +35,8 @@ export default function keepMapped(a, fn, ctxt) {
   upward(a, setup);
 
   var handler = {
-    add: changeRecordSignaturify(_add),
-    update: changeRecordSignaturify(_update),
+    add: _add,
+    update: _update,
     delete({name: i}) {
       _unupward(upwardMaps[i]);
       delete result[i];

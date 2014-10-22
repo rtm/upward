@@ -3,7 +3,7 @@
 import {makeSortfunc}            from './Utl';
 import {upward, upwardCapture}   from './Upw';
 import {valueOf}                 from './Obj';
-import {changeRecordSignaturify, identity} from './Fun';
+import {identity}                 from './Fun';
 import keepMapped                from './Map';
 
 // Order an array based on a map, and keep it updated as map changes.
@@ -23,12 +23,12 @@ export default function keepSorted(a, key = identity) {
   function _unupward(u) { unupward(u, go); }
   
   var capturesHandlers = {
-    delete: changeRecordSignaturify((v, i) => unupwardCaptures(i)),
-    add: changeRecordSignaturify((v, i) => upwardCaptures(i)),
-    update: changeRecordSignaturify((v, i) => {
+    delete: (v, i) => unupwardCaptures(i),
+    add: (v, i) => upwardCaptures(i),
+    update: (v, i) => {
       unupwardCaptures(i);
       upwardCaptures(i);
-    })
+    }
   };
   Object.observe(captures, capturesHandlers);
 
@@ -87,9 +87,9 @@ export default function keepSorted(a, key = identity) {
   
   // Watch for changes in array values.
   var handlers = {
-    update: changeRecordSignaturify(update),
-    add:    changeRecordSignaturify(add),
-    delete: changeRecordSignaturify(_delete)
+    update: update,
+    add:    add,
+    delete: _delete
   };
   observeObject(a, makeObserver(handlers));
 

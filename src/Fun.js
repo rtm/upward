@@ -4,10 +4,10 @@
 // Housekeeping.
 import {upwardConfig} from './Cfg';
 
-var {prototype}                        = Function;
-var {call, bind, apply}                = prototype;
+var {prototype}                          = Function;
+var {call, bind, apply}                  = prototype;
 var {defineProperty, defineProperties} = Object;
-var {forEach, map}                     = Array.prototype;
+var {forEach}                           = Array.prototype;
 
 // Compose functions, calling from right to left.
 function compose(...fns) {
@@ -89,6 +89,13 @@ function trimify(fn, n = 1) {
   }
 }
 
+// Make a function which throws away some args at the end.
+function trimifyRight(fn, n = 1) {
+  return function(...args) {
+    return fn.call(this, ...args.slice(0, -n));
+  }
+}
+
 // Make a version of the function which logs entry and exit.
 function logify(fn) {
 	return function() {
@@ -106,16 +113,9 @@ function selfthisify(fn) {
 
 // Make a function which calls some function for each argument, returning array of results.
 function repeatify(fn) {
-  return function() {
-		return map.call(arguments, fn, this);
+  return function(...args) {
+		return [...args].map(fn, this);
 	};
-}
-
-// Transform function taking O.o change record into one with forEach signature.
-function changeRecordSignaturify(fn, ctxt) {
-  return function({name, object, oldValue}) {
-    return fn.call(ctxt, object[name], name, oldValue, object);
-  };
 }
 
 // Make a function which returns a property on `this`.
@@ -132,7 +132,7 @@ function identity() {
 
 // Function which always returns the same value.
 function fixed(c) {
-  return _ => c;
+  return () => c;
 }
 
 // Function which inverts its argument.
@@ -173,7 +173,6 @@ export {
   maybeify,
 	selfthisify,
 	repeatify,
-  changeRecordSignaturify,
 	logify,
 
   propGetter,

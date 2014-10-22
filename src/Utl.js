@@ -50,7 +50,7 @@ function replace(a, elt1, elt2) {
   return a;
 }
 
-// reverse an array in place
+// Reverse an array in place.
 function reverse(a) {
   var len = a.length;
   for (var i = 0; i < Math.floor(len/2); i++) {
@@ -59,6 +59,8 @@ function reverse(a) {
   return a;
 }
 
+// Make a function suitable for `Array#sort` from a key function.
+// The key function must return values of correct `String` or `Number` type.
 function makeSortfunc(key, desc) {
   return function(a, b) {
     var akey = key(a), key = key(b);
@@ -68,7 +70,7 @@ function makeSortfunc(key, desc) {
 }
 
 // Copy an array into another one destructively
-function copyArray(a1, a2) {
+function copyOntoArray(a1, a2) {
   for (let i = 0; i < a1.length; i++) {
     a2[i] = a1[i];
   }
@@ -127,7 +129,9 @@ if (!Array.prototype.tail) {
     swap:      { value()         { return swap     (this);          } },
     append:    { value(...elts)  { return append   (this, ...elts); } },
     omit:      { value(elt)      { return omit     (this, elt);     } },
-    uniqueize: { value()         { return uniqueize(this);          } }
+    replace:   { value(e1, e2)   { return replace  (this, e1, e2)l  } },
+    uniqueize: { value()         { return uniqueize(this);         } },
+    copyOnto: ( value(a)        { return copyOntoArray (this, a);} }
   });
 }
 
@@ -141,7 +145,7 @@ export {
   replace,
   reverse,
   makeSortfunc,
-  copyArray,
+  copyOntoArray,
   uniqueize,
   indexesOf,
   runningMap,
