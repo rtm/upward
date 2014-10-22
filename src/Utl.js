@@ -1,6 +1,8 @@
 // Utility array functions
 // =======================
 
+import {mapObject} from './Obj';
+
 // Generate a sequence of integers.
 function *seq(to, from = 0) {
   var dir = to > from ? +1 : -1;
@@ -50,7 +52,7 @@ function replace(a, elt1, elt2) {
   return a;
 }
 
-// Reverse an array in place.
+// reverse an array in place
 function reverse(a) {
   var len = a.length;
   for (var i = 0; i < Math.floor(len/2); i++) {
@@ -59,8 +61,6 @@ function reverse(a) {
   return a;
 }
 
-// Make a function suitable for `Array#sort` from a key function.
-// The key function must return values of correct `String` or `Number` type.
 function makeSortfunc(key, desc) {
   return function(a, b) {
     var akey = key(a), key = key(b);
@@ -70,7 +70,7 @@ function makeSortfunc(key, desc) {
 }
 
 // Copy an array into another one destructively
-function copyOntoArray(a1, a2) {
+function copyOnto(a1, a2) {
   for (let i = 0; i < a1.length; i++) {
     a2[i] = a1[i];
   }
@@ -121,18 +121,19 @@ function chainPromises(...fns) {
   );
 }
 
+var prototypeFns = {
+  tail, sum, swap, append, replace, omit, copyOnto, uniqueize,
+  indexesOf, runningMap, runningTotal, filterInPlace, chainPromises
+};
+
 // Allow in-place modifier functions to be applied to array as `this`.
 if (!Array.prototype.tail) {
-  Object.defineProperties(Array.prototype, {
-    tail:      { value()         { return tail     (this);          } },
-    sum:       { value()         { return sum      (this);          } },
-    swap:      { value()         { return swap     (this);          } },
-    append:    { value(...elts)  { return append   (this, ...elts); } },
-    omit:      { value(elt)      { return omit     (this, elt);     } },
-    replace:   { value(e1, e2)   { return replace  (this, e1, e2)l  } },
-    uniqueize: { value()         { return uniqueize(this);         } },
-    copyOnto: ( value(a)        { return copyOntoArray (this, a);} }
-  });
+  Object.defineProperties(
+    Array.prototype,
+    mapObject(prototypeFns, v => (
+      { value(...args) { return v(this, ...args); } }
+    ))
+  );
 }
 
 export {
@@ -145,7 +146,7 @@ export {
   replace,
   reverse,
   makeSortfunc,
-  copyOntoArray,
+  copyOnto,
   uniqueize,
   indexesOf,
   runningMap,

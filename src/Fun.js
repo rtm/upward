@@ -125,6 +125,9 @@ function propGetter(p) {
   };
 }
 
+// Function which does nothing.
+function noop() { }
+
 // Function which returns its argument.
 function identity() {
 	return x => x;
@@ -177,6 +180,7 @@ export {
 
   propGetter,
 
+  noop,
   identity,
 	invert,
   fixed
