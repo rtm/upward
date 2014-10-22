@@ -113,8 +113,8 @@ function repeatify(fn) {
 
 // Transform function taking O.o change record into one with forEach signature.
 function changeRecordSignaturify(fn, ctxt) {
-  return function({name, object}) {
-    return fn.call(ctxt, object[name], name, object);
+  return function({name, object, oldValue}) {
+    return fn.call(ctxt, object[name], name, oldValue, object);
   };
 }
 

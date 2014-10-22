@@ -67,6 +67,15 @@ function makeSortfunc(key, desc) {
   };
 }
 
+// Copy an array into another one destructively
+function copyArray(a1, a2) {
+  for (let i = 0; i < a1.length; i++) {
+    a2[i] = a1[i];
+  }
+  a2.length = a1.length;
+  return a2;
+}
+
 // Create an array of unique values.
 function uniqueize(a) {
   return a.filter((elt, i) => a.indexOf(elt) === i);
@@ -102,15 +111,23 @@ function filterInPlace(a, fn, ctxt) {
   return a;
 }
 
+// Chain fns together using promises.
+function chainPromises(...fns) {
+  return [...fns].reduce(
+    (result, fn) => result.then(fn),
+    new Promise.resolve()
+  );
+}
+
 // Allow in-place modifier functions to be applied to array as `this`.
 if (!Array.prototype.tail) {
   Object.defineProperties(Array.prototype, {
-    tail:      { value()         { return tail(this); } },
-    sum:       { value()         { return sum(this); } },
-    swap:      { value()         { return swap(this); } },
-    append:    { value(...elts)  { return append(this, ...elts); } },
-    omit:      { value(elt)      { return omit(this, elt); } },
-    uniqueize: { value()         { return uniqueize(this); } }
+    tail:      { value()         { return tail     (this);          } },
+    sum:       { value()         { return sum      (this);          } },
+    swap:      { value()         { return swap     (this);          } },
+    append:    { value(...elts)  { return append   (this, ...elts); } },
+    omit:      { value(elt)      { return omit     (this, elt);     } },
+    uniqueize: { value()         { return uniqueize(this);          } }
   });
 }
 
@@ -121,12 +138,15 @@ export {
   swap,
   append,
   omit,
+  replace,
   reverse,
   makeSortfunc,
+  copyArray,
   uniqueize,
   indexesOf,
   runningMap,
   runningTotal,
   filterInPlace,
+  chainPromises,
   makeSortFunc
 };

@@ -11,10 +11,6 @@ import keepSliced   from './Slc';
 
 var {defineProperty, defineProperties} = Object;
 
-// Order an array and keep it ordered as things change.
-function keepOrdered(a, order) { 
-  return keepMapped(order, i => a[i]); 
-}
 
 // Place the methods on the Array and Upwardable prototype.
 var methodMap = {
