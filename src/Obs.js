@@ -10,32 +10,49 @@ var {keys, create, assign, observe, unobserve} = Object;
 // After all changes are handled, the 'end' hook is called.
 var observerPrototype = {
   handle(changes) {
+    var saveObject;
     changes.forEach(change => {
-      var {type, object, name} = change;
+      let {type, object, name} = change;
+      saveObject = object;
       this[type](object[name], name, object, change);
     });
-    if (this.end) { this.end(); }
+    if (this.end) { this.end(saveObject); }
 	}
 };
 
 // Make an observer from a hash of handlers for observation types.
 // This observer can be passed to `observeObject`.  
 function makeObserver(handlers) {
+  console.assert(handlers && typeof handlers === 'object', "Argument to makeObserver must be hash.");
 	var handler = assign(create(observerPrototype), handlers);
 	var observer = handler.handle.bind(handler);
-	observer.keys = keys(handlers);
 	return observer;
 }
 
 // Invoke Object.observe with only the types available to be handled.
 function observeObject(o, observer) { 
-	observe (o, observer, observer.keys);
+	return observe (o, observer, keys(observer));
 }
 
-function unobserveObject(o, observer) { 
-	unobserve(o, observer); 
+function observeObjectNow(o, observer) {
+  observeObject(o, observer);
+  notifyRetroactively(o);
+  return o;
 }
-  
+
+// Unobserve something obseved with `observeObject`.
+function unobserveObject(o, observer) { 
+	return unobserve(o, observer); 
+}
+
+// Retroactively notify 'add' to all properties in an object.
+function notifyRetroactively(object) {
+  const type = 'add';
+  var notifier = Object.getNotifier(o);
+  kyes(object).forEach(name => notifier.notify({type, name, object});
+  return object;
+}
+                             
 // Keep an object in sync with another.
 function mirrorProperties(src, dest = {}) {
 	function set(name) { dest[name] = src[name]; }
@@ -51,6 +68,8 @@ function mirrorProperties(src, dest = {}) {
 export {
 	makeObserver,
 	observeObject,
+	observeObjectNow,
 	unobserveObject,
+  notifyRetroactively,
 	mirrorProperties
 };

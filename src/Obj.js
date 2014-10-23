@@ -21,6 +21,13 @@ function mapObject(o, fn, ctxt) {
 	return result;
 }
 
+function mapObjectInPlace(o, fn, ctxt) {
+	for (var [key, val] of objectPairs(o)) {
+		o[key] = fn.call(ctxt, val, key, o);
+	}
+  return o;
+}
+
 // "Invert" an object.
 function invertObject(o) {
 	var result = {};
@@ -76,6 +83,7 @@ function emptyObject(o, {keep = {}}) {
 export {
   objectToString,
   mapObject,
+  mapObjectInPlace,
   valueOfObject,
   valueArray,
   objectValues,

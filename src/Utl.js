@@ -62,6 +62,13 @@ function reverse(a) {
   return a;
 }
 
+function mapInPlace(a, fn, ctxt) {
+  for (var i = 0, len = a.length; i < len; i++) {
+    a[i] = fn.call(ctxt, a[i]);
+  }
+  return a;
+}
+
 function repeat(n, v) {
   return seq(n).map(fixed(v));
 }
@@ -127,7 +134,7 @@ function chainPromises(...fns) {
 }
 
 var prototypeFns = {
-  tail, sum, swap, append, replace, omit, copyOnto, uniqueize,
+  tail, sum, swap, append, replace, mapInPlace, omit, copyOnto, uniqueize,
   indexesOf, runningMap, runningTotal, filterInPlace, chainPromises
 };
 
@@ -150,6 +157,7 @@ export {
   omit,
   replace,
   reverse,
+  mapInPlace,
   repeat,
   makeSortfunc,
   copyOnto,

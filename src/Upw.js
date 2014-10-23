@@ -1,6 +1,6 @@
 // Convenience.
 
-import {objectToString, valueOf, valueOfObject, mapObject, objectPairs} from './Obj';
+import {objectToString, valueOf, mapObject, objectPairs} from './Obj';
 import {upwardConfig, upwardableId} from './Cfg';
 import {tickify, maybeify, propGetter} from './Fun';
 
@@ -209,6 +209,23 @@ function upwardifyProperties(o) {
   return o;
 }
 
+// Create a mirrored object which is updated as the underlying object changes.
+// Dereference upwardable property values.
+function valueOfObject(o) {
+  var result = mapObject(o, valueOf);
+  var upwardFuncs = {};
+
+  function _upward  (v, i) { upward(v, upwardFuncs[i] = nv => result[i] = valueOf(nv)); }
+  function _unupward(v, i) { unupward(oldValue, upwardFuncs[i]); }
+
+  function add      (v, i)             { _upward(v, i); }
+  function update   (v, i, {oldValue}) { _unupward(oldValue, i); _upward(oldValue, i); }
+  function _delete  (v, i, {oldValue}) { _unupward(oldValue, i); delete upawrdFuncs[i]; }
+
+  observeObject(o, makeObserver({add, update, delete:_delete}));
+  return result;
+}
+
 export {
   Upwardable,
   computedUpwardable,
@@ -221,5 +238,6 @@ export {
 	mirrorProperties,
 	upwardCapture,
   upwardablePrototype,
-  upwardifiedObject
+  upwardifiedObject,
+  valueOfObject
 };
