@@ -26,12 +26,13 @@ function makeObserver(handlers) {
   console.assert(handlers && typeof handlers === 'object', "Argument to makeObserver must be hash.");
 	var handler = assign(create(observerPrototype), handlers);
 	var observer = handler.handle.bind(handler);
+  observer.keys = keys(handlers);
 	return observer;
 }
 
 // Invoke Object.observe with only the types available to be handled.
 function observeObject(o, observer) { 
-	return observe (o, observer, keys(observer));
+	return observe (o, observer, observer.keys);
 }
 
 function observeObjectNow(o, observer) {
@@ -48,8 +49,9 @@ function unobserveObject(o, observer) {
 // Retroactively notify 'add' to all properties in an object.
 function notifyRetroactively(object) {
   const type = 'add';
-  var notifier = Object.getNotifier(o);
-  kyes(object).forEach(name => notifier.notify({type, name, object});
+  var notifier = Object.getNotifier(object);
+
+  keys(object).forEach(name => notifier.notify({type, name, object}));
   return object;
 }
                              

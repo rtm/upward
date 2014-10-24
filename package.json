@@ -14,8 +14,7 @@
     "name": "Bob Myers",
     "email": "rtm@gol.com"
   },
-  "contributors": [
-  ],
+  "contributors": [],
   "licenses": [
     {
       "type": "MIT",
@@ -24,26 +23,18 @@
   ],
   "main": "upward.js",
   "devDependencies": {
+    "assert": "angular/assert#dist",
     "chai": "*",
-    "mocha": "*",
     "docco": "*",
     "expect": "*",
-		"require": "*",
-    "karma": "~0.12.0",
-    "karma-cli": "~0.0.4",
-    "karma-requirejs": "~0.2.1",
-    "karma-traceur-preprocessor": "~0.1",
-    "karma-jasmine": "~0.1",
-    "karma-chrome-launcher": "~0.1",
-    "assert": "angular/assert#dist"
+    "mocha": "*",
+    "require": "*"
   },
   "scripts": {
-    "test": "karma start --single-run",
     "dist": "node dist; node node_modules/.bin/docco src/package.js"
   },
   "engines": {
     "node": ">= 0.6.x"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }

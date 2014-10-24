@@ -45,12 +45,18 @@ function reduceObject(o, fn, init) {
 	return init;
 }
 
+// Create an object from arrays of keys and values.
 function objectFromPairs(keys, vals) {
   var result = {};
   for (let i = 0, len = keys.length; i < len; i++) {
     result[keys[i]] = vals[i];
   }
   return result;
+}
+
+// Create a value-only property descriptors object from an object.
+function makePropertyDescriptors(o) {
+  return mapObject(o, v => ({ value: v }));
 }
 
 // Return an object all of the values of which are evaluated.
@@ -84,12 +90,15 @@ export {
   objectToString,
   mapObject,
   mapObjectInPlace,
+  invertObject,
+  reduceObject,
+  objectFromPairs,
+  makePropertyDescriptors,
   valueOfObject,
+	valueFromPath,
   valueArray,
   objectValues,
 	valueOf,
-  emptyObject,
-	valueFromPath,
-  objectPairs
+  emptyObject
 };
 

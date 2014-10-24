@@ -4,10 +4,14 @@
 import {mapObject} from './Obj';
 import {fixed} from './Fun';
 
-// Generate a sequence of integers.
-function *seq(to, from = 0) {
+// Create an array of a sequence of integers.
+function seq(to, from = 0, step = 1) {
   var dir = to > from ? +1 : -1;
-  for (var i = from; i != to; i += dir) { yield i; }
+  var result = [];
+  for (let i = from, count = 0; i != to; i += dir, count++) {
+    result[count] = i;
+  }
+  return result;
 }
 
 // Return tail of array.

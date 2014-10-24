@@ -1,13 +1,16 @@
 JS = $(shell find src sample -name "[A-Za-z]*.js")
+
 TOUCH = $(addprefix tmp/,$(JS))
 
-
-.PHONY: all realAll
+.PHONY: all realAll tests
 
 all: realAll
 	@true
 
-realAll: $(TOUCH)
+tests:
+	$(MAKE) -C tests
+
+realAll: $(TOUCH) #  tests
 
 tmp/%.js: %.js
 	-@traceur --experimental $<

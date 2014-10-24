@@ -1,8 +1,9 @@
 // Convenience.
 
-import {objectToString, valueOf, mapObject, objectPairs} from './Obj';
-import {upwardConfig, upwardableId} from './Cfg';
-import {tickify, maybeify, propGetter} from './Fun';
+import {objectToString, valueOf, mapObject} from './Obj';
+import {upwardConfig, upwardableId}         from './Cfg';
+import {tickify, maybeify, propGetter}      from './Fun';
+import {observeObject, makeObserver}        from './Obs';
 
 var {create, keys, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;

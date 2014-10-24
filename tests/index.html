@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Upward Test Runner</title>
+
+  <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+  <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+  
+  <script>
+    traceur.options.experimental = true;
+  </script>
+
+  <!-- include spec files here... -->
+  <script type="module" src="./run.js"></script>
+
+  <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+
+</head>
+
+<body>
+  <h1>Tests</h1>
+  <div id="tests">
+  </div>
+</body>
+</html>
