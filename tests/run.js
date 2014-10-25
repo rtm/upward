@@ -2,7 +2,9 @@
 // =======================
 
 import slcTests from './Slc';
+import tstTests from './Tst';
+
 import {testGroup, consoleReporter, htmlReporter} from '../src/Tst';
 
-slcTests(consoleReporter());
+tstTests(consoleReporter());
 //slcTest(htmlReporter(document.getElementById('tests'), 'h4'));

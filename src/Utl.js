@@ -1,9 +1,12 @@
 // Utility array functions
 // =======================
 
+// Setup.
 import {mapObject} from './Obj';
 import {fixed} from './Fun';
 
+var {create} = Object;
+    
 // Create an array of a sequence of integers.
 function seq(to, from = 0, step = 1) {
   var dir = to > from ? +1 : -1;
@@ -133,8 +136,29 @@ function filterInPlace(a, fn, ctxt) {
 function chainPromises(...fns) {
   return [...fns].reduce(
     (result, fn) => result.then(fn),
-    new Promise.resolve()
+    Promise.resolve()
   );
+}
+
+// Stopwatch: start and stop, then retrieve elapsed time.
+// Start and stop return input, to make them friendly to promise chaining.
+// Start, stop and reset are pre-bound to the stopwatch itself.
+var stopwatchPrototype = create({
+  start(val) { this.started = Date.now(); this.stopped = false; return val; },
+  stop (val) { this.elapsed = this.time;  this.stopped = true;  return val; },
+  reset(val) { this.elapsed = 0;          this.stopped = true;  return val; },
+  stopped:   true,
+  elapsed:   0
+}, {
+  current:   { get: function() { return this.stopped ? 0 : Date.now() - this.started; } },
+  time:      { get: function() { return this.elapsed + this.current; } }
+});
+
+function makeStopwatch() {
+  var stopwatch = create(stopwatchPrototype);
+  ['start', 'stop', 'reset'].forEach(
+    method => stopwatch[method] = stopwatch[method].bind(stopwatch));
+  return stopwatch;
 }
 
 var prototypeFns = {
@@ -171,5 +195,6 @@ export {
   runningTotal,
   filterInPlace,
   chainPromises,
-  makeSortFunc
+  makeSortFunc,
+  makeStopWatch
 };

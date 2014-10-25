@@ -23,12 +23,8 @@
   ],
   "main": "upward.js",
   "devDependencies": {
-    "assert": "angular/assert#dist",
     "chai": "*",
-    "docco": "*",
-    "expect": "*",
-    "mocha": "*",
-    "require": "*"
+    "docco": "*"
   },
   "scripts": {
     "dist": "node dist; node node_modules/.bin/docco src/package.js"
