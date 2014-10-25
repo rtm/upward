@@ -8,8 +8,9 @@
 
 // Setup.
 
-import {spawn, timeout} from '../src/Asy';
+import {spawn, timeout}          from '../src/Asy';
 import {makePropertyDescriptors} from '../src/Obj';
+import {makeStopwatch}           from '../src/Utl';
 
 var {assign, create} = Object;
 
@@ -61,8 +62,8 @@ var nullReporterPrototype = create(
 var consoleReporterPrototype = create(
   reporterPrototype,
   makePropertyDescriptors({
-    succeed(msg)    {
-      console.log('%c'+msg, "color: green");
+    succeed(msg, time) {
+      console.log('%c✓' + msg + ' (%sms)', "color: green", time);
       return this.success();
     },
     log(msg) {
@@ -80,8 +81,8 @@ var consoleReporterPrototype = create(
     endGroup(group) {
       console.groupEnd();
       var color = this.failures ? 'red' : 'green';
-      console.log(`%c${this.successes} successes, ${this.failures} failures`, `color: ${color}`);
       this.count(group);
+      console.log(`%c${group.successes} successes, ${group.failures} failures`, `color: ${color}`);
       return this;
     }
   })
@@ -167,13 +168,16 @@ function testGroup(desc, tests) {
 
 // Return a function to run a single test.
 function test(desc, when, then) {
+  var stopwatch = makeStopwatch();
   return reporter => Promise
     .resolve()
-//    .then  (_ => reporter.log(desc))
+  //    .then  (_ => reporter.log(desc))
+    .then  (stopwatch.start)
     .then  (_ => when(reporter))
     .then  (timeout())
     .then  (_ => then(reporter))
-    .then  (_ => reporter.succeed(desc))
+    .then  (stopwatch.stop)
+    .then  (_ => reporter.succeed(desc, stopwatch.time))
     .catch (e => reporter.fail(e))
   ;
 }

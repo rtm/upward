@@ -2,7 +2,7 @@ import keepSliced from '../src/Slc';
 import {test, testGroup, expect, should, assert} from '../src/Tst';
 
 export default testGroup(
-  "keepSliced",
+  "module Slc (keepSliced, Array#of)",
 
   function() {
     var a = [1,2,3,4,5,6,7,8,9,10], b;

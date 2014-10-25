@@ -18,9 +18,10 @@ export default testGroup(
 
     function() {
       return testGroup(
-        "should can check equality",
+        "various assertion library checks",
         [
-          test("equality", noop, () => "bar".should.equal("bar"))
+          test("equality", noop, () => "bar".should.equal("bar")),
+          test("Throw", noop, () => should.Throw(_ => { throw "fuck" }))
         ]
       );
     }()

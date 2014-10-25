@@ -196,5 +196,5 @@ export {
   filterInPlace,
   chainPromises,
   makeSortFunc,
-  makeStopWatch
+  makeStopwatch
 };
