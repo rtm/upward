@@ -9,22 +9,13 @@ export default testGroup(
     return [
       test(
         "does basic slicing", 
-        function() {
-          b = keepSliced({a, from: 3, to: 7}); // [4, 5, 6, 7]
-        },
-        function(reporter) {
-          reporter.assert("Array length is 4", b.length === 4);
-          b.should.have.length(2);
-          expect(b.length).to.equal(2);
-          assert(lengthOf(b, 2));
-          reporter.log(`new array is ${b.join(',')}`);
-          reporter.assert("1 === 2", 1 === 2);
-        }
+        _ => b = keepSliced({a, from: 3, to: 7}), // [4, 5, 6, 7]
+        _ => b.should.have.length(2)
       ),
       test(
         "omits removed element from slice",
-        function() { a.splice(4,1); },
-        function(reporter) { reporter.log(`new array is ${b.join(',')}`); }
+        _ => a.splice(4,1),
+        _ => b[1].should.equal(6)
       )
     ];
   }()

@@ -74,22 +74,23 @@ var consoleReporterPrototype = create(
       return this.failure();
     },
     startGroup(desc)    {
-      console[this.collapsed ? 'groupCollapsed' : 'group'](desc);
-      return consoleReporter(this.collapsed);
+      console[this.options.collapsed ? 'groupCollapsed' : 'group'](desc);
+      return consoleReporter(this.options);
     },
     endGroup(group) {
-      console.log(`${this.successes} successes, ${this.failures} failures`);
       console.groupEnd();
+      var color = this.failures ? 'red' : 'green';
+      console.log(`%c${this.successes} successes, ${this.failures} failures`, `color: ${color}`);
       this.count(group);
       return this;
     }
   })
 );
 
-function consoleReporter(collapsed = false) {
+function consoleReporter(options = {}) {
   return create(
     consoleReporterPrototype,
-    { collapsed: { value: collapsed } }
+    { options: { value: options } }
   );
 }
 
@@ -103,7 +104,7 @@ var htmlReporterPrototype = create(
     
     succeed(msg) {
       var t = this.text(msg);
-      var e = thsi.elt();
+      var e = this.elt();
       e.appendChild(t);
       this.append(e);
       this.success();
