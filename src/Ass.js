@@ -6,11 +6,11 @@
 // Also handles subobjects.
 
 // Convenience.
-import {valueOf, mapObject, objectPairs} from './Obj';
-import {upwardConfig, upwardableId}       from './Cfg';
-import {argify, propGetter}                from './Fun';
-import {Upwardable, upward}                 from './Upw';
-import {makeObserver, observeObject}      from './Obs';
+import {valueOf, mapObject, objectFromPairs} from './Obj';
+import {upwardConfig, upwardableId}          from './Cfg';
+import {argify, propGetter}                  from './Fun';
+import {Upwardable, upward}                  from './Upw';
+import {makeObserver, observeObject}         from './Obs';
 
 var {create, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;
@@ -103,7 +103,7 @@ function _keepAssigned(ka, o, pusher = unshift) {
   var handlers = {
     add: argify(placeKey, ka),
     update: argify(placeKey, ka),
-    delete: _delete)
+    delete: _delete
   };
   observeObject(o, makeObserver(handlers));
   

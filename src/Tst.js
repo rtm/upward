@@ -30,14 +30,14 @@ should = should();
 
 // Inherited prototype for all reporters.
 var reporterPrototype = {
-  startGroup()            { return this; },
-  endGroup(group)         { this.count(group); },
+  startGroup()     { return this; },
+  endGroup(group)  { this.count(group); },
   count(group)            {
     this.successes += group.successes;
     this.failures  += group.failures;
   },
-  success()               { this.successes++; return this; },
-  failure()               { this.failures++;  return this; },
+  success()        { this.successes++; return this; },
+  failure()        { this.failures++;  return this; },
   successes: 0,
   failures: 0,
   
