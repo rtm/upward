@@ -37,7 +37,7 @@ var statusInfo = {
 var statuses = keys(statusInfo);
 
 // Base class for reporters.
-// Options include `hideCounts`, `hideTime`, `hidePasses`, and `hideSubtests`.
+// Options include a `hide` property with properties `counts`, `time`, `pass`, `fail`, and `skip`.
 class Reporter {
   constructor(options = {}) {
     this.options = assign({}, options);
@@ -47,9 +47,9 @@ class Reporter {
 
   startGroup()     { return new this.constructor(options); }
 
-  endGroup(group)  {
-    assignAdd(this.counts, group.counts);
-    this.time += group.time;
+  endGroup({counts, time})  {
+    assignAdd(this.counts, counts);
+    this.time += time;
   }
 
   report({status, time}) {
@@ -173,24 +173,19 @@ function testGroup(desc, tests) {
 }
 
 // Return a function to run a single test.
-function test(desc, when, then) {
+function test(desc, fn) {
   var stopwatch = makeStopwatch();
   var status, msg, time;
 
   return reporter => {
     return Promise
       .resolve()
-      .then  (  stopwatch.start  )
-
-      .then  (_ => when(reporter))
-      .then  (     timeout()     )
-      .then  (_ => then(reporter))
-
+      .then  (stopwatch.start)
+      .then  (_ => fn(reporter))
       .then  (
         _ => { status = 'pass'; msg = desc; },
         e => { status = 'fail'; msg = desc + ": " + e; }
       )
-
       .then  (_ => {
         stopwatch.stop();
         time = stopwatch.time;

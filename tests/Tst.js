@@ -9,10 +9,10 @@ export default testGroup(
     testGroup(
       "Assertion libraries include",
       [
-        test("assert", noop, () => assert.isDefined(assert)),
-        test("assert (should)", noop, () => should.exist(assert)),
-        test("expect", noop, () => should.exist(expect)),
-        test("should", noop, () => should.exist(should))
+        test("assert", () => assert.isDefined(assert)),
+        test("assert (should)", () => should.exist(assert)),
+        test("expect", () => should.exist(expect)),
+        test("should", () => should.exist(should))
       ]
     ),
 
@@ -20,8 +20,8 @@ export default testGroup(
       return testGroup(
         "various assertion library checks",
         [
-          test("equality", noop, () => "bar".should.equal("bar")),
-          test("Throw", noop, () => should.Throw(_ => { throw "fuck" }))
+          test("equality", () => "bar".should.equal("bar")),
+          test("Throw", () => should.Throw(_ => { throw "fuck" }))
         ]
       );
     }()
