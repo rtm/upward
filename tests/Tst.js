@@ -1,6 +1,6 @@
 // Unit tests for src/Tst.js.
 
-import {test, testGroup, expect, should, assert} from '../src/Tst';
+import {test, testGroup, skipify, expect, should, assert} from '../src/Tst';
 import {noop} from '../src/Fun';
 
 export default testGroup(
@@ -9,7 +9,7 @@ export default testGroup(
     testGroup(
       "Assertion libraries include",
       [
-        test("assert", () => assert.isDefined(assert)).skip(),
+        skipify(test("assert", () => assert.isDefined(assert))),
         test("assert (should)", () => should.exist(assert)),
         test("expect", () => should.exist(expect)),
         test("should", () => should.exist(should))
