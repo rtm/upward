@@ -7,10 +7,8 @@
 // HTML and console reporters are provided.
 
 // Setup.
-
-import {spawn, timeout}          from '../src/Asy';
-import {makePropertyDescriptors} from '../src/Obj';
-import {makeStopwatch}           from '../src/Utl';
+import {spawn, timeout} from '../src/Asy';
+import {makeStopwatch}  from '../src/Utl';
 
 var {assign, create} = Object;
 
@@ -23,132 +21,104 @@ assign(chai.config, {
   showDiff: true
 });
 
+// `should` requires initialization.
 should = should();
 
 // Reporters
 // ---------
 
-// Inherited prototype for all reporters.
-var reporterPrototype = {
-  startGroup()     { return this; },
-  endGroup(group)  { this.count(group); },
-  count(group)            {
-    this.successes += group.successes;
-    this.failures  += group.failures;
-  },
-  success()        { this.successes++; return this; },
-  failure()        { this.failures++;  return this; },
-  successes: 0,
-  failures: 0,
-  
-};
+// Base class for reporters.
+// Options include `hideCounts`, `hideTime`, `hidePasses`, and `hideSubtests`.
+class Reporter {
+  constructor(options = {}) {
+    this.options = assign({}, options);
+  }
 
-// Null reporter does nothing but count results.
-function nullReporter() {
-  return create(nullReporterPrototype);
+  startGroup()     { return new this.constructor(options); }
+  endGroup(group)  { 
+    this.passes += group.passes;
+    this.fails  += group.fails;
+  }
+  pass()           { this.passes++; return this; }
+  fail()           { this.fails++;  return this; }
 }
 
-var nullReporterPrototype = create(
-  reporterPrototype,
-  makePropertyDescriptors({
-    startGroup()     { return nullReporter(); },
-    endGroup(group)  { this.count(group); },
-    succeed()        { return this.success(); },
-    fail()           { return this.failure(); }
-  })
-);
+assign(Reporter.prototype, {passes: 0, fails: 0});
 
-// Console reporter, which reports messages and results on the console.
-var consoleReporterPrototype = create(
-  reporterPrototype,
-  makePropertyDescriptors({
-    succeed(msg, time) {
-      console.log('%c✓' + msg + ' (%sms)', "color: green", time);
-      return this.success();
-    },
-    log(msg) {
-      console.log(msg);
-      return this;
-    },
-    fail(msg) {
-      console.error(msg);
-      return this.failure();
-    },
-    startGroup(desc)    {
-      console[this.options.collapsed ? 'groupCollapsed' : 'group'](desc);
-      return consoleReporter(this.options);
-    },
-    endGroup(group) {
-      console.groupEnd();
-      var color = this.failures ? 'red' : 'green';
-      this.count(group);
-      console.log(`%c${group.successes} successes, ${group.failures} failures`, `color: ${color}`);
-      return this;
+// Console reporter, which reports results on the console.
+class ConsoleReporter extends Reporter {
+  constructor(options = {}) {
+    super(options);
+  }
+  pass(msg, time) {
+    if (!this.options.hidePasses) {
+      let str = '%c✓' + msg;
+      if (!this.options.hideTime) { str += ' (%sms)'; }
+      console.log(str, "color: green", time);
     }
-  })
-);
-
-function consoleReporter(options = {}) {
-  return create(
-    consoleReporterPrototype,
-    { options: { value: options } }
-  );
+    return super();
+  }
+  log(msg) {
+    console.log(msg);
+    return this;
+  }
+  fail(msg) {
+    console.error(msg);
+    return super();
+  }
+  startGroup(desc, options = {}) {
+    console[this.options.hideSubtests ? 'groupCollapsed' : 'group'](desc);
+    return new ConsoleReporter(assign(options, this.options));
+  }
+  endGroup(group) {
+    console.groupEnd();
+    if (!this.options.hideCounts) {
+      let color = group.fails ? 'red' : 'green';
+      console.log(`%c${group.passes} passes, ${group.fails} fails`, `color: ${color}`);
+    }
+    return super(group);
+  }
 }
 
-// HTML reporter inserts messages and results into the DOM.
-var htmlReporterPrototype = create(
-  reporterPrototype,
-  makePropertyDescriptors({
-    elt() { return document.createElement(this.tag); },
-    append(c) { return this.parent.appendChild(c); },
-    text(t) { return document.createTextNode(t); },
-    
-    succeed(msg) {
-      var t = this.text(msg);
-      var e = this.elt();
-      e.appendChild(t);
-      this.append(e);
-      this.success();
-    },
-    
-    log(msg) {
-      var e = this.elt();
-      var t = this.text("LOG: " + msg);
-      e.appendChild(t);
-      this.append(e);
-    },
+// HTML reporter inserts output into the DOM.
+class HtmlReporter extends Reporter {
+  constructor(parent, tag, options = {}) {
+    assign(this, {parent, tag});
+    super(options);
+  }
 
-    fail(msg) {
-      var t = this.text(msg);
-      var e = this.elt();
-      var span = document.createElement('span');
-      span.setAttribute('style', "color: red");
-      span.appendChild(t);
-      e.appendChild(span);
-      this.append(e);
-      this.failure();
-    },
-
-    startGroup(desc) {
-      // @TODO put out the name of the group
-      var ul = document.createElement('ul');
-      this.parent.appendChild(ul);
-      return htmlReporter(ul, 'li');
-    },
-  })
-);
-
-function htmlReporter(parent, tag) {
-  return create(
-    htmlReporterPrototype,
-    makePropertyDescriptors({parent, tag})
-  );
-}
-
-// Generator for running a set of tests against a reporter via `spawn`.
-function *runAll(tests, reporter) {
-  for (var t of tests) {
-    yield t(reporter);
+  elt()     { return document.createElement(this.tag); }
+  append(c) { return this.parent.appendChild(c); }
+  text(t)   { return document.createTextNode(t); }
+  
+  pass(msg) {
+    var t = this.text(msg);
+    var e = this.elt();
+    e.appendChild(t);
+    this.append(e);
+    return super();
+  }
+  log(msg) {
+    var e = this.elt();
+    var t = this.text("LOG: " + msg);
+    e.appendChild(t);
+    this.append(e);
+  }
+  fail(msg) {
+    var t = this.text(msg);
+    var e = this.elt();
+    var span = document.createElement('span');
+    span.setAttribute('style', "color: red");
+    span.appendChild(t);
+    e.appendChild(span);
+    this.append(e);
+    return super();
+  }
+  startGroup(desc) {
+    // @TODO put out the name of the group
+    var ul = document.createElement('ul');
+    this.parent.appendChild(ul);
+    return new HtmlReporter(ul, 'li', options);
   }
 }
 
@@ -158,11 +128,16 @@ function *runAll(tests, reporter) {
 // Return a function to run a group of tests.
 function testGroup(desc, tests) {
   return function(reporter) {
-    var group = reporter.startGroup(desc);
-    return spawn(function() { return runAll(tests, group); })
-      .then(function(reporter) {
-        return reporter.endGroup(group); })
-    ;
+    return spawn(
+      function *() {
+        var group;
+        yield group = reporter.startGroup(desc);
+        for (var t of tests) {
+          yield t(group);
+        }
+        yield reporter.endGroup(group);
+      }
+    );
   };
 }
 
@@ -177,7 +152,7 @@ function test(desc, when, then) {
     .then  (timeout())
     .then  (_ => then(reporter))
     .then  (stopwatch.stop)
-    .then  (_ => reporter.succeed(desc, stopwatch.time))
+    .then  (_ => reporter.pass(desc, stopwatch.time))
     .catch (e => reporter.fail(e))
   ;
 }
@@ -186,9 +161,8 @@ function test(desc, when, then) {
 // -------
 export {
   // Reporters.
-  consoleReporter,
-  htmlReporter,
-  nullReporter,
+  ConsoleReporter,
+  HtmlReporter,
 
   // Test creators.
   test,

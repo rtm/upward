@@ -5,13 +5,11 @@ import slcTests from './Slc';
 import tstTests from './Tst';
 import {BUTTON} from '../src//U';
 
-import {testGroup, consoleReporter, htmlReporter} from '../src/Tst';
+import {testGroup, ConsoleReporter, HtmlReporter} from '../src/Tst';
 
-var reporter = htmlReporter(document.getElementById('tests'), 'h4');
-reporter = consoleReporter({collapsed: true});
+var reporter = new HtmlReporter(document.getElementById('tests'), 'h4');
+reporter = new ConsoleReporter({collapsed: false});
 
-document.body.appendChild(BUTTON("Run tests", go));
-                          
 var tests = testGroup(
   "All tests",
   [
@@ -20,7 +18,4 @@ var tests = testGroup(
   ]
 );
 
-function go() {
-  tests(reporter);
-}
-
+document.body.appendChild(BUTTON("Run tests", _ => tests(reporter)));
