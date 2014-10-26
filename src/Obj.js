@@ -86,6 +86,17 @@ function emptyObject(o, {keep = {}}) {
   }
 }
 
+// Create a function which combines properties from two objects using a function.
+// If the property doesn't exist in the first object, just copy.
+function makeAssigner(fn) {
+  return function(o1, o2) {
+    assign(o1, mapObject(o2, (v, k) => o1.hasOwnProperty(k) ? fn(o1[k], v) : v));
+  };
+}
+
+// Add the values of properties in one array to the same property in another.
+var assignAdd = makeAssigner((a, b) => a + b);
+
 export {
   objectToString,
   mapObject,
@@ -99,6 +110,8 @@ export {
   valueArray,
   objectValues,
 	valueOf,
-  emptyObject
+  emptyObject,
+  makeAssigner,
+  assignAdd
 };
 

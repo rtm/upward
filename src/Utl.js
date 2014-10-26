@@ -23,7 +23,6 @@ function tail(a) {
   return t;
 }
 
-// Add two things.
 function plus(a, b) {
   return a + b;
 }
@@ -119,7 +118,7 @@ function runningMap(a, fn, init) {
 
 // Create an array of running totals.
 function runningTotal(a) { 
-  return runningMap(a, plus); 
+  return runningMap(a, Math.sum); 
 }
 
 // Filter an array in place, based on predicate with same signature as `Array#filter`.
@@ -179,6 +178,7 @@ if (!Array.prototype.tail) {
 export {
   seq,
   tail,
+  plus,
   sum,
   swap,
   append,

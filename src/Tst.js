@@ -9,8 +9,9 @@
 // Setup.
 import {spawn, timeout} from '../src/Asy';
 import {makeStopwatch}  from '../src/Utl';
+import {assignAdd}      from '../src/Obj';
 
-var {assign, create} = Object;
+var {assign, create, keys} = Object;
 
 // Assertion libraries.
 // --------------------
@@ -27,26 +28,35 @@ should = should();
 // Reporters
 // ---------
 
+var statusInfo = {
+  pass: { color: 'green',  mark: '✓'},
+  fail: { color: 'red',    mark: 'x'},
+  skip: { color: 'yellow', mark: '?'}
+};
+
+var statuses = keys(statusInfo);
+
 // Base class for reporters.
 // Options include `hideCounts`, `hideTime`, `hidePasses`, and `hideSubtests`.
 class Reporter {
   constructor(options = {}) {
     this.options = assign({}, options);
+    this.counts = {};
+    this.time = 0;
   }
+
   startGroup()     { return new this.constructor(options); }
-  endGroup(group)  { 
-    this.passes += group.passes;
-    this.fails  += group.fails;
-    this.time   += group.time;
+
+  endGroup(group)  {
+    assignAdd(this.counts, group.counts);
+    this.time += group.time;
   }
-  report(result)   {
-    if (result.pass) { this.passes++; }
-    else { this.fails++; }
-    this.time += result.time;
+
+  report({status, time}) {
+    this.counts[status] = (this.counts[status] || 0) + 1;
+    this.time += time;
   }
 }
-
-assign(Reporter.prototype, {passes: 0, fails: 0, time: 0});
 
 // Console reporter, which reports results on the console.
 class ConsoleReporter extends Reporter {
@@ -55,13 +65,21 @@ class ConsoleReporter extends Reporter {
   }
 
   report(result) {
-    var {msg, pass, time} = result;
-    var {hideTime, hidePasses} = this.options;
+    var {msg, status, time} = result;
+    var {hide = {}} = this.options;
 
-    if (!hideTime) { msg = `${msg} (${time}ms)`; }
-    if (pass) {
-      if (!hidePasses) { console.log('%c✓' + msg, "color: green"); }
-    } else { console.error(msg); }
+    if (!hide.time) { msg = `${msg} (${time}ms)`; }
+    if (!hide[status]) {
+      switch (status) {
+      case 'skip':
+      case 'pass':
+        console.log('%c%s' + msg, `color: ${statusInfo[status].color}`, statusInfo[status].mark);
+        break;
+      case 'fail':
+        console.error(msg);
+        break;
+      }
+    }
     return super(result);
   }
 
@@ -76,13 +94,16 @@ class ConsoleReporter extends Reporter {
   }
 
   endGroup(group) {
+    var {counts, options: {hide = {}}, time} = group;
     console.groupEnd();
     super(group);
-    if (!this.options.hideCounts) {
-      let color = group.fails ? 'red' : 'green';
-      let msg = `%c${group.passes} passes, ${group.fails} fails`;
-      if (!group.hideTime) { msg += ` (${this.time}ms)`; }      
-      console.log(msg, `color: ${color}`);
+    if (!hide.counts) {
+      let msg = keys(counts)
+          .map(status => `${counts[status]} ${status}`)
+          .join(', ');
+      let color = counts.fail ? 'red' : 'green';
+      if (!hide.time) { msg += ` (${time}ms)`; }      
+      console.log('%c' + msg, `color: ${color}`);
     }
     return this;
   }
@@ -154,7 +175,7 @@ function testGroup(desc, tests) {
 // Return a function to run a single test.
 function test(desc, when, then) {
   var stopwatch = makeStopwatch();
-  var pass = true, msg = desc, time;
+  var status, msg, time;
 
   return reporter => {
     return Promise
@@ -165,12 +186,15 @@ function test(desc, when, then) {
       .then  (     timeout()     )
       .then  (_ => then(reporter))
 
-      .then  (null, e => { pass = false; msg += ": " + e; })
+      .then  (
+        _ => { status = 'pass'; msg = desc; },
+        e => { status = 'fail'; msg = desc + ": " + e; }
+      )
 
       .then  (_ => {
         stopwatch.stop();
         time = stopwatch.time;
-        reporter.report({pass, msg, time});
+        reporter.report({status, msg, time});
       })
     ;
   }
