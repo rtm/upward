@@ -33,50 +33,58 @@ class Reporter {
   constructor(options = {}) {
     this.options = assign({}, options);
   }
-
   startGroup()     { return new this.constructor(options); }
   endGroup(group)  { 
     this.passes += group.passes;
     this.fails  += group.fails;
+    this.time   += group.time;
   }
-  pass()           { this.passes++; return this; }
-  fail()           { this.fails++;  return this; }
+  report(result)   {
+    if (result.pass) { this.passes++; }
+    else { this.fails++; }
+    this.time += result.time;
+  }
 }
 
-assign(Reporter.prototype, {passes: 0, fails: 0});
+assign(Reporter.prototype, {passes: 0, fails: 0, time: 0});
 
 // Console reporter, which reports results on the console.
 class ConsoleReporter extends Reporter {
   constructor(options = {}) {
     super(options);
   }
-  pass(msg, time) {
-    if (!this.options.hidePasses) {
-      let str = '%c✓' + msg;
-      if (!this.options.hideTime) { str += ' (%sms)'; }
-      console.log(str, "color: green", time);
-    }
-    return super();
+
+  report(result) {
+    var {msg, pass, time} = result;
+    var {hideTime, hidePasses} = this.options;
+
+    if (!hideTime) { msg = `${msg} (${time}ms)`; }
+    if (pass) {
+      if (!hidePasses) { console.log('%c✓' + msg, "color: green"); }
+    } else { console.error(msg); }
+    return super(result);
   }
+
   log(msg) {
     console.log(msg);
     return this;
   }
-  fail(msg) {
-    console.error(msg);
-    return super();
-  }
+
   startGroup(desc, options = {}) {
     console[this.options.hideSubtests ? 'groupCollapsed' : 'group'](desc);
     return new ConsoleReporter(assign(options, this.options));
   }
+
   endGroup(group) {
     console.groupEnd();
+    super(group);
     if (!this.options.hideCounts) {
       let color = group.fails ? 'red' : 'green';
-      console.log(`%c${group.passes} passes, ${group.fails} fails`, `color: ${color}`);
+      let msg = `%c${group.passes} passes, ${group.fails} fails`;
+      if (!group.hideTime) { msg += ` (${this.time}ms)`; }      
+      console.log(msg, `color: ${color}`);
     }
-    return super(group);
+    return this;
   }
 }
 
@@ -129,6 +137,7 @@ class HtmlReporter extends Reporter {
 function testGroup(desc, tests) {
   return function(reporter) {
     return spawn(
+
       function *() {
         var group;
         yield group = reporter.startGroup(desc);
@@ -137,6 +146,7 @@ function testGroup(desc, tests) {
         }
         yield reporter.endGroup(group);
       }
+
     );
   };
 }
@@ -144,17 +154,26 @@ function testGroup(desc, tests) {
 // Return a function to run a single test.
 function test(desc, when, then) {
   var stopwatch = makeStopwatch();
-  return reporter => Promise
-    .resolve()
-  //    .then  (_ => reporter.log(desc))
-    .then  (stopwatch.start)
-    .then  (_ => when(reporter))
-    .then  (timeout())
-    .then  (_ => then(reporter))
-    .then  (stopwatch.stop)
-    .then  (_ => reporter.pass(desc, stopwatch.time))
-    .catch (e => reporter.fail(e))
-  ;
+  var pass = true, msg = desc, time;
+
+  return reporter => {
+    return Promise
+      .resolve()
+      .then  (  stopwatch.start  )
+
+      .then  (_ => when(reporter))
+      .then  (     timeout()     )
+      .then  (_ => then(reporter))
+
+      .then  (null, e => { pass = false; msg += ": " + e; })
+
+      .then  (_ => {
+        stopwatch.stop();
+        time = stopwatch.time;
+        reporter.report({pass, msg, time});
+      })
+    ;
+  }
 }
 
 // Exports
