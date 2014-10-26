@@ -31,7 +31,7 @@ should = should();
 var statusInfo = {
   pass: { color: 'green',  mark: '✓'},
   fail: { color: 'red',    mark: 'x'},
-  skip: { color: 'yellow', mark: '?'}
+  skip: { color: 'orange', mark: '?'}
 };
 
 var statuses = keys(statusInfo);
@@ -154,45 +154,63 @@ class HtmlReporter extends Reporter {
 // Test creators
 // -------------
 
-// Return a function to run a group of tests.
-function testGroup(desc, tests) {
-  return function(reporter) {
-    return spawn(
+// To skip a test, or test group, or unskip it, tack this on the end.
+var skippers = {
+  skip()   { this._skip   = true; return this; },
+  unskip() { this._unskip = true; return this; }
+}
 
+// Return a function to run a group of tests.
+function testGroup(desc, tests, options = {}) {
+  var {skip, unskip} = options;
+  
+  function _testGroup(reporter, skipping) {
+    return spawn(
+      
       function *() {
         var group;
         yield group = reporter.startGroup(desc);
         for (var t of tests) {
-          yield t(group);
+          yield t(group, !t._unskip && (t._skip || skipping));
         }
         yield reporter.endGroup(group);
       }
-
+      
     );
-  };
+  }
+  return assign(_testGroup, skippers);
 }
 
 // Return a function to run a single test.
-function test(desc, fn) {
-  var stopwatch = makeStopwatch();
+function test(desc, fn, options = {}) {
   var status, msg, time;
+  var stopwatch = makeStopwatch();
+  var {unskip, skip} = options;
 
-  return reporter => {
-    return Promise
-      .resolve()
-      .then  (stopwatch.start)
-      .then  (_ => fn(reporter))
-      .then  (
-        _ => { status = 'pass'; msg = desc; },
-        e => { status = 'fail'; msg = desc + ": " + e; }
-      )
-      .then  (_ => {
-        stopwatch.stop();
-        time = stopwatch.time;
-        reporter.report({status, msg, time});
-      })
-    ;
+  function _test(reporter, skipping) {
+    if (skipping) {
+      return Promise
+        .resolve()
+        .then(_ => reporter.report({status: 'skip', msg: desc, time: 0}))
+      ;
+    } else {
+      return Promise
+        .resolve()
+        .then  (stopwatch.start)
+        .then  (_ => fn(reporter))
+        .then  (
+          _ => { status = 'pass'; msg = desc; },
+          e => { status = 'fail'; msg = desc + ": " + e; }
+        )
+        .then  (_ => {
+          stopwatch.stop();
+          time = stopwatch.time;
+          reporter.report({status, msg, time});
+        })
+      ;
+    }
   }
+  return assign(_test, skippers);
 }
 
 // Exports

@@ -9,7 +9,7 @@ export default testGroup(
     testGroup(
       "Assertion libraries include",
       [
-        test("assert", () => assert.isDefined(assert)),
+        test("assert", () => assert.isDefined(assert)).skip(),
         test("assert (should)", () => should.exist(assert)),
         test("expect", () => should.exist(expect)),
         test("should", () => should.exist(should))
