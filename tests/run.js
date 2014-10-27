@@ -7,8 +7,8 @@ import {BUTTON} from '../src//U';
 
 import {testGroup, skipify, ConsoleReporter, HtmlReporter} from '../src/Tst';
 
-var reporter = new HtmlReporter(document.getElementById('tests'), 'h4');
-reporter = new ConsoleReporter({collapsed: false});
+var reporter = new HtmlReporter(document.getElementById('tests'), {});
+//reporter = new ConsoleReporter({collapsed: false});
 
 var tests = testGroup(
   "All tests",

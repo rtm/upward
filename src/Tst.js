@@ -52,7 +52,20 @@ class Reporter {
     this.time += time;
   }
 
-  report({status, time}) {
+  pass() { }
+  fail() { }
+  skip() { }
+  
+  report(result) {
+    var {msg, status, time} = result;
+    var {hide = {}} = this.options;
+
+    if (!hide[status]) {
+      if (!hide.time) { msg = `${msg} (${time}ms)`; }
+      msg = statusInfo[status].mark + msg;
+      this[status](msg, statusInfo[status].color);
+    }
+
     this.counts[status] = (this.counts[status] || 0) + 1;
     this.time += time;
   }
@@ -64,32 +77,21 @@ class ConsoleReporter extends Reporter {
     super(options);
   }
 
-  report(result) {
-    var {msg, status, time} = result;
-    var {hide = {}} = this.options;
-
-    if (!hide.time) { msg = `${msg} (${time}ms)`; }
-    if (!hide[status]) {
-      switch (status) {
-      case 'skip':
-      case 'pass':
-        console.log('%c%s' + msg, `color: ${statusInfo[status].color}`, statusInfo[status].mark);
-        break;
-      case 'fail':
-        console.error(msg);
-        break;
-      }
-    }
-    return super(result);
+  pass(msg, color) {
+    console.log('%c' + msg, `color: ${color}`);
   }
 
-  log(msg) {
-    console.log(msg);
-    return this;
+  fail(msg) {
+    console.error(msg);
+  }
+
+  skip(msg, color) {
+    console.log('%c' + msg, `color: ${color}`);
   }
 
   startGroup(desc, options = {}) {
-    console[this.options.hideSubtests ? 'groupCollapsed' : 'group'](desc);
+    var {hide = {}} = this.options;
+    console[hide.cihldren ? 'groupCollapsed' : 'group'](desc);
     return new ConsoleReporter(assign(options, this.options));
   }
 
@@ -111,44 +113,64 @@ class ConsoleReporter extends Reporter {
 
 // HTML reporter inserts output into the DOM.
 class HtmlReporter extends Reporter {
-  constructor(parent, tag, options = {}) {
-    assign(this, {parent, tag});
+  constructor(parent, options = {}) {
+    this.parent = parent;
     super(options);
   }
 
-  elt()     { return document.createElement(this.tag); }
+  elt(tag)  { return document.createElement(tag); }
   append(c) { return this.parent.appendChild(c); }
   text(t)   { return document.createTextNode(t); }
   
-  pass(msg) {
+  pass(msg, color) {
     var t = this.text(msg);
-    var e = this.elt();
-    e.appendChild(t);
-    this.append(e);
-    return super();
-  }
-  log(msg) {
-    var e = this.elt();
-    var t = this.text("LOG: " + msg);
+    var e = this.elt('div');
+    e.style.color = color;
     e.appendChild(t);
     this.append(e);
   }
-  fail(msg) {
+  skip(msg, color) {
     var t = this.text(msg);
-    var e = this.elt();
-    var span = document.createElement('span');
-    span.setAttribute('style', "color: red");
-    span.appendChild(t);
-    e.appendChild(span);
+    var e = this.elt('div');
+    e.style.color = color;
+    e.appendChild(t);
     this.append(e);
-    return super();
   }
+  fail(msg, color) {
+    var t = this.text(msg);
+    var e = this.elt('div');
+    e.style.color = color;
+    e.appendChild(t);
+    this.append(e);
+  }
+
   startGroup(desc) {
-    // @TODO put out the name of the group
-    var ul = document.createElement('ul');
-    this.parent.appendChild(ul);
-    return new HtmlReporter(ul, 'li', options);
+    var {hide = {}} = this.options;
+    var details = this.elt('details');
+    if (!hide.children) { details.setAttribute('open', true); }
+    var summary = this.summaryElement = this.elt('summary');
+    details.appendChild(summary);
+    var desc = this.text(desc);
+    summary.appendChild(desc);
+    this.parent.appendChild(details);
+    return new HtmlReporter(details, this.options);
   }
+
+  endGroup(group) {
+    var {counts, options: {hide = {}}, time} = group;
+    super(group);
+    if (!hide.counts) {
+      let msg = keys(counts)
+          .map(status => `${counts[status]} ${status}`)
+          .join(', ');
+      let color = counts.fail ? 'red' : 'green';
+      if (!hide.time) { msg += ` (${time}ms)`; }
+      this.summaryElement.textContent += ` [${msg}]`;
+      this.summaryElement.style.color = color;
+    }
+    return this;
+  }
+
 }
 
 // Test creators
