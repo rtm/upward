@@ -1,7 +1,7 @@
 {
   "name": "upward",
   "description": "Definitive framework for modern JS programming",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://github.com/rtm/upward",
   "repository": {
     "type": "git",
@@ -21,12 +21,12 @@
       "url": "http://github.com/jeremyosborne/packagejsonexample/blob/master/LICENSE.txt"
     }
   ],
-  "main": "upward.js",
+  "main": "src/U.js",
   "devDependencies": {
     "docco": "*"
   },
   "scripts": {
-    "dist": "node dist; node node_modules/.bin/docco src/package.js"
+    "dist": "node node_modules/.bin/docco src/*.js tests/*.js"
   },
   "engines": {
     "node": ">= 0.6.x"

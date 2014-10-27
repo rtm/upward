@@ -196,8 +196,8 @@ function propGetter(p) {
 function noop() { }
 
 // Function which returns its argument.
-function identity() {
-  return x => x;
+function identity(x) {
+  return x;
 }
 
 // Function which always returns the same value.

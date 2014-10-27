@@ -76,12 +76,13 @@ function mapInPlace(a, fn, ctxt) {
 }
 
 function repeat(n, v) {
-  return seq(n).map(fixed(v));
+  return seq(n).fill(v);
 }
 
+// Create a sort function suitable for passing to `Array#sort`.
 function makeSortfunc(key, desc) {
   return function(a, b) {
-    var akey = key(a), key = key(b);
+    var akey = key(a), bkey = key(b);
     var result = akey < bkey ? -1 : akey > bkey ? +1 : 0;
     return desc ? -result : result;
   };

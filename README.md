@@ -10,10 +10,11 @@ Upward is an all-JavaScript framework, so all your CSS and HTML is written in Ja
 As the computing community struggles how to integrate the technologies we've developed
 for mark-up, styling, and program logic, it has come up with a witches brew of mixed-modes.
 These include mark-up slipped into programs, programs treating mark-up as strings,
-CSS pre-processors like LESS providing their own logical structures, 
+CSS pre-processors like LESS providing their own programming constructs,
 and mark-up languages with built-in logic (templates).
 We have ended up with styles inside logic, logic inside styles,
 logic inside mark-up, and mark-up inside logic.
+
 In ridiculous cases, we have logic and styles inside mark-up inside logic.
 We have build a tangled web of templating languages, libraries like jQuery,
 and CSS preprocessors.
@@ -33,7 +34,7 @@ It is ultimately unopinionated.
 
 ### Hello world
 
-		import {O} from '../src/U';
+    import {O} from '../src/U';
     import {TEXT, BUTTON} from '../src/Dom';
 
     var model = O({ msg: "Hi, Bob." });
