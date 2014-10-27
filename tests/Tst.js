@@ -16,14 +16,12 @@ export default testGroup(
       ]
     ),
 
-    function() {
-      return testGroup(
-        "various assertion library checks",
-        [
-          test("equality", () => "bar".should.equal("bar")),
-          test("Throw", () => should.Throw(_ => { throw "fuck" }))
-        ]
-      );
-    }()
+    testGroup(
+      "various assertion library checks",
+      [
+        test("equality", () => "bar".should.equal("bar")),
+        test("Throw", () => should.Throw(_ => { throw "fuck" }))
+      ]
+    )
   ]
 );

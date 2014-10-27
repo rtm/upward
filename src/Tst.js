@@ -155,27 +155,32 @@ class HtmlReporter extends Reporter {
 // -------------
 
 // To skip a test, or test group, or unskip it, call these.
-function skipify  (test, s = true) { test.skip   = s; return test; }
-function unskipify(test, s = true) { test.unskip = s; return test; }
+function skipify  (test, s = true) { test._skip   = s; return test; }
+function unskipify(test, s = true) { test._unskip = s; return test; }
 
 // Return a function to run a group of tests.
 function testGroup(desc, tests, options = {}) {
   var {skip, unskip} = options;
   
-  return function _testGroup(reporter, skipping) {
+  function _testGroup(reporter, skipping) {
     return spawn(
       
       function *() {
         var group;
         yield group = reporter.startGroup(desc);
         for (var t of tests) {
-          yield t(group, !t.unskip && (t.skip || skipping));
+          yield t(group, !t._unskip && (t._skip || skipping));
         }
         yield reporter.endGroup(group);
       }
       
     );
   }
+
+  // Allow skipping/unskipping by chaining: `testGroup(...).skip()`.
+  _testGroup.skip   = function(s) { return skipify  (this, s); };
+  _testGroup.unskip = function(s) { return unskipify(this, s); };
+  return _testGroup;
 }
 
 // Return a function to run a single test.
@@ -207,6 +212,12 @@ function test(desc, fn, options = {}) {
       ;
     }
   }
+
+  // Allow skipping/unskipping by chaining: `test(...).skip()`.
+  _test.skip   = function(s) { return skipify  (this, s); };
+  _test.unskip = function(s) { return unskipify(this, s); };
+  return _test;
+
 }
 
 // Exports
