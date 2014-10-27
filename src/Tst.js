@@ -172,7 +172,8 @@ class HtmlReporter extends Reporter {
       let msg = keys(counts)
           .map(status => `${counts[status]} ${status}`)
           .join(', ');
-      let color = counts.fail ? 'red' : 'green';
+      let allSkip = counts.skip && !keys(counts).some(k => k !== 'skip' && counts[k]);
+      let color = allSkip ? 'orange' : counts.fail ? 'red' : 'green';
       if (!hide.time) { msg += ` (${time}ms)`; }
       this.summaryElement.textContent += ` [${msg}]`;
       this.summaryElement.style.color = color;
