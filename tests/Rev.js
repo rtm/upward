@@ -5,7 +5,7 @@ import {test, testGroup, assert} from '../src/Tst';
 import {upwardifyProperties} from '../src/Upw';
 
 export default testGroup(
-  "module Rev (keepSliced, Array#up)",
+  "module Rev (keepReversed, Array#up)",
   [
     function() {
       var a = [1,2,3], b, c;
@@ -20,6 +20,20 @@ export default testGroup(
           
           test("element added at end",      _ => a.push(6)),
           test("should come to front",      _ => assert.propertyVal(b, 0, 6))
+        ]
+      );
+    }(),
+
+    function() {
+      var a = [1,2,3], b, c;
+      return testGroup(
+        "Changing length",
+        [
+          test("reversing array",           _ => b = keepReversed(a)),
+          test("truncating array",          _ => a.length = 2),
+          test("should truncate result",    _ => assert.deepEqual(b, [2, 1])),
+          test("extend array",              _ => a.length = 3),
+          test("should extend result",      _ => assert.deepEqual(b, [undefined, 2, 1])),
         ]
       );
     }(),

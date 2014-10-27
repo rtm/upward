@@ -1,34 +1,23 @@
-// keepReversed: Keep an array in original, or reversed order.
-// ===========================================================
+// keepReversed: Keep an array in reversed order.
+// ==============================================
 
-import {
-  upward,
-  valueOfObject
-} from './Upw';
-
-import {
-  makeObserver,
-  observeObject,
-  unobserveObject,
-  observeObjectNow,
-} from './Obs';
-
-import {
-  valueOf,
-  mapObject
-}from './Obj';
+import {upward, valueOfObject} from './Upw';
+import {makeObserver, observeObject, unobserveObject, observeObjectNow} from './Obs';
+import {mapObject} from './Obj';
+import {noop} from './Fun';
 
 // Keep an array in reversed order.
 // @TODO handle sparse arrays
 function _keepReversed(params) {
-  var result = [];
-  var arrayObserver;
-  var paramsObserver;
 
-  // Calculate corresponding position in reversed array.
-  function pos(i) {
+  // Perform the reversal.
+  function end() {
     var {a, up} = params;
-    return up ? i : a.length - 1 - i;
+    var len = a.length;
+    for (let i = 0; i < len; i++) {
+      result[i] = a[up ? i : a.length - 1 - i];
+    }
+    result.length = len;
   }
   
   // Handle changes to parameters.
@@ -49,54 +38,22 @@ function _keepReversed(params) {
       if (i === 'a') { _unobserve(oldValue); _observe(v); }
     }
     
-    // Redo the reversal, when parameters have changed.
-    function end({a, up}) {
-      var len = a.length;
-      for (let i = 0; i < len; i++) {
-        result[i] = a[pos(i)];
-      }
-      result.length = len;
-    }
-    
     return makeObserver({add, update, end});
   }
   
   // Handle changes to array itself.
   // -------------------------------
   function makeArrayObserver() {
-    
-    // Element has been added (at end?)
-    function add(v) {
-      result.unshift(v);
-    }
-    
-    // Update an element if it is in range of the slice.
-    function update(v, i) {
-      var {a, from, to} = params;
-      if (i === 'length') {
-        //slice array
-      } else {
-        console.assert(!isNaN(i), "index in keepSliced#update must be numeric");
-        result[pos(i)] = v;
-      }
-    }
-    
-    // Delete an element if it is in range of the slice.
-    function _delete(_, i) {
-      var {from, to} = params;
-      console.assert(!isNaN(i), "index in keepSliced#_delete must be numeric");
-      delete a[pos(i)];
-    }
-    
-    return makeObserver({add, update, delete: _delete});
+    return makeObserver({update: noop, delete: noop, add: noop, end});
   }
 
-  mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
+  var result = [];
+  var arrayObserver = makeArrayObserver();
+  var paramsObserver = makeParamsObserver();
 
+  mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
   params = valueOfObject(params);
   params.up = params.up || false;
-  arrayObserver = makeArrayObserver();
-  paramsObserver = makeParamsObserver();
   observeObjectNow(params, paramsObserver);
 
   return result;
