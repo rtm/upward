@@ -31,8 +31,8 @@ should = should();
 
 var statusInfo = {
   pass: { color: 'green',  mark: '✓'},
-  fail: { color: 'red',    mark: 'x'},
-  skip: { color: 'orange', mark: '?'}
+  fail: { color: 'red',    mark: '✗'},
+  skip: { color: 'orange', mark: '❖'}
 };
 
 var statuses = keys(statusInfo);
@@ -64,7 +64,7 @@ class Reporter {
 
     if (!hide[status]) {
       if (!hide.time) { msg = `${msg} (${time}ms)`; }
-      msg = statusInfo[status].mark + msg;
+      msg = statusInfo[status].mark + " " + msg;
       this[status](msg, code, statusInfo[status].color);
     }
 
@@ -187,8 +187,8 @@ class HtmlReporter extends Reporter {
 // -------------
 
 // To skip a test, or test group, or unskip it, call these.
-function skipify  (test, s = true) { test._skip   = s; return test; }
-function unskipify(test, s = true) { test._unskip = s; return test; }
+function skip  (test, s = true) { test._skip   = s; return test; }
+function unskip(test, s = true) { test._unskip = s; return test; }
 
 // Return a function to run a group of tests.
 function testGroup(desc, tests, options = {}) {
@@ -210,8 +210,8 @@ function testGroup(desc, tests, options = {}) {
   }
 
   // Allow skipping/unskipping by chaining: `testGroup(...).skip()`.
-  _testGroup.skip   = function(s) { return skipify  (this, s); };
-  _testGroup.unskip = function(s) { return unskipify(this, s); };
+  _testGroup.skip   = function(s) { return skip  (this, s); };
+  _testGroup.unskip = function(s) { return unskip(this, s); };
   return _testGroup;
 }
 
@@ -235,7 +235,11 @@ function test(desc, fn, options = {}) {
         .then  (_ => fn(reporter))
         .then  (
           _ => { status = 'pass'; msg = desc; },
-          e => { status = 'fail'; msg = desc + ": " + e; }
+          e => {
+            status = 'fail';
+            if (typeof e === 'object' && e.message) { e = e.message; }
+            msg = desc + ": " + e;
+          }
         )
         .then  (_ => {
           stopwatch.stop();
@@ -247,8 +251,8 @@ function test(desc, fn, options = {}) {
   }
 
   // Allow skipping/unskipping by chaining: `test(...).skip()`.
-  _test.skip   = function(s) { return skipify  (this, s); };
-  _test.unskip = function(s) { return unskipify(this, s); };
+  _test.skip   = function(s) { return skip  (this, s); };
+  _test.unskip = function(s) { return unskip(this, s); };
   return _test;
 
 }
@@ -263,8 +267,8 @@ export {
   // Test creators.
   test,
   testGroup,
-  skipify,
-  unskipify,
+  skip,
+  unskip,
 
   // Assertion libraries.
   assert,

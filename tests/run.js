@@ -3,9 +3,11 @@
 
 import slcTests from './Slc';
 import tstTests from './Tst';
-import {BUTTON} from '../src//U';
+import revTests from './Rev';
 
-import {testGroup, skipify, ConsoleReporter, HtmlReporter} from '../src/Tst';
+import {BUTTON} from '../src/U';
+
+import {testGroup, skip, ConsoleReporter, HtmlReporter} from '../src/Tst';
 
 var reporter = new HtmlReporter(document.getElementById('tests'), {});
 //reporter = new ConsoleReporter({collapsed: false});
@@ -14,7 +16,8 @@ var tests = testGroup(
   "All tests",
   [
     tstTests,
-    skipify(slcTests)
+    skip(slcTests),
+    revTests
   ]
 );
 

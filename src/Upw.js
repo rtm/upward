@@ -24,9 +24,13 @@ function Upwardable(v, options = {}, upwards = []) {
 
 	if (isUpwardable(v)) { return upwardableFromUpwardable(v); }
 
-	var send_upward = tickify(function(nv) {
+//	var send_upward = tickify(function(nv) {
+//    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
+//	});
+
+	var send_upward = function(nv) {
     upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
-	});
+	};
 
   // Provide an accessor (getter/setter) to apply to object properties
   // (with `#define`).
