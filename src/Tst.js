@@ -10,6 +10,7 @@
 import {spawn, timeout} from '../src/Asy';
 import {makeStopwatch}  from '../src/Utl';
 import {assignAdd}      from '../src/Obj';
+import {parseBody}      from '../src/Fun';
 
 var {assign, create, keys} = Object;
 
@@ -37,7 +38,8 @@ var statusInfo = {
 var statuses = keys(statusInfo);
 
 // Base class for reporters.
-// Options include a `hide` property with properties `counts`, `time`, `pass`, `fail`, and `skip`.
+// Options include a `hide` property with properties:
+// `counts`, `time`, `pass`, `fail`, `skip`, `body`, `children`
 class Reporter {
   constructor(options = {}) {
     this.options = assign({}, options);
@@ -57,13 +59,13 @@ class Reporter {
   skip() { }
   
   report(result) {
-    var {msg, status, time} = result;
+    var {msg, status, time, code} = result;
     var {hide = {}} = this.options;
 
     if (!hide[status]) {
       if (!hide.time) { msg = `${msg} (${time}ms)`; }
       msg = statusInfo[status].mark + msg;
-      this[status](msg, statusInfo[status].color);
+      this[status](msg, code, statusInfo[status].color);
     }
 
     this.counts[status] = (this.counts[status] || 0) + 1;
@@ -77,7 +79,7 @@ class ConsoleReporter extends Reporter {
     super(options);
   }
 
-  pass(msg, color) {
+  pass(msg, code, color) {
     console.log('%c' + msg, `color: ${color}`);
   }
 
@@ -85,7 +87,7 @@ class ConsoleReporter extends Reporter {
     console.error(msg);
   }
 
-  skip(msg, color) {
+  skip(msg, code, color) {
     console.log('%c' + msg, `color: ${color}`);
   }
 
@@ -122,21 +124,28 @@ class HtmlReporter extends Reporter {
   append(c) { return this.parent.appendChild(c); }
   text(t)   { return document.createTextNode(t); }
   
-  pass(msg, color) {
+  pass(msg, code, color) {
+    var {hide = {}} = this.options;
+    var t = this.text(msg);
+    var e = this.elt('div');
+    e.style.color = color;
+    e.appendChild(t);
+    if (!hide.code) {
+      let codeElement = document.createElement('code');
+      let codeText = document.createTextNode(` { ${code} }`);
+      codeElement.appendChild(codeText);
+      e.appendChild(codeElement);
+    }
+    this.append(e);
+  }
+  skip(msg, code, color) {
     var t = this.text(msg);
     var e = this.elt('div');
     e.style.color = color;
     e.appendChild(t);
     this.append(e);
   }
-  skip(msg, color) {
-    var t = this.text(msg);
-    var e = this.elt('div');
-    e.style.color = color;
-    e.appendChild(t);
-    this.append(e);
-  }
-  fail(msg, color) {
+  fail(msg, code, color) {
     var t = this.text(msg);
     var e = this.elt('div');
     e.style.color = color;
@@ -208,6 +217,7 @@ function testGroup(desc, tests, options = {}) {
 // Return a function to run a single test.
 function test(desc, fn, options = {}) {
   var status, msg, time;
+  var code = parseBody(fn);
   var stopwatch = makeStopwatch();
   var {unskip, skip} = options;
 
@@ -229,7 +239,7 @@ function test(desc, fn, options = {}) {
         .then  (_ => {
           stopwatch.stop();
           time = stopwatch.time;
-          reporter.report({status, msg, time});
+          reporter.report({status, msg, time, code});
         })
       ;
     }

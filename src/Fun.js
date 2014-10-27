@@ -166,6 +166,19 @@ function paramify(fn){
   return args; // or fn?
 }
 
+// Return function body.
+function parseBody(fn){
+  //get arguments to function as array of strings
+  var body=fn.body=fn.body||      //cache result in `body` property of function
+      fn.toString()               //get string version of function
+      .replace(/\/\/.*$|\/\*[\s\S]*?\*\//mg, '')   //strip comments
+      .replace(/^\s*$/mg, '')     // kill empty lines
+      .replace(/^.*?\)\s*\{\s*(return)?\s*/, '') // kill argument list and leading curly
+      .replace(/\s*\}\s*$/, '')   // kill trailing curly
+  ;
+  return body; // or fn?
+}
+
 // Return an object of named function parameters and their values.
 // Invoke as `paramsAsObject(thisFunction, arguments);`.
 function paramsAsObject(fn, args) {
@@ -237,6 +250,7 @@ export {
   insertselfify,
   wrapify,
   paramify,
+  parseBody,
   logify,
 
   propGetter,
