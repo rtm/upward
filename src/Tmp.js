@@ -9,7 +9,7 @@ var {forEach} = Array.prototype;
 // Utility routine to compose a string by interspersing literals and values.
 var compose = (strings, ...values) => {
   values.push('');
-  return [].concat(...strings.map((e, i) => [e, values[i].valueOf()])).join('');
+  return [].concat(...strings.map((e, i) => [e, valueize(values[i])])).join('');
 };
 
 // Template helper which detects upwardified parameters and adds notifiers.

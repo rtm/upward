@@ -5,11 +5,29 @@
 var {keys, assign, observe, unobserve} = Object;
 
 // Generic version of `valueOf` which works for anything.
-function valueOf(v) { return v == null ? v : v.valueOf(); }
+function valueize(v) { return v == null ? v : v.valueOf(); }
 
 // User-friendly representation of an objectd.
 function objectToString(o) {
   return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
+}
+
+function propGetter(v) {
+  return function(o) {
+    return o[v];
+  };
+}
+
+function propValueGetter(v) {
+  return function(o) {
+    return valueize(o[v]);
+  };
+}  
+
+function thisPropGetter(v) {
+  return function() {
+    return this[v];
+  };
 }
 
 // Analog of `Array#map` for objects.
@@ -60,7 +78,7 @@ function makePropertyDescriptors(o) {
 }
 
 // Return an object all of the values of which are evaluated.
-function valueOfObject(o) { return mapObject(o, valueOf); }
+function valueizeObject(o) { return mapObject(o, valueize); }
 
 // Get a value down inside an object, based on a "path" (array of property names).
 function valueFromPath(o, path = []) {
@@ -68,7 +86,7 @@ function valueFromPath(o, path = []) {
 }
 
 // Return an aray all of the values of which are evaluated.
-function valueArray(a) { return a.map(valueOf); }
+function valueArray(a) { return a.map(valueize); }
 
 // Return an array of the object's values.
 function objectValues(o) { return keys(o).map(k => o[k]); }
@@ -99,17 +117,20 @@ var assignAdd = makeAssigner((a, b) => a + b);
 
 export {
   objectToString,
+  propGetter,
+  propValueGetter,
+  thisPropGetter,
   mapObject,
   mapObjectInPlace,
   invertObject,
   reduceObject,
   objectFromPairs,
   makePropertyDescriptors,
-  valueOfObject,
+  valueizeObject,
 	valueFromPath,
   valueArray,
   objectValues,
-	valueOf,
+	valueize,
   emptyObject,
   makeAssigner,
   assignAdd

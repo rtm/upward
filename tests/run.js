@@ -17,10 +17,11 @@ var tests = testGroup(
   "All tests",
   [
     tstTests,
-    skip(slcTests),
+    slcTests,
     revTests,
-    srtTests
+    srtTests.unskip(),
   ]
 );
 
-document.body.appendChild(BUTTON("Run tests", _ => tests(reporter)));
+tests(reporter, false);
+//document.body.appendChild(BUTTON("Run tests", _ => tests(reporter)));

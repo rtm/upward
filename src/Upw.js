@@ -1,9 +1,9 @@
 // Convenience.
 
-import {objectToString, valueOf, mapObject} from './Obj';
-import {upwardConfig, upwardableId}         from './Cfg';
-import {tickify, maybeify, propGetter}      from './Fun';
-import {observeObject, makeObserver}        from './Obs';
+import {objectToString, valueize, mapObject} from './Obj';
+import {upwardConfig, upwardableId}          from './Cfg';
+import {tickify, maybeify}                   from './Fun';
+import {observeObject, makeObserver}         from './Obs';
 
 var {create, keys, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;
@@ -25,11 +25,11 @@ function Upwardable(v, options = {}, upwards = []) {
 	if (isUpwardable(v)) { return upwardableFromUpwardable(v); }
 
 //	var send_upward = tickify(function(nv) {
-//    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
+//    upwards.forEach(fn => fn(valueize(nv), valueize(v), u, options));
 //	});
 
 	var send_upward = function(nv) {
-    upwards.forEach(fn => fn(valueOf(nv), valueOf(v), u, options));
+    upwards.forEach(fn => fn(valueize(nv), valueize(v), u, options));
 	};
 
   // Provide an accessor (getter/setter) to apply to object properties
@@ -57,7 +57,7 @@ function Upwardable(v, options = {}, upwards = []) {
   // Usually called via the `upward` routine which ensures upwardability.
   // `#define` applies to the accessor to a specified object property.
   var u = assign(create(upwardablePrototype), {
-    valueOf()        { return valueOf(v); },
+    valueOf()         { return valueize(v); },
     upward(fn)        { upwards.push(fn); },
     unupward(fn)      { upwards.omit(fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
@@ -76,7 +76,7 @@ function Upwardable(v, options = {}, upwards = []) {
 // In this case, the inferior upwardable simply reports changes to the superior one.
 function upwardableFromUpwardable(u) {
 	console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.");
-  var u2 = Upwardable(valueOf(u));
+  var u2 = Upwardable(valueize(u));
   upward(u, nv => u2.val = nv);
   return u2;
 }
@@ -90,9 +90,9 @@ var upwardablePrototype = {};
 // @TODO: factor out basic notion of upwardifying function.
 function addUpwardablePrototypeTransformingMethod(name) {
 	upwardablePrototype[name] = function() {
-		console.assert(valueOf(this)[name], `'${name}' not defined on '${this}'`);
+		console.assert(valueize(this)[name], `'${name}' not defined on '${this}'`);
 		var get = v => v[name]();
-		var u = Upwardable(get(valueOf(this)));
+		var u = Upwardable(get(valueize(this)));
 		upward(this.val, nv => u.val = get(nv));
 		return u;
 	};
@@ -105,7 +105,7 @@ function addUpwardablePrototypeTransformingMethod(name) {
 // @TODO Use WeakSet for better GC-ability.
 var capturers = [];
 
-function upwardCapture(fn, capturer = new Map()) {
+function upwardCapture(fn, capturer = []) {
   capturers.unshift(capturer);
   return [fn(), capturers.shift()];
 }
@@ -155,7 +155,7 @@ function computedUpwardable(fn, ctxt) {
 function upwardify(fn, changefn = fn) {
   return function(v) {
     upward(v, changefn.bind(this));
-    return fn.call(this, valueOf(v));
+    return fn.call(this, valueize(v));
   };
 }
 
@@ -166,7 +166,7 @@ function upwardifyWithObjectParam(fn, changefn = fn) {
   return function(o) {
     upwardifyProperties(o);
     keys(o).forEach(k => upward(o[k], nv => changefn.call(this, k, nv)));
-    return fn.call(this, valueOfObject(o));
+    return fn.call(this, valueizeObject(o));
   };
 }
 
@@ -216,11 +216,11 @@ function upwardifyProperties(o) {
 
 // Create a mirrored object which is updated as the underlying object changes.
 // Dereference upwardable property values.
-function valueOfObject(o) {
-  var result = mapObject(o, valueOf);
+function valueizeObject(o) {
+  var result = mapObject(o, valueize);
   var upwardFuncs = {};
 
-  function _upward  (v, i) { upward(v, upwardFuncs[i] = nv => result[i] = valueOf(nv)); }
+  function _upward  (v, i) { upward(v, upwardFuncs[i] = nv => result[i] = valueize(nv)); }
   function _unupward(v, i) { unupward(oldValue, upwardFuncs[i]); }
 
   function add      (v, i)             { _upward(v, i); }
@@ -244,5 +244,5 @@ export {
 	upwardCapture,
   upwardablePrototype,
   upwardifiedObject,
-  valueOfObject
+  valueizeObject
 };

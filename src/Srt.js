@@ -1,24 +1,22 @@
 // keepSorted: Keep an array in sorted order.
 // ==========================================
 
-import {upward, valueOfObject} from './Upw';
+import {upward, unupward, valueizeObject, upwardCapture} from './Upw';
 import {makeObserver, observeObject, unobserveObject, observeObjectNow} from './Obs';
-import {mapObject} from './Obj';
+import {valueize, mapObject} from './Obj';
 import {noop, identity} from './Fun';
-import {makeSortfunc} from './Utl';
+import {makeSortfunc, copyOnto} from './Utl';
 
 // Keep an array in sorted order.
 function _keep(params) {
 
-  // Perform the reversal.
+  // Perform the sort. Capture upwards affecting order.
   function end() {
     var {a, fn} = params;
-    var len = a.length;
-    var tmp = a.slice().sort(makeSortfunc(fn));
-    for (let i = 0; i < len; i++) {
-      result[i] = tmp[i];
-    }
-    result.length = len;
+    captures.forEach(u => unupward(u, end));
+    captures = upwardCapture(_ => a.map(valueize).forEach(fn));
+    copyOnto(a.slice().sort(makeSortfunc(fn)), result);
+    captures.forEach(u => upward(u, end));
   }
   
   // Handle changes to parameters.
@@ -49,11 +47,12 @@ function _keep(params) {
   }
 
   var result = [];
+  var captures = [];
   var arrayObserver = makeArrayObserver();
   var paramsObserver = makeParamsObserver();
 
   mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
-  params = valueOfObject(params);
+  params = valueizeObject(params);
   params.fn = params.fn || identity;
   observeObjectNow(params, paramsObserver);
 

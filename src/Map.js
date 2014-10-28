@@ -2,7 +2,7 @@
 // Replace changed values, delete deleted values, and mirror splices.
 
 import {upward, upwardCapture}   from './Upw';
-import {valueOf}                 from './Obj';
+import {valueize}                from './Obj';
 
 var {observe} = Array.prototype;
 
@@ -28,7 +28,7 @@ export default function keepMapped(a, fn, ctxt) {
 
   function setup() {
     upwardMaps.forEach(_unupward);
-    valueOf(a).forEach(setOne);
+    valueize(a).forEach(setOne);
   }
   setup();
   

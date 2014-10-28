@@ -15,7 +15,7 @@ import {
 }                       from './Obs';
 
 import {
-  valueOfObject
+  valueizeObject
 }                       from './Upw';
 
 var {max}    = Math;
@@ -86,7 +86,7 @@ export default function keepSliced(params) {
     return makeObserver({add, update, delete: _delete});
   }
   
-  params = valueOfObject(params);
+  params = valueizeObject(params);
   arrayObserver = makeArrayObserver();
   paramsObserver = makeParamsObserver();
   observeObjectNow(params, paramsObserver);

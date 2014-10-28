@@ -30,5 +30,6 @@ function timeout(ms = 0) {
 
 export {
   spawn,
-  timeout
+  timeout,
+  promiseQueue
 };

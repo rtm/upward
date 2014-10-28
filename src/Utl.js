@@ -1,5 +1,5 @@
-// Utility array functions
-// =======================
+// Utility functions
+// =================
 
 // Setup.
 import {mapObject} from './Obj';

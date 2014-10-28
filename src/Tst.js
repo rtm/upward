@@ -155,7 +155,7 @@ class HtmlReporter extends Reporter {
 
   startGroup(desc) {
     var {hide = {}} = this.options;
-    var details = this.elt('details');
+    var details = this.detailsElement = this.elt('details');
     if (!hide.children) { details.setAttribute('open', true); }
     var summary = this.summaryElement = this.elt('summary');
     details.appendChild(summary);
@@ -177,6 +177,7 @@ class HtmlReporter extends Reporter {
       if (!hide.time) { msg += ` (${time}ms)`; }
       this.summaryElement.textContent += ` [${msg}]`;
       this.summaryElement.style.color = color;
+      if (counts.fail) { this.detailsElement.setAttribute("open", true); }
     }
     return this;
   }
@@ -192,7 +193,6 @@ function unskip(test, s = true) { test._unskip = s; return test; }
 
 // Return a function to run a group of tests.
 function testGroup(desc, tests, options = {}) {
-  var {skip, unskip} = options;
   
   function _testGroup(reporter, skipping) {
     return spawn(
@@ -220,7 +220,6 @@ function test(desc, fn, options = {}) {
   var status, msg, time;
   var code = parseBody(fn);
   var stopwatch = makeStopwatch();
-  var {unskip, skip} = options;
 
   return function _test(reporter, skipping) {
     if (skipping) {

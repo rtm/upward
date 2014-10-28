@@ -151,6 +151,13 @@ function wrapify(fn, before = noop, after = noop) {
   };
 }
 
+function debugify(fn) {
+  return function(...args) {
+    debugger;
+    return fn.call(this, ...args);
+  };
+}
+
 // Return an array of argument names.
 // WARNING: parsing JS with regexps!
 // Will fail on deconstructed parameters.
@@ -183,13 +190,6 @@ function parseBody(fn){
 // Invoke as `paramsAsObject(thisFunction, arguments);`.
 function paramsAsObject(fn, args) {
   return objectFromPairs(paramify(fn), args);
-}
-
-// Make a function which returns a property on `this`.
-function propGetter(p) {
-  return function() {
-    return this[p];
-  };
 }
 
 // Function which does nothing.
@@ -249,11 +249,10 @@ export {
   onceify,
   insertselfify,
   wrapify,
+  debugify,
   paramify,
   parseBody,
   logify,
-
-  propGetter,
 
   noop,
   identity,

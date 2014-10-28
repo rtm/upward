@@ -6,9 +6,9 @@
 // Also handles subobjects.
 
 // Convenience.
-import {valueOf, mapObject, objectFromPairs} from './Obj';
+import {valueize, mapObject, objectFromPairs, thisPropGetter} from './Obj';
 import {upwardConfig, upwardableId}          from './Cfg';
-import {argify, propGetter}                  from './Fun';
+import {argify}                              from './Fun';
 import {Upwardable, upward}                  from './Upw';
 import {makeObserver, observeObject}         from './Obs';
 
@@ -26,7 +26,7 @@ function keepAssigned(...objs) {
 // Return property's value from the first object in which it appears.
 function findFirstProp(objs, p) {
   for (let obj of objs) {
-    if (obj && obj.hasOwnProperty(p)) { return valueOf(obj[p]); }
+    if (obj && obj.hasOwnProperty(p)) { return valueize(obj[p]); }
   }
 }
   
@@ -72,7 +72,7 @@ function recalc(ka) {
 function subKeepAssigned(objs, k, puhser) {
   var ka = keepAssigned();
   objs
-    .map(propGetter(k))
+    .map(thisPropGetter(k))
     .forEach(o => _keepAssigned(ka, o, pusher));
   return ka;
 }

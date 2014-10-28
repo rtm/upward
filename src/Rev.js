@@ -1,23 +1,21 @@
 // keepReversed: Keep an array in reversed order.
 // ==============================================
 
-import {upward, valueOfObject} from './Upw';
+import {upward, valueizeObject} from './Upw';
 import {makeObserver, observeObject, unobserveObject, observeObjectNow} from './Obs';
 import {mapObject} from './Obj';
 import {noop} from './Fun';
+import {copyOnto} from './Utl';
 
 // Keep an array in reversed order.
-// @TODO handle sparse arrays
 function _keepReversed(params) {
 
   // Perform the reversal.
   function end() {
     var {a, up} = params;
-    var len = a.length;
-    for (let i = 0; i < len; i++) {
-      result[i] = a[up ? i : a.length - 1 - i];
-    }
-    result.length = len;
+    var tmp = a.slice();
+    if (!up) { tmp.reverse(); }
+    copyOnto(tmp, result);
   }
   
   // Handle changes to parameters.
@@ -52,7 +50,7 @@ function _keepReversed(params) {
   var paramsObserver = makeParamsObserver();
 
   mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
-  params = valueOfObject(params);
+  params = valueizeObject(params);
   params.up = params.up || false;
   observeObjectNow(params, paramsObserver);
 

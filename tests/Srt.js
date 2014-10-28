@@ -3,6 +3,8 @@
 import keepSorted from '../src/Srt';
 import {test, testGroup, assert} from '../src/Tst';
 import {upwardifyProperties} from '../src/Upw';
+import {invert, identity, debugify} from '../src/Fun';
+import {propGetter, propValueGetter} from '../src/Obj';
 
 export default testGroup(
   "module Srt (keepSorted, Array#by)",
@@ -46,6 +48,37 @@ export default testGroup(
           test("should be reversed",        _ => assert.deepEqual(b, [1, 2, 3])),
           test("when upward is changed",    _ => hash.array = [6, 5, 4]),
           test("new array should be sorted", _ => assert.deepEqual(b, [4, 5, 6]))
+        ]
+      );
+    }(),
+
+    function() {
+      var a = [3, 2, 1];
+      var hash = upwardifyProperties({fn: identity})
+      var b;
+      return testGroup(
+        "Upwardly changed function",
+        [
+          test("after normal sorting",      _ => b = keepSorted(a, hash.fn)),
+          test("should be sorted",          _ => assert.deepEqual(b, [1, 2, 3])),
+          test("when upwarded fn is changed", _ => hash.fn = invert),
+          test("array should be resorted",  _ => assert.deepEqual(b, [3, 2, 1]))
+        ]
+      );
+    }(),
+    
+    function() {
+      var a = [upwardifyProperties({v:3}), upwardifyProperties({v:2}), upwardifyProperties({v:1})];
+      var fn = propGetter('v');
+      var fn1 = propValueGetter('v');
+      var b;
+      return testGroup(
+        "Upwardly changed values",
+        [
+          test("after normal sorting",      _ => { debugger; b = keepSorted(a, fn) }),
+          test("should be sorted",          _ => { assert.deepEqual(b.map(fn1), [1, 2, 3]); }),
+          test("when value is upwardly changed", _ => { debugger; a[0].v = 0 }),
+          test("array should be resorted",  _ => assert.deepEqual(b.map(fn1), [0, 1, 2]))
         ]
       );
     }()

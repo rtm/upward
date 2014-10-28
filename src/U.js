@@ -19,7 +19,7 @@ export {
 } from './Dom';
 
 export {
-  valueOf as                   V
+  valueize as                   V
 } from './Obj';
 
 export {
