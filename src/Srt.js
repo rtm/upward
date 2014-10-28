@@ -5,16 +5,10 @@ import {upward, unupward, valueizeObject, upwardCapture} from './Upw';
 import {makeObserver, observeObject, unobserveObject, observeObjectNow} from './Obs';
 import {valueize, mapObject} from './Obj';
 import {noop, identity} from './Fun';
-import {makeSortfunc, copyOnto} from './Utl';
+import {makeSortfunc, copyOnto, makeCounterMap} from './Utl';
 
 // Keep track of how many recomputations were done, using a WeakMap.
-var executionCounts = new WeakMap();
-function initializeExecutionCount(results) {
-  executionCounts.set(results, 0);
-}
-function incrementExecutionCount(results) {
-  executionCounts.set(results, executionCounts.get(results) + 1);
-}
+var counter = makeCounterMap();
 
 // Keep an array in sorted order.
 function _keep(params) {
@@ -28,7 +22,7 @@ function _keep(params) {
   // Perform the sort. Capture upwards affecting order.
   function end() {
     var {a, fn} = params;
-    incrementExecutionCount(result);
+    counter.incr(result);
     captures.forEach(u => unupward(u, trigger));
     captures = upwardCapture(_ => a.map(valueize).map(fn));
     copyOnto(a.slice().sort(makeSortfunc(fn)), result);
@@ -66,7 +60,7 @@ function _keep(params) {
   var captures = [];
   var arrayObserver = makeArrayObserver();
   var paramsObserver = makeParamsObserver();
-  initializeExecutionCount(result);
+  counter.init(result);
 
   mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
   params = valueizeObject(params);
@@ -76,6 +70,8 @@ function _keep(params) {
 
   return result;
 }
+
+export {counter};
 
 export default function(a, fn = identity) {
   return _keep({a, fn});

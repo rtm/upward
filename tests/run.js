@@ -5,6 +5,7 @@ import slcTests from './Slc';
 import tstTests from './Tst';
 import revTests from './Rev';
 import srtTests from './Srt';
+import mapTests from './Map';
 
 import {BUTTON} from '../src/U';
 
@@ -19,7 +20,8 @@ var tests = testGroup(
     tstTests,
     slcTests,
     revTests,
-    srtTests.unskip(),
+    srtTests,
+    mapTests.unskip()
   ]
 );
 

@@ -161,6 +161,20 @@ function makeStopwatch() {
   return stopwatch;
 }
 
+// Make a counter for occurrences of something on an object, using weak map.
+// For example, used to count recomputations of "keepXXX" results.
+function makeCounterMap() {
+  var map = new WeakMap();
+  return {
+    init(obj) { map.set(obj, 0); },
+    incr(obj) {
+      console.assert(map.has(obj), "Object must be in counter map.");
+      map.set(obj, map.get(obj) + 1);
+    },
+    get(obj)  { return map.get(obj); }
+  };
+}
+
 var prototypeFns = {
   tail, sum, swap, append, replace, mapInPlace, omit, copyOnto, uniqueize,
   indexesOf, runningMap, runningTotal, filterInPlace, chainPromises
@@ -197,5 +211,6 @@ export {
   filterInPlace,
   chainPromises,
   makeSortFunc,
-  makeStopwatch
+  makeStopwatch,
+  makeCounterMap
 };
