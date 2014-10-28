@@ -23,5 +23,5 @@ var tests = testGroup(
   ]
 );
 
-tests(reporter, false);
+tests(reporter, true);
 //document.body.appendChild(BUTTON("Run tests", _ => tests(reporter)));

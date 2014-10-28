@@ -187,7 +187,8 @@ class HtmlReporter extends Reporter {
 // Test creators
 // -------------
 
-// To skip a test, or test group, or unskip it, call these.
+// To skip a test, or test group, or unskip it, call these on it,
+// or chain with `.skip()` and `.unskip()`.
 function skip  (test, s = true) { test._skip   = s; return test; }
 function unskip(test, s = true) { test._unskip = s; return test; }
 

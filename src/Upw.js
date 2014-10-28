@@ -28,8 +28,8 @@ function Upwardable(v, options = {}, upwards = []) {
 //    upwards.forEach(fn => fn(valueize(nv), valueize(v), u, options));
 //	});
 
-	var send_upward = function(nv) {
-    upwards.forEach(fn => fn(valueize(nv), valueize(v), u, options));
+	var send_upward = function(nv, oldv) {
+    upwards.forEach(fn => fn(valueize(nv), valueize(oldv), u, options));
 	};
 
   // Provide an accessor (getter/setter) to apply to object properties
@@ -43,8 +43,9 @@ function Upwardable(v, options = {}, upwards = []) {
     },
     set: function(nv) {
       if (!disable && v !== nv) {
-				send_upward(nv);
+        let oldv = v;
         v = nv;
+				send_upward(v, oldv);
         disable = once;
       }
     },
@@ -107,7 +108,8 @@ var capturers = [];
 
 function upwardCapture(fn, capturer = []) {
   capturers.unshift(capturer);
-  return [fn(), capturers.shift()];
+  capturer.result = fn();
+  return capturers.shift();
 }
 
 // Mark an upwardable as captured. Called from `get` accessor.

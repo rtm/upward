@@ -14,7 +14,7 @@ function _keep(params) {
   function end() {
     var {a, fn} = params;
     captures.forEach(u => unupward(u, end));
-    captures = upwardCapture(_ => a.map(valueize).forEach(fn));
+    captures = upwardCapture(_ => a.map(valueize).map(fn)); 
     copyOnto(a.slice().sort(makeSortfunc(fn)), result);
     captures.forEach(u => upward(u, end));
   }

@@ -75,9 +75,9 @@ export default testGroup(
       return testGroup(
         "Upwardly changed values",
         [
-          test("after normal sorting",      _ => { debugger; b = keepSorted(a, fn) }),
-          test("should be sorted",          _ => { assert.deepEqual(b.map(fn1), [1, 2, 3]); }),
-          test("when value is upwardly changed", _ => { debugger; a[0].v = 0 }),
+          test("after normal sorting",      _ => b = keepSorted(a, fn)),
+          test("should be sorted",          _ => assert.deepEqual(b.map(fn1), [1, 2, 3])),
+          test("when value is upwardly changed", _ => a[0].v = 0),
           test("array should be resorted",  _ => assert.deepEqual(b.map(fn1), [0, 1, 2]))
         ]
       );
