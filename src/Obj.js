@@ -92,8 +92,12 @@ function valueArray(a) { return a.map(valueize); }
 function objectValues(o) { return keys(o).map(k => o[k]); }
 
 // Generator for object's key/value pairs. Usage: `for ([key, val] of objectPairs(o))`.
-function *objectPairs(o) { for (var k in o) {	yield [k, o[k]]; } }
-
+function *objectPairs(o) {
+  for (var k in o) {
+    if (o.hasOwnProperty(k)) { yield [k, o[k]]; }
+  }
+}
+ 
 // "Empty" the object, optionally keeping structure of subobjects with `{keep: true}` option.
 // Numbers turn to zero, booleans to false, arrays are emptied, etc.
 function emptyObject(o, {keep = {}}) {
