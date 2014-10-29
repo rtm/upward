@@ -4,7 +4,7 @@ import {test, testGroup, skip, expect, should, assert} from '../src/Tst';
 import {noop} from '../src/Fun';
 
 export default testGroup(
-  "Tst module",
+  "module Tst",
   [
     testGroup(
       "Assertion libraries include",

@@ -42,7 +42,7 @@ export default testGroup(
         "Handling simple subojects",
         [
           test("create nexted keepAssigned", _ => a = keepAssigned({x: {x: 1}})),
-          test("has correct value",          _ => assert.equal(valueize(a.x.x), 1))
+          test("has correct value",         _ => assert.equal(valueize(a.x.x), 1))
         ]
       );
     }()

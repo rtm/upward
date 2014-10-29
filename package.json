@@ -1,35 +1,24 @@
 {
-  "name": "upward",
-  "description": "Definitive framework for modern JS programming",
-  "version": "0.0.6",
-  "homepage": "https://github.com/rtm/upward",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rtm/upward.git"
-  },
-  "bugs": {
-    "url": "https://github.com/rtm/upward/issues"
-  },
-  "author": {
-    "name": "Bob Myers",
-    "email": "rtm@gol.com"
-  },
-  "contributors": [],
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/jeremyosborne/packagejsonexample/blob/master/LICENSE.txt"
-    }
-  ],
-  "main": "src/U.js",
-  "devDependencies": {
-  },
-  "scripts": {
+  "name":            "upward",
+  "description":     "Definitive framework for modern JS programming",
+  "version":         "0.0.6",
+  "licenses":        [ { "type": "MIT" } ],
+
+  "homepage":        "https://github.com/rtm/upward",
+  "repository":      { "type": "git", "url": "https://github.com/rtm/upward.git" },
+  "bugs":            { "url": "https://github.com/rtm/upward/issues" },
+
+  "author":          { "name": "Bob Myers", "email": "rtm@gol.com" },
+  "contributors":    [],
+
+  "dependencies":    {},
+  "devDependencies": {},
+  "main":            "src/U.js",
+
+  "scripts":         {
     "docs": "docco src/*.js",
     "test": "open http://localhost:8000/tests/index.html"
   },
-  "engines": {
-    "node": ">= 0.6.x"
-  },
-  "dependencies": {}
+
+  "engines":         { "node": ">= 0.6.x" }
 }

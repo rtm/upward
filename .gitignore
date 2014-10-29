@@ -1,6 +1,7 @@
 node_modules
+
+# should not have any of these POS anyway
 bower_components
-lib
-tmp
-compiled
+
 docs
+npm-debug.log
