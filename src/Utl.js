@@ -171,7 +171,7 @@ function makeCounterMap() {
       console.assert(map.has(obj), "Object must be in counter map.");
       map.set(obj, map.get(obj) + 1);
     },
-    get(obj)  { return map.get(obj); }
+     get(obj)  { return map.get(obj); }
   };
 }
 

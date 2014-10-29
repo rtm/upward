@@ -6,7 +6,7 @@
 // Also handles subobjects.
 
 // Convenience.
-import {valueize, mapObject, objectFromPairs, thisPropGetter} from './Obj';
+import {valueize, mapObject, objectFromPairs, propGetter} from './Obj';
 import {upwardConfig, upwardableId}          from './Cfg';
 import {argify}                              from './Fun';
 import {Upwardable, upward}                  from './Upw';
@@ -50,7 +50,7 @@ function placeKey(ka, v, k, pusher) {
     }
   } else {
     if (k in ka) {
-      ka[k].val = ka.get(k);
+      ka[k].val = calcProp(ka, k);
     } else { 
       defineProperty(ka, k, {
         get() { return Upwardable(findFirstProp(ka.objs, k)); }
@@ -69,10 +69,10 @@ function recalc(ka) {
 }
 
 // Make a keepAssigned object for subobjects with some key.
-function subKeepAssigned(objs, k, puhser) {
+function subKeepAssigned(objs, k, pusher) {
   var ka = keepAssigned();
   objs
-    .map(thisPropGetter(k))
+    .map(propGetter(k))
     .forEach(o => _keepAssigned(ka, o, pusher));
   return ka;
 }
@@ -123,6 +123,5 @@ function isKeepAssigned(o) {
   return keepAssignedPrototype.isPrototypeOf(o);
 }
 
-export {
-  keepAssigned
-};
+export default keepAssigned;
+export {isKeepAssigned};

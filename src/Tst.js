@@ -12,6 +12,8 @@ import {makeStopwatch}  from '../src/Utl';
 import {assignAdd}      from '../src/Obj';
 import {parseBody}      from '../src/Fun';
 
+const INSTALL_SHOULD = false;
+
 var {assign, create, keys} = Object;
 
 // Assertion libraries.
@@ -23,8 +25,8 @@ assign(chai.config, {
   showDiff: true
 });
 
-// `should` requires initialization.
-should = should();
+// `should` requires initialization; it pollutes the Object prototype.
+if (INSTALL_SHOULD) { should = should(); }
 
 // Reporters
 // ---------

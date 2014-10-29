@@ -19,7 +19,7 @@ export {
 } from './Dom';
 
 export {
-  valueize as                   V
+  valueize as                  V
 } from './Obj';
 
 export {
@@ -33,6 +33,8 @@ export {
   insertCSSStyleRules
 } from './Css';
 
+import keepAssigned from './Ass';
+
 export {
-  keepAssigned as              O
-} from './Ass';
+  keepAssigned as              A
+};
