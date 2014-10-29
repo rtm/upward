@@ -60,13 +60,15 @@ The environment it runs in needs to support ES features such as `Map`.
 It has been tested only in Chrome, but has a reasonable chance of running in FF or IE11.
 At present, we recommend including the traceur compiler and runtime in your web page:
 
-    <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
-    <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
-    <script>traceur.options.experimental = true;</script>
+```html
+<script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+<script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+<script>traceur.options.experimental = true;</script>
+```
 
 ### Installation
 
-`npm install upward`.
+    npm install upward
 
 Upward has no dependencies, although you should install docco globally to create documentation.
 
@@ -75,6 +77,12 @@ Upward has no dependencies, although you should install docco globally to create
 Upward uses its own testing framework, with chai assertions.
 See any file in the `tests` directory for examples.
 To run tests, open `tests/index.html`, or run `npm test`.
+
+### License
+
+Copyright (c) 2014 Bob Myers.
+
+Licensed under the MIT license.
 
 ### Formatting
 
