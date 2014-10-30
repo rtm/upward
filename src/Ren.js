@@ -6,7 +6,7 @@ import {upward, unupward, Upwardable, upwardify, upwardifyWithObjectParam} from 
 
 import {dasherize}                   from './Str';
 import {mapObject, valueizeObject}   from './Obj';
-import {observeObject, makeObserver} from './Obs';
+import {observeObject, makeObserver, observeObjectNow} from './Obs';
 import keepAssigned                  from './Ass';
 
 var {push} = Array.prototype;
@@ -17,9 +17,11 @@ function isSubattr(a) { return subAttrs.contains(a); }
 // Make observers for children, attributes, and subattributes.
 // -----------------------------------------------------------
 function makeChildrenObserver(e) {
-  function add(v)        { e.appendChild(v); }
-  function _delete(v)    { e.removeChild(v); }
-  function update(v, i, c, {oldValue}) { e.replaceChild(v, oldValue); }
+  function add    (v)                   { e.appendChild(v); }
+  function _delete(v, i, o, {oldValue}) { e.removeChild(oldValue); }
+  function update (v, i, c, {oldValue}) {
+    if (i !== 'length') { e.replaceChild(v, oldValue); }
+  }
   return makeObserver({add, update, delete: _delete});
 }
 
@@ -54,11 +56,11 @@ function _keepRendered(tagName, params) {
   function makeParamsObserver() {
     
     // Observe and unobserve the children.
-    function _observeChildren  (v) { observeObject  (v, childrenObserver); }
-    function _unobserveChildren(v) { unobserveObject(v, childrenObserver); }
+    function _observeChildren  (v) { observeObjectNow(v, childrenObserver); }
+    function _unobserveChildren(v) { unobserveObject (v, childrenObserver); }
     
     function _observeAttrs(v) {
-      observeObject(v, AttrsObserver);
+      observeObject(v, attrsObserver);
       subAttrs.forEach(a => observeObject(v[a], subAttrObservers[a]));
     }
     function _unobserveAttrs(v) {
@@ -69,8 +71,10 @@ function _keepRendered(tagName, params) {
     // When we get a new parameter, set up observers.
     function add(v, i) {
       switch (i) {
-      case 'children': _observeChildren(v); brek;
-      case 'atts':     _observeAttrs(v); break;
+      case 'children':
+        _observeChildren(v);
+        break;
+      case 'attrs':    _observeAttrs   (v); break;
       }
     }
     
@@ -94,7 +98,8 @@ function _keepRendered(tagName, params) {
   };
   var attrsObserver = makeAttrsObserver(result);
   var childrenObserver = makeChildrenObserver(result);
-  
+  var paramsObserver = makeParamsObserver();  
+
   mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
   params = valueizeObject(params);
   params.attrs = keepAssigned(params.attrs, {style: {}, class: {}, dataset: {}}, push);

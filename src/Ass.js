@@ -73,6 +73,7 @@ function subKeepAssigned(objs, k, pusher) {
   var ka = keepAssigned();
   objs
     .map(propGetter(k))
+    .filter(Boolean)
     .forEach(o => _keepAssigned(ka, o, pusher));
   return ka;
 }
