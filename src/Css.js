@@ -33,7 +33,7 @@ var makeScopedStyleId = id => 's' + id;
 // The first places the `[data-...]` selector in front, to address descendnats.
 // The second attaches it to the first subslector, to address the element itself.
 function scopifySelectors(selectors, scope_id) {
-	var scoper = `[data-${dasherify(scopedStyleIdsProp)}~=${scope_id}]`;
+	var scoper = `[data-${dasherize(scopedStyleIdsProp)}~=${scope_id}]`;
 	return [].concat(
 		selectors.split(',')
 			.map(selector => {
@@ -77,7 +77,11 @@ function insertCSSStyleRule(sheet, [selectors, styles]) {
 	var rule = sheet.rules[idx];
 
 	if (typeof styles === 'string') { rule.style = styles; } 
-	else { mirrorProperties(rule.style, styles); }
+	else {
+    // @TODO Fix this to be upward-friendly.
+    Object.assign(rule.style, styles);    
+    //mirrorProperties(rule.style, styles);
+  }
 
 	return rule;
 };

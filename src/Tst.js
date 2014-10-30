@@ -37,6 +37,14 @@ var statusInfo = {
   skip: { color: 'orange', mark: '❖'}
 };
 
+var testCssRules = [];
+keys(statusInfo).forEach(
+  status => testCssRules.push(
+    ['.' + status, {color: statusInfo[status].color}],
+    ['.' + status + "::before", { content: `"${statusInfo[status].mark} "` }]
+  )
+);
+
 var statuses = keys(statusInfo);
 
 // Base class for reporters.
@@ -66,8 +74,7 @@ class Reporter {
 
     if (!hide[status]) {
       if (!hide.time) { msg = `${msg} (${time}ms)`; }
-      msg = statusInfo[status].mark + " " + msg;
-      this[status](msg, code, statusInfo[status].color);
+      this[status](msg, code);
     }
 
     this.counts[status] = (this.counts[status] || 0) + 1;
@@ -81,8 +88,8 @@ class ConsoleReporter extends Reporter {
     super(options);
   }
 
-  pass(msg, code, color) {
-    console.log('%c' + msg, `color: ${color}`);
+  pass(msg, code, status) {
+    console.log('%c' + msg, `color: ${statusInfo.pass.color}`);
   }
 
   fail(msg) {
@@ -90,7 +97,7 @@ class ConsoleReporter extends Reporter {
   }
 
   skip(msg, code, color) {
-    console.log('%c' + msg, `color: ${color}`);
+    console.log('%c' + msg, `color: ${statusInfo.skip.color}`);
   }
 
   startGroup(desc, options = {}) {
@@ -126,11 +133,11 @@ class HtmlReporter extends Reporter {
   append(c) { return this.parent.appendChild(c); }
   text(t)   { return document.createTextNode(t); }
   
-  pass(msg, code, color) {
+  pass(msg, code) {
     var {hide = {}} = this.options;
     var t = this.text(msg);
     var e = this.elt('div');
-    e.style.color = color;
+    e.classList.add('pass');
     e.appendChild(t);
     if (!hide.code) {
       let codeElement = document.createElement('code');
@@ -140,17 +147,19 @@ class HtmlReporter extends Reporter {
     }
     this.append(e);
   }
-  skip(msg, code, color) {
+
+  skip(msg, code) {
     var t = this.text(msg);
     var e = this.elt('div');
-    e.style.color = color;
+    e.classList.add('skip');
     e.appendChild(t);
     this.append(e);
   }
-  fail(msg, code, color) {
+
+  fail(msg, code) {
     var t = this.text(msg);
     var e = this.elt('div');
-    e.style.color = color;
+    e.classList.add('fail');
     e.appendChild(t);
     this.append(e);
   }
@@ -275,5 +284,8 @@ export {
   // Assertion libraries.
   assert,
   should,
-  expect
+  expect,
+
+  // CSS rules
+  testCssRules
 };

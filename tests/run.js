@@ -12,9 +12,24 @@ import renTests from './Ren';
 
 import {BUTTON} from '../src/U';
 
-import {testGroup, skip, ConsoleReporter, HtmlReporter} from '../src/Tst';
+import {testGroup, skip, ConsoleReporter, HtmlReporter, testCssRules} from '../src/Tst';
+import {createCSSStyleSheet, insertCSSStyleRules} from '../src/Css';
 
-var reporter = new HtmlReporter(document.getElementById('tests'), {hide: {children: true}});
+var testDiv = document.createElement('div');
+
+document.body.appendChild(testDiv);
+
+// Styles
+// ------
+var sheet = createCSSStyleSheet(testDiv, true);
+
+insertCSSStyleRules(sheet, [
+  ["details > *",   { marginLeft: "24px"   }],
+  ["details > div", { marginLeft: "48px"   }]
+]);
+insertCSSStyleRules(sheet, testCssRules);
+
+var reporter = new HtmlReporter(testDiv, {hide: {children: true}});
 //reporter = new ConsoleReporter({collapsed: false});
 
 var tests = testGroup(

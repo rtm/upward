@@ -1,31 +1,30 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>Upward Test Runner</title>
 
-  <script src="http://chaijs.com/chai.js"></script>  
-  <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
-  <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
-  <script>
-    traceur.options.experimental = true;
-  </script>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Upward Test Runner</title>
+    
+    <link rel="icon" type="image/png" href="../ass/img/upward.png"/>
 
-  <!-- include spec files here... -->
-  <script type="module" src="./run.js"></script>
+    <!-- testing libraries -->
+    <script src="http://chaijs.com/chai.js"></script>  
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/sinon.js/1.7.3/sinon.js"></script>
+    
+    <!-- traceur -->
+    <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+    <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+    <script>traceur.options.experimental = true;</script>
+    
+    <!-- livereload -->
+    <script>
+      document.write('<' + 'script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+    </script>
+  </head>
 
-  <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+  <body>
+    <h1>Upward Tests</h1>
+    <script type="module" src="./run.js"></script>
+  </body>
 
-  <style>
-    details > * { margin-left: 24px; }
-    details > div { margin-left: 48px; }
-  </style>
-
-</head>
-
-<body>
-  <h1>Tests</h1>
-  <div id="tests">
-  </div>
-</body>
 </html>
