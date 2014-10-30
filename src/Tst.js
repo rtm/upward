@@ -184,10 +184,10 @@ class HtmlReporter extends Reporter {
           .map(status => `${counts[status]} ${status}`)
           .join(', ');
       let allSkip = counts.skip && !keys(counts).some(k => k !== 'skip' && counts[k]);
-      let color = allSkip ? 'orange' : counts.fail ? 'red' : 'green';
+      let klass = allSkip ? 'skip' : counts.fail ? 'fail' : 'pass';
       if (!hide.time) { msg += ` (${time}ms)`; }
       this.summaryElement.textContent += ` [${msg}]`;
-      this.summaryElement.style.color = color;
+      this.summaryElement.classList.add(klass);
       if (counts.fail) { this.detailsElement.setAttribute("open", true); }
     }
     return this;

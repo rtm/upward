@@ -213,9 +213,11 @@ function invert(c) {
 // Place a function transformer on the Function prototype.
 // This allows it be used as `fn.swapify(1,2)`.
 function prototypeize(fn, name = fn.name) {
-  defineProperty(prototype, name, {
-    get: function() { return fn(this); }
-  });
+  if (name) { // IE11 does not support name
+    defineProperty(prototype, name, {
+      get: function() { return fn(this); }
+    });
+  }
 }
 
 // Provide versions on function prototype that can be called as

@@ -20,9 +20,9 @@ var EventListenerPrototype = {
   handleEvent(evt) { return this[evt.type](evt); }
 };
 
-// `events` is a method on `EventTarget`s (meaning HTML elements), 
+// `events` is a method on `HTMLElement`
 // to which you pass event handlers in the form of a hash keyed by event name.
-EventTarget.prototype.events = function(handlers) {
+HTMLElement.prototype.events = function(handlers) {
   var listener = create(EventListenerPrototype);
   assign(listener, handlers, {context: this});
   keys(handlers).forEach(evt_type => this.addEventListener(evt_type, listener));

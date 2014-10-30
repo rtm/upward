@@ -25,9 +25,15 @@ var sheet = createCSSStyleSheet(testDiv, true);
 
 insertCSSStyleRules(sheet, [
   ["details > *",   { marginLeft: "24px"   }],
-  ["details > div", { marginLeft: "48px"   }]
+  ["details > div", { marginLeft: "48px"   }],
 ]);
 insertCSSStyleRules(sheet, testCssRules);
+
+var sheet2 = createCSSStyleSheet();
+insertCSSStyleRules(sheet2, [
+  ["body",          { fontFamily: "sans-serif" }]
+]);
+
 
 var reporter = new HtmlReporter(testDiv, {hide: {children: true}});
 //reporter = new ConsoleReporter({collapsed: false});
