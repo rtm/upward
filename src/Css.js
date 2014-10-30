@@ -1,4 +1,4 @@
-import {dasherify} from './Str';
+import {dasherize} from './Str';
 import {mirrorProperties} from './Obs';
 
 var scopedSupported = 'scoped' in document.createElement('style');

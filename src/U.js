@@ -2,6 +2,10 @@
 
 import './Evt';
 import './Arr';
+import keepAssigned from './Ass';
+import keepRendered from './Ren';
+import keepMapped   from './Map';
+import keepFiltered from './Fil';
 
 export {
   Upwardable as                U,
@@ -14,8 +18,7 @@ export {
   BUTTON,
   DIV,
   TEXT,
-  SPAN,
-  createElt as                 E
+  SPAN
 } from './Dom';
 
 export {
@@ -33,8 +36,9 @@ export {
   insertCSSStyleRules
 } from './Css';
 
-import keepAssigned from './Ass';
-
 export {
-  keepAssigned as              A
+  keepAssigned as              A,
+  keepRendered as              R,
+  keepMapped as                M,
+  keepFiltered as              F
 };

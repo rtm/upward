@@ -2,193 +2,108 @@
 // =================================================
 
 // Bookkeeping and initialization.
-import {Upwardable, upwardify, upwardifyWithObjectParam} from './Upw';
+import {upward, unupward, Upwardable, upwardify, upwardifyWithObjectParam} from './Upw';
 
-import {chainify, swapify, argify}   from './Fun';
 import {dasherize}                   from './Str';
-import {mapObject}                   from './Obj';
+import {mapObject, valueizeObject}   from './Obj';
 import {observeObject, makeObserver} from './Obs';
+import keepAssigned                  from './Ass';
 
-var {createTextNode, createElement} = document;
-var {appendChild, replaceChild, setAttribute} = HTMLElement.prototype;
+var {push} = Array.prototype;
 
-function _keepRendered(params) {
-  var result = document.createElement(params.tagName);
+var subAttrs = ['style', 'class', 'dataset'];
+function isSubattr(a) { return subAttrs.contains(a); }
+
+// Make observers for children, attributes, and subattributes.
+// -----------------------------------------------------------
+function makeChildrenObserver(e) {
+  function add(v)        { e.appendChild(v); }
+  function _delete(v)    { e.removeChild(v); }
+  function update(v, i, c, {oldValue}) { e.replaceChild(v, oldValue); }
+  return makeObserver({add, update, delete: _delete});
+}
+
+function makeAttrsObserver(e) {
+  function add(v, k)     { e.setAttribute(k, v); }
+  function _delete(v, k) { e.removeAttribute(k); }
+  return makeObserver({add, update: add, delete: _delete});
+}
+
+function makeStyleObserver(s) {
+  function add(v, k)     { elt.style[k] = v; }
+  function _delete(v, k) { result.style[name] = ""; };
+  return makeObserver({add, update: add, delete: _delete});
+}
+
+function makeDatasetObserver(e) {
+  function add(v, k)     { e.dataset[k] = v; }
+  function _delete(v, k) { delete e.dataset[k]; }
+  return makeObserver({add, change: add, delete: _delete});
+}
+
+function makeClassObserver(e) {
+  function add(v, k)     { e.classList.toggle(dasherize(k), v); }
+  function _delete(v, k) { e.classList.remove(dasherize(k)); };
+  return makeObserver({add, change: add, delete: _delete});
+}
+
+function _keepRendered(tagName, params) {
 
   // Handle changes to parameters.
   // -----------------------------
   function makeParamsObserver() {
     
     // Observe and unobserve the children.
-    function _observe  (v) { observeObject  (v, childrenObserver); }
-    function _unobserve(v) { unobserveObject(v, childrenObserver); }
+    function _observeChildren  (v) { observeObject  (v, childrenObserver); }
+    function _unobserveChildren(v) { unobserveObject(v, childrenObserver); }
     
-    // When we get a new set of children, set up observer on it.
+    function _observeAttrs(v) {
+      observeObject(v, AttrsObserver);
+      subAttrs.forEach(a => observeObject(v[a], subAttrObservers[a]));
+    }
+    function _unobserveAttrs(v) {
+      unobserveObject(v, AttributesObserver);
+      subAttr.forEach(a => unobserveObject(v[a], subAttrObservers[a]))
+    }
+
+    // When we get a new parameter, set up observers.
     function add(v, i) {
-      if (i === 'children') {  _observe(v); }
+      switch (i) {
+      case 'children': _observeChildren(v); brek;
+      case 'atts':     _observeAttrs(v); break;
+      }
     }
     
-    // When the child array changes, tear down and resetup observer on it.
+    // When parameters change, tear down and resetup observers.
     function update(v, i, params, {oldValue}) {
-      switch(i) {
-      case 'children':  _unobserve(oldValue); _observe(v); break;
+      switch (i) {
+      case 'children': _unobserveChildren(oldValue); _observeChildren(v); break;
+      case 'attrs':    _unobserveAttrs   (oldValue); _observeAttrs   (v); break;
       }
     }
     
-    return makeObserver({add, update, end});
+    return makeObserver({add, update});
   }
 
-  // Handle changes to children.
-  // ---------------------------
-  function makeChildrenObserver() {
+  var result = document.createElement(tagName);
 
-    function add(v)     { result.appendChild(v); }
-    function _delete(v) { result.removeChild(v); }
-    function update(v, i, c, {oldValue}) { result.replaceChild(v, oldValue); }
-    function end()      { }
-
-    return makeObserver({add, update, delete: _delete, end});
-  }
-
-  function makeAttributeObserver() {
-    function add(v, k)     { result.setAttribute(k, v); }
-    function _delete(v, k) { result.removeAttribute(k); }
-    return makeObserver({add, update: add, delete: _delete});
-  }
-
-  var observersAndRemovers = {
-    style: {
-      observer: function() {
-        function add(v, k)     { elt.style[k] = v; }
-        function _delete(v, k) { result.style[name] = ""; };
-        return makeObserver({add, update: add, delete: _delete});
-      },
-      remover: function() {
-        result.style = "";
-      }
-    },
-    dataset: {
-      observer: function() {
-        function add(v, k)     { elt.dataset[k] = v; }
-        function _delete(v, k) { delete elt.dataset[k]; }
-        return makeObserver({add, change: add, delete: _delete});
-      },
-      remover: function() [
-        keys(result.dataset).forEach(k => delete result.dataset[k]); 
-      }
-    },
-    class: {
-      observer: function() {
-        function add(v, k)     { result.classList.toggle(dasherize(k), v); }
-        function _delete(v, k) { result.classList.remove(dasherize(k)); };
-        return makeObserver({add, change: add, delete: _delete});
-      },
-      remover: function() {
-        result.className = ""; 
-      }
-    },
-    attributes: {
-      observer: function() {},
-      remover: function() {
-        for ([name] of e.attributes) { e.removeAttribute(name); }
-      }
-    }
+  var subAttrObservers = {
+    class:   makeClassObserver(result),
+    dataset: makeDatasetObserver(result),
+    style:   makeStyleObserver(result)
   };
-
+  var attrsObserver = makeAttrsObserver(result);
+  var childrenObserver = makeChildrenObserver(result);
+  
   mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
   params = valueizeObject(params);
-  params.attrs = params.attr || {};
-  params.children = params.children || {};
-  params.trigger = 0;
+  params.attrs = keepAssigned(params.attrs, {style: {}, class: {}, dataset: {}}, push);
+  params.children = params.children || [];
   observeObjectNow(params, paramsObserver);
 
   return result;
 }
 
 export default function(tagName, attrs = {}, children = []) {
-  return _keepRendered({tagName, attrs, children});
+  return _keepRendered(tagName, {attrs, children});
 }
-
-
-// Toggle a class on an element
-function toggleClass(cls, b) { 
-	this.classList.toggle(dasherify(cls), b); 
-}
-
-// Set classes on an object based on boolean-valued hash of camelCase names
-function setClass(cls_hash) {
-	mapObject(cls_hash, swapify(toggleClass), this);
-}
-
-var handlerMakers = {
-  style:     styleObservationHandlers,
-  dataset:   datasetObservationHandlers,
-  class:     classObservationHandlers,
-  attribute: attributeObservationHandlers
-};
-
-var clearers = {
-};
-
-var handlers = {};
-
-var attrHandler = makeObserver({});
-
-function setAttrsObserver() {
-  observer(attrs, function(changes) {
-    changes.forEach(function({name, type, oldValue, object}) {
-      switch (type) {
-      case "delete":
-	clearers[type]();
-      case "style":
-      case "dataset":
-      case "class":
-	switch (type) {
-	case "add":
-	case "update":
-	  resetHandler(name, object[name], oldValue);
-	case "delete":
-	  unsetHandler(name, oldValue);
-	}
-	break;
-      default:
-      case "delete":
-        cle
-      }
-    });
-  });
-}
-
-function unsetHandler(type, v) {
-  if (v)  { unobserve(v,  handlers[type]); }
-}
-function setHandler(type, nv, v) {
-  if (nv) { observe  (nv, handlers[type] = handlerMakers[type](e));	}
-}
-function resetHandler(type, nv, v) {
-  unsetHandler(type, v );
-  setHandler  (type, nv);
-}
-
-keys(handlerMakers).forEach(type => setHandler(type, attrs[type]));
-
-upward(attrs /*(DO SOMEITHNG*/);
-
-
-return e;
-}
-
-// Template helper which handles HTML; return a document fragment.
-// Example:
-// ```
-// document.body.appendChild(HTML`<span>${foo}</span><span>${bar}</span>`);
-// ```
-function HTML(strings, ...values) {
-  var dummy = document.createElement('div');
-  var fragment = document.createDocumentFragment();
-  dummy.innerHTML = compose(strings, ...values);
-  forEach.call(dummy.childNodes, appendChild, fragment);
-  return fragment;
-}
-
-export default keepRendered;

@@ -8,6 +8,7 @@ import srtTests from './Srt';
 import mapTests from './Map';
 import assTests from './Ass';
 import funTests from './Fun';
+import renTests from './Ren';
 
 import {BUTTON} from '../src/U';
 
@@ -24,8 +25,9 @@ var tests = testGroup(
     revTests,
     srtTests,
     mapTests,
-    funTests.unskip(),
-    assTests.unskip()
+    funTests,
+    assTests,
+    renTests.unskip()
   ]
 );
 
