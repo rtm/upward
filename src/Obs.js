@@ -1,7 +1,7 @@
 // Observation utilities
 // =====================
 
-// Setup
+// Setup.
 var {keys, create, assign, observe, unobserve} = Object;
 
 // Make an observation handler, given a target and an object of handlers
@@ -13,11 +13,31 @@ var observerPrototype = {
     var saveObject;
     changes.forEach(change => {
       let {type, object, name} = change;
+      let fn = this[type];
       saveObject = object;
-      this[type](object[name], name, object, change);
+//      if (type === 'update' && name === 'length') { type = 'length'; }
+      if (fn) { fn(object[name], name, object, change); }
     });
     if (this.end) { this.end(saveObject); }
 	}
+};
+
+// This version of observerPrototype handles the change objects asynchronously,
+// allowing them to return promises.
+// However, it doesn't work right now, at least not in a testing context.
+var asyncObserverPrototype = {
+  handle(changes) {
+    var saveObject;
+    spawn(function *() {
+      for (var change of changes) {
+        let {type, object, name} = change;
+        var fn = this[type];
+        saveObject = object;
+        if (fn) { yield fn (object[name], name, object, change); }
+      }
+      if (this.end) { yield this.end(saveObject); }
+	  });
+  }
 };
 
 // Make an observer from a hash of handlers for observation types.
@@ -32,7 +52,7 @@ function makeObserver(handlers) {
 
 // Invoke Object.observe with only the types available to be handled.
 function observeObject(o, observer) { 
-	return observe (o, observer, observer.keys);
+	return observe(o, observer, observer.keys);
 }
 
 function observeObjectNow(o, observer) {

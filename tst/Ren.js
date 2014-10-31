@@ -3,7 +3,6 @@
 
 import keepRendered from '../src/Ren';
 import {test, testGroup, assert} from '../src/Tst';
-import {timeout} from '../src/Asy';
 
 export default testGroup(
   "module Ren (keepRendered (R))",
@@ -33,6 +32,19 @@ export default testGroup(
           test("child is gone",             _ => assert.equal(e.childNodes.length, 0))
         ]
       );
+    }(),
+
+    function() {
+      var e;
+      var c = [document.createTextNode('test')];
+      return testGroup(
+        "basic attribute handling",
+        [
+          test("construct elt with title",  _ => e = keepRendered('div', {title: 'test'})),
+          test("title is there",            _ => assert.ok(e.hasAttribute('title')))
+        ]
+      );
     }()
+
   ]
 );

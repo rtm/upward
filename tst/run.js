@@ -35,7 +35,7 @@ insertCSSStyleRules(sheet2, [
 ]);
 
 
-var reporter = new HtmlReporter(testDiv, {hide: {children: true}});
+var reporter = new HtmlReporter(testDiv, {hide: {children: true, time: true}});
 //reporter = new ConsoleReporter({collapsed: false});
 
 var tests = testGroup(
@@ -52,5 +52,5 @@ var tests = testGroup(
   ]
 );
 
-tests(reporter, true);
+tests(reporter, false);
 //document.body.appendChild(BUTTON("Run tests", _ => tests(reporter)));

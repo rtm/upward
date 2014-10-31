@@ -17,7 +17,7 @@
 
   "scripts":         {
     "docs": "docco src/*.js",
-    "test": "open http://localhost:8000/tests/index.html"
+    "test": "open http://localhost:8000/tst/index.html"
   },
 
   "engines":         { "node": ">= 0.6.x" }

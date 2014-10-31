@@ -1,28 +1,13 @@
+// Build CSS sheets and rules.
+// ===========================
+
+// Setup.
 import {dasherize} from './Str';
 import {mirrorProperties} from './Obs';
 
+var {assign} = Object;
+
 var scopedSupported = 'scoped' in document.createElement('style');
-
-export function makeStyles(elt, css) {
-  var style = document.createElement('style');
-  var sheet;
-
-  style.appendChild(document.createTextNode(""));
-  style.setAttribute('scoped', true);
-  elt.appendChild(style);
-  sheet = style.sheet;
-  
-  (css || []).forEach(function(rule) {
-    Object.assign(
-      sheet.cssRules[
-        sheet.insertRule(
-          [].concat(rule[0]).join(',') + '{}', 
-          sheet.cssRules.length)
-      ].style,
-				...[].concat(rule[1])
-    );
-  });
-}
 
 var scopedStyleId = 0;
 var scopedStyleIdsProp = "scopedStyleIds";
@@ -78,8 +63,8 @@ function insertCSSStyleRule(sheet, [selectors, styles]) {
 
 	if (typeof styles === 'string') { rule.style = styles; } 
 	else {
-    // @TODO Fix this to be upward-friendly.
-    Object.assign(rule.style, styles);    
+    // @TODO Fix this to be upward-friendly, and valueize style object.
+    assign(rule.style, styles);    
     //mirrorProperties(rule.style, styles);
   }
 
@@ -112,7 +97,7 @@ CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
 CSSStyleSheet.prototype.rule = function(selector, styles) {
 	var idx = this.insertRule(`${selector} { }`, this.rules.length);
 	var rule = this.rules[idx];
-  Object.assign(rule.style, styles);
+  assign(rule.style, styles);
 	return this;
 };
 
