@@ -21,7 +21,7 @@ function _keep(params) {
       // @TODO: unwind existing upward settings for this elt, if any
       map.delete(Object(elt));
       params.trigger++;
-    }
+    };
   }
 
   // Make a mapping function for elements.

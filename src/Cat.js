@@ -51,7 +51,7 @@ function _keepConcatenated(kc, a) {
   var handlers = {
     add: argify(placeKey, kc),
     update: argify(placeKey, kc),
-    delete: _delete)
+    delete: _delete
   };
   observeObject(o, makeObserver(handlers));
   

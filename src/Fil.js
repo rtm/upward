@@ -44,7 +44,6 @@ export default function keepFiltered(a, fn, ctxt) {
   // Watch for changes in parallel array of bools.
   observe(filters, makeObserver(handlers));
   
-  var result;
   capture();
 
   // Watch for changes to filtering criteria.

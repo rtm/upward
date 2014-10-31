@@ -19,7 +19,7 @@ var {appendChild}                   = HTMLElement.prototype;
 var INPUT = function() {
   var input = document.createElement('input');
   var propname = evt_type => `val_${evt_type}`;
-  var handler = { handleEvent(evt) { input[propname(evt.type)] = input.value } };
+  var handler = { handleEvent(evt) { input[propname(evt.type)] = input.value; } };
   ['input', 'change'].forEach(evt_type => {
     input.addEventListener(evt_type, handler);
     Upwardable("").define(input, propname(evt_type));
@@ -49,7 +49,7 @@ var TEXT = function(text) {
 // These are methods that overwrite the node value.
 ['concat', 'replace', 'slice', 'substr', 'substring', 'toUpperCase', 'toLowerCase', 'toLocaleUpperCase', 'toLocaleLowerCase', 'trim', 'trimLeft', 'trimRight', 'revese']
   .forEach(method => Text.prototype[method] = function() {
-    return this.nodeValue = String.prototype[method].apply(this.nodeValue, arguments);
+    return (this.nodeValue = String.prototype[method].apply(this.nodeValue, arguments));
   })
 ;
 

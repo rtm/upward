@@ -28,6 +28,17 @@ function timeout(ms = 0) {
   };
 }
 
+// Implement Promise.done.
+// Set Promise.onDoneError to trap errors.
+function _throw(e) { throw e; }
+function promiseDone(fulfill, reject) {
+  this
+    .then(fulfill, reject)
+    .catch(e => setTimeout(Promise.onDoneError || _throw, 1, e))
+  ;
+}
+Promise.prototype.done = Promise.prototype.done || promiseDone;
+
 export {
   spawn,
   timeout,

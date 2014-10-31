@@ -115,8 +115,8 @@ function _keepAssigned(ka, o, pusher = unshift) {
 
 // Prototype of keepAssigned objects; define `and` and `or`.
 var keepAssignedPrototype = {
-  and(o) { return _keepAssigned(this, o, unshift) },
-  or (o) { return _keepAssigned(this, o, push   ) }
+  and(o) { return _keepAssigned(this, o, unshift); },
+  or (o) { return _keepAssigned(this, o, push   ); }
 };
   
 // Is something a `keepAssigned` object?

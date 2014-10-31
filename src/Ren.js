@@ -33,7 +33,7 @@ function makeAttrsObserver(e) {
 
 function makeStyleObserver(s) {
   function add(v, k)     { elt.style[k] = v; }
-  function _delete(v, k) { result.style[name] = ""; };
+  function _delete(v, k) { result.style[name] = ""; }
   return makeObserver({add, update: add, delete: _delete});
 }
 
@@ -45,7 +45,7 @@ function makeDatasetObserver(e) {
 
 function makeClassObserver(e) {
   function add(v, k)     { e.classList.toggle(dasherize(k), v); }
-  function _delete(v, k) { e.classList.remove(dasherize(k)); };
+  function _delete(v, k) { e.classList.remove(dasherize(k)); }
   return makeObserver({add, change: add, delete: _delete});
 }
 
@@ -65,7 +65,7 @@ function _keepRendered(tagName, params) {
     }
     function _unobserveAttrs(v) {
       unobserveObject(v, AttributesObserver);
-      subAttr.forEach(a => unobserveObject(v[a], subAttrObservers[a]))
+      subAttr.forEach(a => unobserveObject(v[a], subAttrObservers[a]));
     }
 
     // When we get a new parameter, set up observers.

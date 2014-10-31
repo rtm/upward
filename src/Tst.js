@@ -70,7 +70,8 @@ class Reporter {
   
   report(result) {
     var {msg, status, time, code} = result;
-    var {hide = {}} = this.options;
+    var {hide} = this.options;
+    hide = hide || {};
 
     if (!hide[status]) {
       if (!hide.time) { msg = `${msg} (${time}ms)`; }
@@ -101,13 +102,15 @@ class ConsoleReporter extends Reporter {
   }
 
   startGroup(desc, options = {}) {
-    var {hide = {}} = this.options;
+    var {hide} = this.options;
+    hide = hide || {};
     console[hide.cihldren ? 'groupCollapsed' : 'group'](desc);
     return new ConsoleReporter(assign(options, this.options));
   }
 
   endGroup(group) {
-    var {counts, options: {hide = {}}, time} = group;
+    var {counts, options: {hide}, time} = group;
+    hide = hide || {};
     console.groupEnd();
     super(group);
     if (!hide.counts) {
@@ -134,7 +137,8 @@ class HtmlReporter extends Reporter {
   text(t)   { return document.createTextNode(t); }
   
   pass(msg, code) {
-    var {hide = {}} = this.options;
+    var {hide} = this.options;
+    hide = hide || {};
     var t = this.text(msg);
     var e = this.elt('div');
     e.classList.add('pass');
@@ -165,19 +169,21 @@ class HtmlReporter extends Reporter {
   }
 
   startGroup(desc) {
-    var {hide = {}} = this.options;
+    var {hide} = this.options;
+    hide = hide || {};
     var details = this.detailsElement = this.elt('details');
     if (!hide.children) { details.setAttribute('open', true); }
     var summary = this.summaryElement = this.elt('summary');
     details.appendChild(summary);
-    var desc = this.text(desc);
+    desc = this.text(desc);
     summary.appendChild(desc);
     this.parent.appendChild(details);
     return new HtmlReporter(details, this.options);
   }
 
   endGroup(group) {
-    var {counts, options: {hide = {}}, time} = group;
+    var {counts, options: {hide}, time} = group;
+    hide = hide || {};
     super(group);
     if (!hide.counts) {
       let msg = keys(counts)
@@ -211,7 +217,7 @@ function testGroup(desc, tests, options = {}) {
       
       function *() {
         var group;
-        yield group = reporter.startGroup(desc);
+        yield (group = reporter.startGroup(desc));
         for (var t of tests) {
           yield t(group, !t._unskip && (t._skip || skipping));
         }
@@ -233,7 +239,7 @@ function test(desc, fn, options = {}) {
   var code = parseBody(fn);
   var stopwatch = makeStopwatch();
 
-  return function _test(reporter, skipping) {
+  function _test(reporter, skipping) {
     if (skipping) {
       return Promise
         .resolve()

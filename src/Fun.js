@@ -86,14 +86,14 @@ function invertify(fn) {
 function trimify(fn, n = 1) {
   return function(...args) {
     return fn.call(this, ...args.slice(0, n));
-  }
+  };
 }
 
 // Make a function which throws away some args at the end.
 function trimifyRight(fn, n = 1) {
   return function(...args) {
     return fn.call(this, ...args.slice(0, -n));
-  }
+  };
 }
 
 // Make a version of the function which logs entry and exit.
