@@ -12,7 +12,7 @@ import renTests from './Ren';
 
 import {BUTTON} from '../src/U';
 
-import {testGroup, skip, ConsoleReporter, HtmlReporter, testCssRules} from '../src/Tst';
+import {runTests, testGroup, skip, consoleReporter, testCssRules} from '../src/Tst';
 import {createCSSStyleSheet, insertCSSStyleRules} from '../src/Css';
 
 var testDiv = document.createElement('div');
@@ -35,7 +35,7 @@ insertCSSStyleRules(sheet2, [
 ]);
 
 
-var reporter = new HtmlReporter(testDiv, {hide: {children: true, time: true}});
+//var reporter = new HtmlReporter(testDiv, {hide: {children: true, time: true}});
 //reporter = new ConsoleReporter({collapsed: false});
 
 var tests = testGroup(
@@ -52,5 +52,6 @@ var tests = testGroup(
   ]
 );
 
-tests(reporter, true);
-//document.body.appendChild(BUTTON("Run tests", _ => tests(reporter)));
+runTests(tests).then(
+  v => consoleReporter(v, {hide: {children: true}})
+);
