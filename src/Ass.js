@@ -18,7 +18,7 @@ var {push, unshift} = Array.prototype;
 // Create the `keepAssigned` object.
 function keepAssigned(...objs) {
   var ka = create(keepAssignedPrototype);
-  ka.objs = []; // first-come first-served
+  defineProperty(ka, 'objs', { value: [] }); // first-come first-served
   [...objs].forEach(o => _keepAssigned(ka, o));
   return ka;
 }
@@ -53,7 +53,8 @@ function placeKey(ka, v, k, pusher) {
       ka[k].val = calcProp(ka, k);
     } else { 
       defineProperty(ka, k, {
-        get() { return Upwardable(findFirstProp(ka.objs, k)); }
+        get() { return Upwardable(findFirstProp(ka.objs, k)); },
+        enumerable: true
       });
       //upward(v, ka[k]);
     }

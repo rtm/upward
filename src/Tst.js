@@ -37,6 +37,7 @@ var statusInfo = {
   skip: { color: 'orange', mark: '❖'}
 };
 
+// CSS rules for HTML output. Stick these where you will.
 var testCssRules = [];
 keys(statusInfo).forEach(
   status => testCssRules.push(

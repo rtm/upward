@@ -5,7 +5,7 @@
 import {upward, unupward, Upwardable, upwardify, upwardifyWithObjectParam} from './Upw';
 
 import {dasherize}                   from './Str';
-import {mapObject, valueizeObject}   from './Obj';
+import {mapObject, valueize, valueizeObject}   from './Obj';
 import {observeObject, makeObserver, observeObjectNow} from './Obs';
 import keepAssigned                  from './Ass';
 
@@ -26,7 +26,7 @@ function makeChildrenObserver(e) {
 }
 
 function makeAttrsObserver(e) {
-  function add(v, k)     { e.setAttribute(k, v); }
+  function add(v, k)     { e.setAttribute(k, valueize(v)); }
   function _delete(v, k) { e.removeAttribute(k); }
   return makeObserver({add, update: add, delete: _delete});
 }
@@ -60,8 +60,8 @@ function _keepRendered(tagName, params) {
     function _unobserveChildren(v) { unobserveObject (v, childrenObserver); }
     
     function _observeAttrs(v) {
-      observeObject(v, attrsObserver);
-      subAttrs.forEach(a => observeObject(v[a], subAttrObservers[a]));
+      observeObjectNow(v, attrsObserver);
+      subAttrs.forEach(a => observeObjectNow(v[a], subAttrObservers[a]));
     }
     function _unobserveAttrs(v) {
       unobserveObject(v, AttributesObserver);
