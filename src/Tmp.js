@@ -16,6 +16,7 @@ var compose = (strings, ...values) => {
 var upwardifyTemplate = (strings, ...values) => computedUpwardable(() => compose(strings, ...values),  values);
 
 // Template helper which detects upwardified parameters and adds notifiers.
+/*jshint -W061 */
 var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
 
 // Template helper which handles HTML; return a document fragment.

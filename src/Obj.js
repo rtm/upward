@@ -5,6 +5,7 @@
 var {keys, assign, observe, unobserve} = Object;
 
 // Generic version of `valueOf` which works for anything.
+/*jshint eqnull:true */
 function valueize(v) { return v == null ? v : v.valueOf(); }
 
 // User-friendly representation of an objectd.
@@ -32,35 +33,39 @@ function thisPropGetter(v) {
 
 // Analog of `Array#map` for objects.
 function mapObject(o, fn, ctxt) {
-	var result = {};
-	for (var [key, val] of objectPairs(o)) {
-		result[key] = fn.call(ctxt, val, key, o);
-	}
-	return result;
+  var result = {};
+  for (var pair of objectPairs(o)) {
+    let [key, val] = pair;
+    result[key] = fn.call(ctxt, val, key, o);
+  }
+  return result;
 }
 
 function mapObjectInPlace(o, fn, ctxt) {
-	for (var [key, val] of objectPairs(o)) {
-		o[key] = fn.call(ctxt, val, key, o);
-	}
+  for (let pair of objectPairs(o)) {
+    let [key, val] = pair;
+    o[key] = fn.call(ctxt, val, key, o);
+  }
   return o;
 }
 
 // "Invert" an object.
 function invertObject(o) {
-	var result = {};
-	for ([key, val] of objectPairs(o)) {
-		result[val] = key;
-	}
-	return result;
+  var result = {};
+  for (let pair of objectPairs(o)) {
+    let [key, val] = pair;
+    result[val] = key;
+  }
+  return result;
 }
 
 // Analog of `Array#reduce` for objects.
 function reduceObject(o, fn, init) {
-	for ([key, val] of objectPairs(o)) {
-		init = fn(init, val, key, o);
-	}
-	return init;
+  for (let pair of objectPairs(o)) {
+    let [key, val] = pair;
+    init = fn(init, val, key, o);
+  }
+  return init;
 }
 
 // Create an object from arrays of keys and values.
@@ -82,7 +87,7 @@ function valueizeObject(o) { return mapObject(o, valueize); }
 
 // Get a value down inside an object, based on a "path" (array of property names).
 function valueFromPath(o, path = []) {
-	return path.reduce((ret, seg) => ret && typeof ret === 'object' && ret[seg], o);
+  return path.reduce((ret, seg) => ret && typeof ret === 'object' && ret[seg], o);
 }
 
 // Return an aray all of the values of which are evaluated.
@@ -97,11 +102,13 @@ function *objectPairs(o) {
     if (o.hasOwnProperty(k)) { yield [k, o[k]]; }
   }
 }
- 
+
 // "Empty" the object, optionally keeping structure of subobjects with `{keep: true}` option.
 // Numbers turn to zero, booleans to false, arrays are emptied, etc.
-function emptyObject(o, {keep = {}}) {
-  for (var [k, v] of objectPairs(o)) {
+function emptyObject(o, {keep}) {
+  keep = keep || {};
+  for (let pair of objectPairs(o)) {
+    let [k, v] = pair;
     var ctor = v && v.constructor;
     if (keep && ctor === Object) emptyObject(v);
     else o[k] = ctor && ctor();
@@ -131,10 +138,10 @@ export {
   objectFromPairs,
   makePropertyDescriptors,
   valueizeObject,
-	valueFromPath,
+  valueFromPath,
   valueArray,
   objectValues,
-	valueize,
+  valueize,
   emptyObject,
   makeAssigner,
   assignAdd

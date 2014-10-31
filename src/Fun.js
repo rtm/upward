@@ -17,7 +17,8 @@ function compose(...fns) {
 }
 
 // Create a function which runs on next tick.
-function tickify(fn, {delay = 10} = {}) {
+function tickify(fn, {delay} = {}) {
+  delay = delay || 10;
   return function() {
     return setTimeout(() => fn.apply(this, arguments), delay);
   };
@@ -54,7 +55,9 @@ function dropify(fn, n = 1) {
 }
 
 // Make a function which memozies its result.
-function memoify(fn, {hash = identity, cache = {}} = {}) {
+function memoify(fn, {hash, cache} = {}) {
+  hash = hash || identify;
+  cache = cache = {};
   function memoified(...args) {
     var key = hash(...args);
     return key in cache ? cache[key] : cache[key] = fn.call(this, ...args);
@@ -153,6 +156,7 @@ function wrapify(fn, before = noop, after = noop) {
 
 function debugify(fn) {
   return function(...args) {
+    /*jshint debug: true */
     debugger;
     return fn.call(this, ...args);
   };
