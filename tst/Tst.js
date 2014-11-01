@@ -19,7 +19,7 @@ export default testGroup(
       "various assertion library checks",
       [
         test("equality",               _ => assert.equal("bar", "bar")),
-        test("throwing",               _ => assert.throws(_ => { throw "fuck" }))
+        test("throwing",               _ => assert.throws(_ => { throw "fuck"; }))
       ]
     )
   ]

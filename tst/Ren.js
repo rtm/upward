@@ -26,7 +26,7 @@ export default testGroup(
       return testGroup(
         "basic child handling",
         [
-          test("construct elt with child",  _ => e = keepRendered('div', {}, c)),
+          test("construct elt with child",  _ => e = keepRendered('div', c)),
           test("child is there",            _ => assert.equal(e.childNodes.length, 1)),
           test("delete child",              _ => c.pop()),
           test("child is gone",             _ => assert.equal(e.childNodes.length, 0))
@@ -40,7 +40,7 @@ export default testGroup(
       return testGroup(
         "basic attribute handling",
         [
-          test("construct elt with title",  _ => e = keepRendered('div', {title: 'test'})),
+          test("construct elt with title",  _ => e = keepRendered('div', [], {title: 'test'})),
           test("title is there",            _ => assert.ok(e.hasAttribute('title')))
         ]
       );

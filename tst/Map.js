@@ -39,7 +39,7 @@ export default testGroup(
     }(),
 
     function() {
-      var hash = upwardifyProperties({array: [1, 2, 3]})
+      var hash = upwardifyProperties({array: [1, 2, 3]});
       var b;
       return testGroup(
         "Upwardly changed array",
@@ -54,7 +54,7 @@ export default testGroup(
 
     function() {
       var a = [1, 2, 3];
-      var hash = upwardifyProperties({fn: identity})
+      var hash = upwardifyProperties({fn: identity});
       var b;
       return testGroup(
         "Upwardly changed function",

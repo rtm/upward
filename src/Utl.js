@@ -2,9 +2,6 @@
 // =================
 
 // Setup.
-import {mapObject} from './Obj';
-import {fixed} from './Fun';
-
 var {create} = Object;
     
 // Create an array of a sequence of integers.
@@ -98,6 +95,7 @@ function copyOnto(a1, a2) {
 }
 
 // Create an array of unique values.
+// @TODO replace this logic using Set.
 function uniqueize(a) {
   return a.filter((elt, i) => a.indexOf(elt) === i);
 }
@@ -110,6 +108,11 @@ function indexesOf(a, elt) {
     ret.push(index++);
   }
   return ret;
+}
+
+// Interleave an element into an array (adding at end too).
+function interleave(a1, elt) {
+  return [].concat(...a1.map(v => [v, elt]));
 }
 
 // Create an array of running totals, etc.
@@ -177,18 +180,18 @@ function makeCounterMap() {
 
 var prototypeFns = {
   tail, sum, swap, append, replace, mapInPlace, omit, copyOnto, uniqueize,
-  indexesOf, runningMap, runningTotal, filterInPlace, chainPromises
+  indexesOf, interleave, runningMap, runningTotal, filterInPlace, chainPromises
 };
 
 // Allow in-place modifier functions to be applied to array as `this`.
-if (!Array.prototype.tail) {
-  Object.defineProperties(
-    Array.prototype,
-    mapObject(prototypeFns, v => (
-      { value(...args) { return v(this, ...args); } }
-    ))
-  );
-}
+// if (!Array.prototype.tail) {
+//   Object.defineProperties(
+//     Array.prototype,
+//     mapObject(prototypeFns, v => (
+//       { value(...args) { return v(this, ...args); } }
+//     ))
+//   );
+// }
 
 export {
   seq,
@@ -206,6 +209,7 @@ export {
   copyOnto,
   uniqueize,
   indexesOf,
+  interleave,
   runningMap,
   runningTotal,
   filterInPlace,

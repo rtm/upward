@@ -7,7 +7,7 @@ var {assign} = Object;
 var upwardConfig = {
   LOGGING: true,
   DEBUG: true,
-	MODIFY_BUILTIN_PROTOTYPES: true,
+	MODIFY_BUILTIN_PROTOTYPES: false,
 	TEST: false
 };
 

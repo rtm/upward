@@ -109,6 +109,6 @@ function _keepRendered(tagName, params) {
   return result;
 }
 
-export default function(tagName, attrs = {}, children = []) {
+export default function(tagName, children = [], attrs = {}) {
   return _keepRendered(tagName, {attrs, children});
 }

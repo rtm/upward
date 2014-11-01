@@ -2,6 +2,7 @@
 // =====================
 
 // Setup.
+// This module has no dependencies.
 var {keys, create, assign, observe, unobserve} = Object;
 
 // Make an observation handler, given a target and an object of handlers

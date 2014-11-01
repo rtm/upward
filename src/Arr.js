@@ -14,11 +14,11 @@ var {defineProperty, defineProperties} = Object;
 
 // Place the methods on the Array and Upwardable prototype.
 var methodMap = {
-  as: keepMapped,
-  by: keepSorted,
-  if: keepFiltered,
-  of: keepSliced,
-  up: keepReversed,
+  as:   keepMapped,
+  by:   keepSorted,
+  if:   keepFiltered,
+  of:   keepSliced,
+  up:   keepReversed,
   uniq: keepUnique
 };
 

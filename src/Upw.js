@@ -4,6 +4,7 @@ import {objectToString, valueize, mapObject} from './Obj';
 import {upwardConfig, upwardableId}          from './Cfg';
 import {tickify, maybeify}                   from './Fun';
 import {observeObject, makeObserver}         from './Obs';
+import {omit}                                from './Utl';
 
 var {create, keys, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;
@@ -60,7 +61,7 @@ function Upwardable(v, options = {}, upwards = []) {
   var u = assign(create(upwardablePrototype), {
     valueOf()         { return valueize(v); },
     upward(fn)        { upwards.push(fn); },
-    unupward(fn)      { upwards.omit(fn); },
+    unupward(fn)      { omit(upwards, fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
   });
 

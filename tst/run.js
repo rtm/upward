@@ -10,33 +10,11 @@ import assTests from './Ass';
 import funTests from './Fun';
 import renTests from './Ren';
 
-import {BUTTON} from '../src/U';
-
-import {runTests, testGroup, skip, consoleReporter, testCssRules} from '../src/Tst';
+import keepRendered from '../src/Ren';
+import keepMapped   from '../src/Map';
+import {BUTTON, TEXT, DIV, R} from '../src/U';
+import {runTests, testGroup, skip, consoleReporter, htmlReporter, testCssRules} from '../src/Tst';
 import {createCSSStyleSheet, insertCSSStyleRules} from '../src/Css';
-
-var testDiv = document.createElement('div');
-
-document.body.appendChild(testDiv);
-
-// Styles
-// ------
-var sheet = createCSSStyleSheet(testDiv, true);
-
-insertCSSStyleRules(sheet, [
-  ["details > *",   { marginLeft: "24px"   }],
-  ["details > div", { marginLeft: "48px"   }],
-]);
-insertCSSStyleRules(sheet, testCssRules);
-
-var sheet2 = createCSSStyleSheet();
-insertCSSStyleRules(sheet2, [
-  ["body",          { fontFamily: "sans-serif" }]
-]);
-
-
-//var reporter = new HtmlReporter(testDiv, {hide: {children: true, time: true}});
-//reporter = new ConsoleReporter({collapsed: false});
 
 var tests = testGroup(
   "All tests",
@@ -49,9 +27,26 @@ var tests = testGroup(
     funTests,
     assTests,
     renTests.unskip()
-  ]
+  ],
+  { pause: 1000 }
 );
 
-runTests(tests).then(
-  v => consoleReporter(v, {hide: {children: true}})
-);
+var results = runTests(tests, true);
+var testDiv = DIV(htmlReporter(results));
+
+// Styles
+// ------
+var sheet = createCSSStyleSheet(testDiv, true);
+insertCSSStyleRules(sheet, [
+  ["details > *",   { marginLeft: "24px"   }],
+  ["details > div", { marginLeft: "48px"   }],
+]);
+insertCSSStyleRules(sheet, testCssRules);
+
+var sheet2 = createCSSStyleSheet();
+insertCSSStyleRules(sheet2, [
+  ["body",          { fontFamily: "sans-serif" }]
+]);
+
+document.body.appendChild(R('h1', [TEXT("Upward Tests")]));
+document.body.appendChild(testDiv); // GO!

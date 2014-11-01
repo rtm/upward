@@ -7,11 +7,11 @@
 // HTML and console reporters are provided.
 
 // Setup.
-import keepRendered     from '../src/Ren';
-import {spawn, timeout} from '../src/Asy';
-import {makeStopwatch, sum}  from '../src/Utl';
-import {assignAdd}      from '../src/Obj';
-import {parseBody}      from '../src/Fun';
+import {spawn, timeout}      from './Asy';
+import {makeStopwatch, sum}  from './Utl';
+import {assignAdd}           from './Obj';
+import {parseBody}           from './Fun';
+import {TEXT, R, M, DIV, DETAILS, SUMMARY} from './U';
 
 const INSTALL_SHOULD = false;
 
@@ -60,7 +60,7 @@ function consoleReporter(reports, {hide}) {
   hide = hide || {};
   (function _consoleReporter(reports) {
     reports.forEach(
-      ({children, desc, status, counts}) => {
+      ({children, desc, status, counts, time, code}) => {
         let countStr = makeCounts(counts);
         let color    = statusInfo[status].color;
         let colorStr = `color: ${color}`;
@@ -78,7 +78,30 @@ function consoleReporter(reports, {hide}) {
   })(reports);
 }
 
-// HTML reporter
+// HTML reporter; returns an Array of DOM nodes.
+function htmlReporter(reports, options = {}) {
+  var {hide} = options;
+  hide = hide || {};
+
+  function htmlReporterOne({children, desc, status, counts, time, code}) {
+    var text = [TEXT(desc)];
+    var attrs = {class: {[status]: true}};
+    if (children) {
+      return R(
+        'details',
+        [
+          R('summary', text, attrs),
+          DIV(htmlReporter(children, options))
+        ],
+        hide.children ? {} : {open: true}
+      );
+    } else {
+      return DIV(text);
+    }
+  }
+
+  return M(reports, htmlReporterOne);
+}
 
 // Test creators
 // -------------
@@ -98,16 +121,18 @@ function testGroup(desc, tests, options = {}) {
         var counts = {fail: 0, pass: 0, skip: 0};
         var children = [];
         var group = {desc, children, counts, time: 0, status: 'skip'};
-        reporter.push(group);
 
+        // Run each test in the group.
         for (var t of tests) {
           yield t(children, !t._unskip && (t._skip || skipping));
+          if (options.pause) { yield timeout(options.pause); }
         }
 
         children.forEach(g => assignAdd(counts, g.counts));
         let allSkip = counts.skip && !keys(counts).some(k => k !== 'skip' && counts[k]);
         group.status = allSkip ? 'skip' : counts.fail ? 'fail' : 'pass';
         group.time = sum(children.map(c => c.time));
+        reporter.push(group);
       }
       
     );
@@ -170,9 +195,10 @@ function test(desc, fn, options = {}) {
 }
 
 // Run tests, returning a promise with the results.
-function runTests(tests) {
+function runTests(tests, options, skipping) {
   var result = [];
-  return tests(result).then(_ => result);
+  tests(result, skipping);
+  return result;
 }
 
 // Exports
@@ -180,7 +206,7 @@ function runTests(tests) {
 export {
   // Reporters.
   consoleReporter,
-//  htmlReporter,
+  htmlReporter,
 
   // Test creators.
   test,

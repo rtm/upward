@@ -3,7 +3,7 @@
 
 // Setup.
 import {dasherize} from './Str';
-import {mirrorProperties} from './Obs';
+//import {mirrorProperties} from './Obs';
 
 var {assign} = Object;
 
@@ -16,7 +16,7 @@ var makeScopedStyleId = id => 's' + id;
 // "Scopify" a set of selectors to an element identifed by a data-scoped-style-ids attribute.
 // Each selector is turned into two selectors.
 // The first places the `[data-...]` selector in front, to address descendnats.
-// The second attaches it to the first subslector, to address the element itself.
+// The second attaches it to the first subselector, to address the element itself.
 function scopifySelectors(selectors, scope_id) {
   var scoper = `[data-${dasherize(scopedStyleIdsProp)}~=${scope_id}]`;
   return [].concat(

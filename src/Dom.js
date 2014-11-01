@@ -38,6 +38,8 @@ var BUTTON = function(label, handler) {
 // ### SPAN
 var SPAN = argify(keepRendered, 'span');
 var DIV  = argify(keepRendered, 'div');
+var DETAILS = argify(keepRendered, 'details');
+var SUMMARY = argify(keepRendered, 'summary');
 
 // ### TextNode
 var TEXT = function(text) {
@@ -73,4 +75,4 @@ function HTML(strings, ...values) {
   return fragment;
 }
 
-export {INPUT, BUTTON, DIV, TEXT, SPAN, HTML};
+export {INPUT, BUTTON, DIV, TEXT, SPAN, HTML, DETAILS, SUMMARY};

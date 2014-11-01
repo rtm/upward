@@ -18,8 +18,11 @@ export {
   BUTTON,
   DIV,
   TEXT,
-  SPAN
+  SPAN,
+  DETAILS,
+  SUMMARY
 } from './Dom';
+
 
 export {
   valueize as                  V
