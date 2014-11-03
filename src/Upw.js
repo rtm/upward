@@ -6,7 +6,7 @@ import {tickify, maybeify}                   from './Fun';
 import {observeObject, makeObserver}         from './Obs';
 import {omit}                                from './Utl';
 
-var {create, keys, assign, defineProperty} = Object;
+var {create, keys, assign, defineProperty, getNotifier, freeze} = Object;
 var {push, unshift} = Array.prototype;
 
 // Unused?
@@ -23,30 +23,25 @@ function Upwardable(v, options = {}, upwards = []) {
   function toString() { return `upwardable on ${objectToString(options)}`; }
   var {once, later, disable} = options;
 
-	if (isUpwardable(v)) { return upwardableFromUpwardable(v); }
+  if (isUpwardable(v)) { return upwardableFromUpwardable(v); }
 
-//	var send_upward = tickify(function(nv) {
-//    upwards.forEach(fn => fn(valueize(nv), valueize(v), u, options));
-//	});
-
-	var send_upward = function(nv, oldv) {
-    upwards.forEach(fn => fn(valueize(nv), valueize(oldv), u, options));
-	};
+  //      var send_upward = tickify(function(nv) {
+  //    upwards.forEach(fn => fn(valueize(nv), valueize(v), u, options));
+  //      });
 
   // Provide an accessor (getter/setter) to apply to object properties
   // (with `#define`).
   // The getter returns the upwardable itself.
-  // The setter notifies upward dependencies, and sets the internal value.
+  // The setter notifies a change.
   // The property must be enumerable so we copy or `assign` it.
   var accessor = {
     get: function()   { 
-			return capture(u);
+      return capture(u);
     },
     set: function(nv) {
       if (!disable && v !== nv) {
-        let oldv = v;
-        v = nv;
-				send_upward(v, oldv);
+        let [oldv, v] = [v, nv];
+        notifier.notify({type: update, name: 'val', value: nv, oldValue: oldv});
         disable = once;
       }
     },
@@ -64,6 +59,7 @@ function Upwardable(v, options = {}, upwards = []) {
     unupward(fn)      { omit(upwards, fn); },
     define(o, p)      { return defineProperty(o, p, accessor); },
   });
+  var notifier = getNotifier(u);
 
   u.define(u, 'val');
   
@@ -77,7 +73,7 @@ function Upwardable(v, options = {}, upwards = []) {
 // There are legitimate use cases for an upwardable based on an upwardable.
 // In this case, the inferior upwardable simply reports changes to the superior one.
 function upwardableFromUpwardable(u) {
-	console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.");
+  console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.");
   var u2 = Upwardable(valueize(u));
   upward(u, nv => u2.val = nv);
   return u2;
@@ -91,13 +87,13 @@ var upwardablePrototype = {};
 // and uses the return value as the new value.
 // @TODO: factor out basic notion of upwardifying function.
 function addUpwardablePrototypeTransformingMethod(name) {
-	upwardablePrototype[name] = function() {
-		console.assert(valueize(this)[name], `'${name}' not defined on '${this}'`);
-		var get = v => v[name]();
-		var u = Upwardable(get(valueize(this)));
-		upward(this.val, nv => u.val = get(nv));
-		return u;
-	};
+  upwardablePrototype[name] = function() {
+    console.assert(valueize(this)[name], `'${name}' not defined on '${this}'`);
+    var get = v => v[name]();
+    var u = Upwardable(get(valueize(this)));
+    upward(this.val, nv => u.val = get(nv));
+    return u;
+  };
 }
 
 ['toUpperCase'].forEach(addUpwardablePrototypeTransformingMethod);
@@ -238,13 +234,13 @@ export {
   Upwardable,
   computedUpwardable,
   upwardifyProperties,
-	upwardifyWithObjectParam,
+  upwardifyWithObjectParam,
   isUpwardable,
   upward,
   unupward,
   upwardify,
-	mirrorProperties,
-	upwardCapture,
+  mirrorProperties,
+  upwardCapture,
   upwardablePrototype,
   upwardifiedObject,
   valueizeObject
