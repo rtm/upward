@@ -38,7 +38,7 @@ var testDiv = DIV(htmlReporter(results));
 // ------
 var sheet = createCSSStyleSheet(testDiv, true);
 insertCSSStyleRules(sheet, [
-  ["details > *",   { marginLeft: "24px"   }],
+  ["detail",       { marginLeft: "24px"   }],
   ["details > div", { marginLeft: "48px"   }],
 ]);
 insertCSSStyleRules(sheet, testCssRules);

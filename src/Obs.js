@@ -2,11 +2,12 @@
 // =====================
 
 // Setup.
-// This module has no dependencies.
+// This module has no dependencies; please keep it that way.
 var {keys, create, assign, observe, unobserve} = Object;
 
 // Make an observation handler, given a target and an object of handlers
 // with function-valued keys such as "add", "delete", and "update".
+// Keys of the form `type_name`, such as `update_a`, may also be given.
 // Map the signature to match `Array#forEach`, with changerec as 4th arg.
 // After all changes are handled, the 'end' hook is called.
 var observerPrototype = {
@@ -14,10 +15,11 @@ var observerPrototype = {
     var saveObject;
     changes.forEach(change => {
       let {type, object, name} = change;
-      let fn = this[type];
+      // If handler includes a method named `type_name`, use that.
+      let fn = this[type + '_' + name] || this[type] || (_ => undefined);
       saveObject = object;
 //      if (type === 'update' && name === 'length') { type = 'length'; }
-      if (fn) { fn(object[name], name, object, change); }
+      fn(object[name], name, object, change);
     });
     if (this.end) { this.end(saveObject); }
 	}
@@ -41,13 +43,25 @@ var asyncObserverPrototype = {
   }
 };
 
+// Prepare the list of `type`s to pass to O.o, based on handler methods.
+// Even if only `end` is present, we need to add `add` etc.
+// If handler named `type_name` is there, register `type` as handled.
+function getTypesFromHandlers(handlers) {
+  var types = keys(handlers);
+  types = types.map(k => k.replace(/_.*/, ''));
+  if (types.indexOf('end') !== -1) {
+    types.push('add', 'update', 'delete');
+  }
+  return types;
+}
+  
 // Make an observer from a hash of handlers for observation types.
 // This observer can be passed to `observeObject`.  
 function makeObserver(handlers) {
   console.assert(handlers && typeof handlers === 'object', "Argument to makeObserver must be hash.");
 	var handler = assign(create(observerPrototype), handlers);
 	var observer = handler.handle.bind(handler);
-  observer.keys = keys(handlers);
+  observer.keys = getTypesFromHandlers(handlers);
 	return observer;
 }
 

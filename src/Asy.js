@@ -1,6 +1,8 @@
 // Asynchronous functions
 // ======================
 
+var {assign, defineProperty} = Object;
+
 // Run values from a generator through promises.
 // Return a promise for when everything is done.
 function spawn(generator) {
@@ -31,16 +33,52 @@ function timeout(ms = 0) {
 // Implement Promise.done.
 // Set Promise.onDoneError to trap errors.
 function _throw(e) { throw e; }
-function promiseDone(fulfill, reject) {
-  this
-    .then(fulfill, reject)
-    .catch(e => setTimeout(Promise.onDoneError || _throw, 1, e))
-  ;
+if (!Promise.prototype.done) {
+  defineProperty(Promise.prototype, 'done', {
+    value: function(fulfill, reject) {
+      return this
+        .then(fulfill, reject)
+        .catch(e => setTimeout(Promise.onDoneError || _throw, 1, e));
+    }
+  });
 }
-Promise.prototype.done = Promise.prototype.done || promiseDone;
+
+// Implement `get` on promises.
+if (!Promise.prototype.get) {
+  defineProperty(Promise.prototype, 'get', {
+    value: function(prop) { return this.then(o => o[prop]); }
+  });
+}
+
+// Implement `defer`, which returns an object with the promise and resolve and reject methods.
+if (!Promise.defer) {
+  defineProperty(Promise, 'defer', {
+    value() {
+      var ret = {};
+      ret.promise = new Promise((resolve, reject) => assign(ret, {resolve, reject}) );
+      return ret;
+    }
+  });
+}
+
+// Promise queues.
+// See https://github.com/kriskowal/gtor.
+function PromiseQueue() {
+  var ends = Promise.defer();    // not in spec, but in Chrome
+  this.put = function (value) {
+    var next = Promise.defer();
+    ends.resolve({head: value, tail: next.promise});
+    ends.resolve = next.resolve;
+  };
+  this.get = function () {
+    var result = ends.promise.get('head');
+    ends.promise = ends.promise.get('tail');
+    return result;
+  };
+}
 
 export {
   spawn,
   timeout,
-  promiseQueue
+  PromiseQueue
 };

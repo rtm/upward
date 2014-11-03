@@ -29,6 +29,18 @@ function sum(a) {
   return a.reduce(plus);
 }
 
+function arrayMax(a) {
+  return Math.max(...a);
+}
+
+function arrayMin(a) {
+  return Math.min(...a);
+}
+
+function arrayMean(a) {
+  return sum(a) / a.length;
+}
+
 // Swap the elements of a tuple in place.
 function swap(a) {
   [a[1], a[2]] = a;
@@ -198,6 +210,9 @@ export {
   tail,
   plus,
   sum,
+  arrayMax,
+  arrayMin,
+  arrayMean,
   swap,
   append,
   omit,

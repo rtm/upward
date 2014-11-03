@@ -96,7 +96,7 @@ function htmlReporter(reports, options = {}) {
         hide.children ? {} : {open: true}
       );
     } else {
-      return DIV(text);
+      return DIV(text, attrs);
     }
   }
 
