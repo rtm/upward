@@ -9,9 +9,8 @@ import mapTests from './Map';
 import assTests from './Ass';
 import funTests from './Fun';
 import renTests from './Ren';
+import upwTests from './Upw';
 
-import keepRendered from '../src/Ren';
-import keepMapped   from '../src/Map';
 import {BUTTON, TEXT, DIV, R} from '../src/U';
 import {runTests, testGroup, skip, consoleReporter, htmlReporter, testCssRules} from '../src/Tst';
 import {createCSSStyleSheet, insertCSSStyleRules} from '../src/Css';
@@ -26,12 +25,13 @@ var tests = testGroup(
     mapTests,
     funTests,
     assTests,
-    renTests.unskip()
+    renTests,
+    upwTests.unskip(),
   ],
   { pause: 1000 }
 );
 
-var results = runTests(tests, true);
+var results = runTests(tests, {}, true);
 var testDiv = DIV(htmlReporter(results));
 
 // Styles

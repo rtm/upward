@@ -4,28 +4,18 @@ function keepify(fn, resultType) {
 
     function end() { var result = fn.apply(...inputs); }
 
-    // When inputs are initialized or change, tear down and set up observers.
-    function add(v, i, o, {oldValue}) {
-      if (oldValue  && typeof oldValue === 'object') { observeObject  (oldValue, inputObserver); }
-      if (v         && typeof v        === 'object') { unbserveObject (v,        inputObserver); }
-    }
-  
-    var result   = resultType();
-    var inputs   = [this, ...args];
-    var notifier = inputs.getNotifier();
-    var inputObserver = makeObserver({end() { notifier.notify({type: 'modify'}); } });
-    
-    // Watch for upward changes on inputs and valueize them.
-    inputs = inputs.map((v, i) => {
-      upward(v, vv => inputs[i] = vv);
-      return valueize(v);
-    });
+    var result = resultType();
+    var inputs = [this, ...args];
 
-    observeObjectNow(inputs, makeObserver({add, update: add, end, modify: end}));
+    // call the fn now and see what the type of result is.
+    // Also, do capturing here.
+    
+    inputs = inputs.map(valueize);
+    observeObjectNow(inputs, makeObserver({end}));
+ 
     return result;
   };
 }
-
 
 function COUNTER(delay = 1000, start = 0) {
 } 

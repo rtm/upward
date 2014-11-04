@@ -67,7 +67,7 @@ function makeObserver(handlers) {
 
 // Invoke Object.observe with only the types available to be handled.
 function observeObject(o, observer) {
-  return o && typeof o === 'object' && return observe(o, observer, observer.keys);
+  return o && typeof o === 'object' && observe(o, observer, observer.keys);
 }
 
 function observeObjectNow(o, observer) {
