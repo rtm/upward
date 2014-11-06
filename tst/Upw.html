@@ -34,7 +34,7 @@
       var a = U(5);
       console.log(a);
       Object.observe(a, console.log.bind(console), ['update', 'add', 'modify']);
-      a.val = 6;
+      a.set(6);
       console.log(a);
 
       console.log("-------------");

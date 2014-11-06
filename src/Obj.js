@@ -4,38 +4,23 @@
 // Setup. No dependencies, and keep it that way.
 var {keys, assign, observe, unobserve} = Object;
 
+function isObject(o) {
+  return o && typeof o === 'object';
+}
+
 // Generic version of `valueOf` which works for anything.
-/*jshint eqnull:true */
-function valueize(v) { return v == null ? v : v.valueOf(); }
+function valueize(v) { return isObject(o) ? v.valueOf() : v; }
 
 // User-friendly representation of an objectd.
 function objectToString(o) {
   return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
 }
 
-function propGetter(v) {
-  return function(o) {
-    return o[v];
-  };
-}
-
-function propValueGetter(v) {
-  return function(o) {
-    return valueize(o[v]);
-  };
-}  
-
-function thisPropGetter(v) {
-  return function() {
-    return this[v];
-  };
-}
-
-function thisPropValueGetter(v) {
-  return function() {
-    return valueize(this[v]);
-  };
-}
+// Make functions to return properties, in various flavors.
+function propGetter         (v) { return o => o[v]; }
+function propValueGetter    (v) { return o => valueize(o[v]); }
+function thisPropGetter     (v) { return function() { return this[v]; }; }
+function thisPropValueGetter(v) { return function() { return valueize(this[v]); }; }
 
 // Analog of `Array#map` for objects.
 function mapObject(o, fn, ctxt) {
@@ -47,6 +32,7 @@ function mapObject(o, fn, ctxt) {
   return result;
 }
 
+// Map an object's values, replacing existing ones.
 function mapObjectInPlace(o, fn, ctxt) {
   for (let pair of objectPairs(o)) {
     let [key, val] = pair;
@@ -55,7 +41,13 @@ function mapObjectInPlace(o, fn, ctxt) {
   return o;
 }
 
-// "Invert" an object.
+// Overwrite one object entirely with another one.
+function copyOntoObject(o1, o2) {
+  keys(o1).forEach(key => (delete o1[key]));
+  return assign(o1, o2);
+}
+
+// "Invert" an object, swapping keys and values.
 function invertObject(o) {
   var result = {};
   for (let pair of objectPairs(o)) {
@@ -93,7 +85,7 @@ function valueizeObject(o) { return mapObject(o, valueize); }
 
 // Get a value down inside an object, based on a "path" (array of property names).
 function valueFromPath(o, path = []) {
-  return path.reduce((ret, seg) => ret && typeof ret === 'object' && ret[seg], o);
+  return path.reduce((ret, seg) => isObject(ret) && ret[seg], o);
 }
 
 // Return an aray all of the values of which are evaluated.
@@ -133,12 +125,14 @@ function makeAssigner(fn) {
 var assignAdd = makeAssigner((a, b) => a + b);
 
 export {
+  isObject,
   objectToString,
   propGetter,
   propValueGetter,
   thisPropGetter,
   mapObject,
   mapObjectInPlace,
+  copyOntoObject,
   invertObject,
   reduceObject,
   objectFromPairs,
