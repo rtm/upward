@@ -2,16 +2,16 @@ function keepify(fn, resultType) {
 
   return function(...args) {
 
-    function end() { var result = fn.apply(...inputs); }
+    function compute  { return fn.apply(...inputs.map(valueize)); }
+    function modify() { result = compute(); }
 
-    var result = resultType();
-    var inputs = [this, ...args];
+    var result = compute();
+    var inputs = U([this, ...args]);
 
     // call the fn now and see what the type of result is.
     // Also, do capturing here.
     
-    inputs = inputs.map(valueize);
-    observeObjectNow(inputs, makeObserver({end}));
+    observeObject(inputs, makeObserver({modify}));
  
     return result;
   };

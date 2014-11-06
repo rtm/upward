@@ -1,7 +1,7 @@
 // Object utilities
 // ===============
 
-// Setup
+// Setup. No dependencies, and keep it that way.
 var {keys, assign, observe, unobserve} = Object;
 
 // Generic version of `valueOf` which works for anything.
@@ -28,6 +28,12 @@ function propValueGetter(v) {
 function thisPropGetter(v) {
   return function() {
     return this[v];
+  };
+}
+
+function thisPropValueGetter(v) {
+  return function() {
+    return valueize(this[v]);
   };
 }
 

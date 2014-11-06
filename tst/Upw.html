@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+
+<!-- 
+     HTML for Upward test runner.
+     Modify run.js to configure tests.
+-->
+
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Upward Test Runner</title>
+    
+    <link rel="icon" type="image/png" href="../ass/img/upward.png"/>
+
+    <!-- testing libraries -->
+    <script src="http://chaijs.com/chai.js"></script>  
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/sinon.js/1.7.3/sinon.js"></script>
+    
+    <!-- traceur -->
+    <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+    <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+    <script>traceur.options.experimental = true;</script>
+    
+    <!-- livereload -->
+    <script>
+      document.write('<' + 'script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+    </script>
+  </head>
+
+  <body>
+    <script type="module">
+      import {U} from '../src/Upw';
+      var a = U(5);
+      console.log(a);
+      Object.observe(a, console.log.bind(console), ['update', 'add', 'modify']);
+      a.val = 6;
+      console.log(a);
+
+      console.log("-------------");
+      var b = U({a:1})
+      console.log(b);
+    </script>
+  </body>
+
+</html>

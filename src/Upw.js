@@ -1,199 +1,187 @@
-// Convenience.
-
-import {objectToString, valueize, mapObject} from './Obj';
-import {upwardConfig, upwardableId}          from './Cfg';
-import {observeObject, unobserveObject, makeObserver}         from './Obs';
-import {omit}                                from './Utl';
-
-var {create, keys, assign, defineProperty, getNotifier, freeze} = Object;
-var {push, unshift} = Array.prototype;
-
-// Unused?
-function makeUpwardableProperty(o, p) {
-  return Upwardable(o[p], {o, p}).defineAsProperty(o, p);
-}
-
-// ### Upwardable
+// Upwardable
+// ==========
 
 // The heart and soul of the upward library.
-// An object which remembers its value and upward destinations.
+// Define An object which remembers its value and can report on changes.
 
+// Convenience.
+// No dependencies. Keep it that way.
+
+var {create, keys, assign, getNotifier, freeze, observe, unobserve} = Object;
+
+// Upwardable prototype. Heavily adorned elsewhere with methods.
+// Here we just define the `value` property which gets and sets underlying value.
+// This permits constructions such as `upwardable.value++`.
 var upwardablePrototype = {
-  toString() { return `upwardable on ${objectToString(options)}`; },
+  value: {
+    get: function() { return capture(this); },
+    set: function(v) {
+      var old = this.get();
+      if (old === v) { return; }
+      if (old && typeof old === 'object') tearDownUnderlyingObject(this);
+      this.set(v);
+      if (v   && typeof v   === 'object') setUpUnderlyingObject   (this);
 
-  // Make an observer on upwardable properties.
-  // This is to turn `modify` events into `update` events on the object.
-  makeUpwardablePropertyObserver(p) {
-    return function(changes) {
-      changes.forEach(
-        change =>
-          notifier.notify({type: 'update', name: p, object: v, oldValue: change.oldValue})
-      );
-    };
-  },
-
-  // Observe an upwardable property.
-  // This is to allow its `modify` events can be reported as `update`s on the object.
-  // Store the observer, so it can be removed.
-  function observeUpwardableProperty(p) {
-    var {v} = this;
-    if (v && typeof v === 'object' && p in v) {
-      let prop = v[p];
-      if (isUpwardable(prop)) {
-        Object.observe(
-          prop,
-          upwardablePropertyObservers[p] = this.makeUpwardablePropertyObserver(p),
-          'modify'
-        );
-      }
-    }
-  },
-  
-  // Unobserve an upwardable property.
-  // This would be necessary when the property value changes.
-  unobserveUpwardableProperty(p) {
-    var {v, upwardablePropertyObservers} = this;
-    var observer = upwardablePropertyObservers[p];
-    if (observer) {
-      Object.unobserve(v[p], observer);
-      delete upwardablePropertyObservers[p];
-    }
-  },
-
-  observeAllUpwardableProperties() {
-    var {v} = this;
-    if (v && typeof v === 'object') {
-      keys(v).forEach(this.observeUpwardableProperty, this);
-    }
-  },
-
-  unobserveAllUpwardableProperties() {
-    var {v} = this;
-    if (v && typeof v === 'object') {
-      keys(v).forEach(this.unobserveUpwardableProperty, this);
-    }
-  },
-
-  upwardablePropertiesObserver(changes) {
-    changes.forEach(change => {
-      var {type, name} = change;
-      switch (type) {
-      case 'update':
-      case 'add':    this.observeUpwardableProperties  (name); break;
-      case 'delete': this.unobserveUpwardableProperties(name); break;
-      }
-    });
-  },
-
-  observeUpwardableProperties() {
-    var {v} = this;
-    if (v && typeof v === 'object') {
-      Object.observe(v, this.upwardablePropertiesObserver);
-    }
-  },
-  
-  unobserveUpwardableProperties() {
-    var {v} = this;
-    if (v && typeof v === 'object') {
-      Object.unobserve(v, this.upwardablePropertiesObserver);
-    }
-  },
-  
-  // Listen for 'modify' events on upwardable properties in an object.
-  // Pass them along as if the property value itself had changed.
-  modifyObserver(changes) {
-    changes.forEach(change => {
-      if (change.type === 'modify') { this.notifier.notify(change.change); }
-    });
-  },
-
-  // Loop over all properties, observing them for 'modify' events if they are upwardables.
-  observeObjectProperties() {
-    var {v} = this;
-    mapObject(v, vv => {
-      if (isUpwardable(vv)) { Object.observe(vv, modifyObsever); }
-    });
-  },
-
-  valueOf()  { return valueize(this.v); },
-  //  upward(fn) { upwards.push(fn); },
-  //    unupward(fn)      { omit(upwards, fn); },
-  define(o, p)      { return defineProperty(o, p, accessor()); },
-
-};
-
-// Provide an accessor (getter/setter) to apply to object properties
-// (with `#define`).
-// The getter returns the upwardable itself.
-// The setter notifies a change.
-// The property must be enumerable so we copy or `assign` it.
-// Notify the upwardable itself that underlying value has changed,
-// using the `modify` change type.
-var accessor = {
-  return {
-    get: function()   { 
-      return capture(this);
-    },
-    set: function(nv) {
-      var {v} = this;
-      if (v !== nv) {
-        let oldv;
-        
-        this.unobserveUpwardProperties();
-        [oldv, this.v] = [v, nv];
-        this.observeUpwardProperties();
-        
-        notifier.notify({type: 'modify', name: 'val', object: this, oldValue: oldv});
-      }
+      // Issue a 'modify' change on the upwardable.
+      getNotifier(this).notify({type: 'modify', object: this, oldValue: old});
     },
     enumerable: true
   }
 };
 
-defineProperty(UpwardablePrototype, 'val', accessor);
+// Create a new upwardable.
+// This is an ultra-lightweight object wrapping a value with getter and setter.
+function createUpwardable(v) {
+  console.assert(arguments.length === 1, "createUpwardable() takes exactly one argument.");
+  console.assert(!isUpwardable(v), "Cannot create upwardable from upwardable.");
 
-function Upwardable(v, options = {}, upwards = []) {
-
-  if (!this || !(this instanceof Upwardable)) {
-    return new Upwardable(v, options);
-  }
-
-  defineProperties(this, {
-    v: { value: v, writeable: true},
-    notifier: { value: getNotifier(u) },
-    upwardablePropertyObservers: { value: [] }
+  var u = create(upwardablePrototype, {
+    valueOf: { value: _  => u.value },   // get value, with capture handling
+    get:     { value: _  => v       },   // get raw value
+    set:     { value: nv => v = nv  }    // set raw value
   });
 
-  observeObject  (v, notify);
-  
-  if (upwardConfig.DEBUG) {
-    assign(u, {id: upwardableId(), toString});
-  }
+  setUpUnderlyingObject(u);
+  return freeze(u);
 }
 
-// There are legitimate use cases for an upwardable based on an upwardable.
-// In this case, the inferior upwardable simply reports changes to the superior one.
-function upwardableFromUpwardable(u) {
-  console.assert(isUpwardable(u), "Parameter to upwardableFromUpwardable must be upwardable.");
-  var u2 = Upwardable(valueize(u));
-  upward(u, nv => u2.val = nv);
-  return u2;
+// Constructor for upwardable object.
+// Skip construction and return an existing upwardable if one exists.
+function U(v) {
+  console.assert(arguments.length === 1, "U() takes exactly one argument.");
+
+  return isUpwardable(v) ? v : 
+    isUpwardified(v) || createUpwardable(v);
 }
 
-// Add a prototype method to Upwardable that takes the value as `this`,
-// and uses the return value as the new value.
-// @TODO: factor out basic notion of upwardifying function.
-function addUpwardablePrototypeTransformingMethod(name) {
-  upwardablePrototype[name] = function() {
-    console.assert(valueize(this)[name], `'${name}' not defined on '${this}'`);
-    var get = v => v[name]();
-    var u = Upwardable(get(valueize(this)));
-    upward(this.val, nv => u.val = get(nv));
-    return u;
+function upwardableToString(u) {
+  console.assert(isUpwardable(u), "Cannot stringify non-upwardable object.");
+  return `U (=${u.get()})`;
+}
+
+// Make an observer for the underlying object.
+// First, pass add/update/delete changes on it to the upwardable.
+// Second, set up and tear down observers on upwardable properties in underlying object.
+// Finally, report a 'modify' type change.
+function makeUnderlyingObjectObserver(u) {
+  console.assert(isUpwardable(u), "Cannot make underlying object observer on non-upwardable.");
+
+  var notifier = getNotifier(u);
+  const type = 'modify';
+
+  return changes => {
+    changes.forEach(change => {
+      var {name, oldValue, object} = change;
+      var newValue = object[name];
+      if (isUpwardable(oldValue)) unobseveUpwardableProperty(u, oldValue);
+      if (isUpwardable(newValue))   obseveUpwardableProperty(u, newValue);
+      notifier.notify(change);
+    });
+    notifier.notify({type}); // should this be on the underlying object?
   };
 }
 
-['toUpperCase'].forEach(addUpwardablePrototypeTransformingMethod);
+// Set things up so changes to the underlying object are notified on the upwardable.
+// Store the observer in a weak map so we can unobserve it when tearing down.
+function setUpUnderlyingObject(u) {
+  console.assert(isUpwardable(u), "Cannot set up underlying object on non-upwardable.");
+  console.assert(isUpwardable(u.get()), "Cannot set up non-object underlying value.");
+
+  let observer = makeUnderlyingObjectObserver(u);
+  underlyingObjectObservers.set(u, observer);
+  observe(u.get(), observer);
+  observeUpwardableProperties(u);
+}
+
+// Tear down the previous observer on the underlying object when we get a new one.
+function tearDownUnderlyingObject(u) {
+  console.assert(isUpwardable(u), "Cannot tear down underlying object on non-upwardable.");
+  console.assert(isUpwardable(u.get()), "Cannot tear down non-object Underlying value.");
+
+  let observer = underlyingObjectObservers.get(u);
+  console.assert(observer, "Cannot find underlying object observer to tear down.");
+  unobserve(valueize(v), observer);
+  unobserveUpwardableProperties(u);
+}
+
+// Make an observer on an upwardable property in an upwardable's underlying object.
+// Used to observe `modify` events and turn them  into `update` events on the object.
+function makeUpwardablePropertyObserver(u, p) {
+  console.assert(isUpwardable(u), "Cannot make upwardable property observer on non-upwardable object.");
+  console.assert(isUpwardable(p), "Cannot make upwardable property observer on non-upwardable property.");
+
+  var notifier = getNotifier(u);
+  var notify   = change => notifier.notify({
+    type: 'update', name: p, object: u.v, oldValue: change.oldValue
+  });
+  return changes => changes.forEach(notify);
+}
+
+// Observe an upwardable property.
+// This is to allow its `modify` events can be reported as `update`s on the object.
+// Store the observer, so it can be removed.
+function observeUpwardableProperty(u, p) {
+  console.assert(isUpwardable(u), "Cannot observe upwardable property on non-upwardable.");
+  console.assert(isUpwardable(p), "Cannot observe non-upwardable property.");
+
+  var observer = makeUpwardablePropertyObserver(u, p);
+  upwardablePropertyObservers.set({u, p}, observer);
+  observe(p, observer, 'modify');
+}
+  
+// Unobserve an upwardable property.
+// This would be necessary when the property value changes.
+function unobserveUpwardableProperty(u, p) {
+  console.assert(isUpwardable(u), "Cannot unobserve upwardable property on non-upwardable.");
+  console.assert(isUpwardable(p), "Cannot unobserve non-upwardable property.");
+
+  var observer = upwardablePropertyObservers.get({u, p});
+  console.assert(observer, "Cannot find upwardable property observer to unobserve.");
+
+  Object.unobserve(p, observer);
+  upwardablePropertyObservers.delete({u, p});
+}
+
+// Find upwardable properties in underlying object, observe them.
+function observeUpwardableProperties(u) {
+  console.assert(isUpwardable(u), "Cannot observe upwardable propertyies on non-upwardable.");
+
+  var v = valueize(u);
+  var observe = argify(observeUpwardProperty, u);
+  keys(v).map(k => v[k]).filter(isUpwardable).forEach(observe);
+}
+
+function unobserveUpwardableProperties(u) {
+  console.assert(isUpwardable(u), "Cannot unobserve upwardable propertyies on non-upwardable.");
+
+  var v = valueize(u);
+  var unobserve = argify(unobserveUpwardProperty, u);
+  keys(v).map(k => v[k]).filter(isUpwardable).forEach(unobserve);
+}
+
+function makeUpwardablePropertiesObserver(u) {
+  return changes =>
+    changes.forEach(change => {
+      var {type, name} = change;
+      switch (type) {
+      case 'update':
+      case 'add':    observeUpwardableProperties  (u, name); break;
+      case 'delete': unobserveUpwardableProperties(u, name); break;
+      }
+    })
+  ;
+}
+
+// Listen for 'modify' events on upwardable properties in an object.
+// Pass them along as if the property value itself had changed.
+function modifyObserver(changes) {
+  changes.forEach(change => {
+    if (change.type === 'modify') { this.notifier.notify(change.change); }
+  });
+}
+
+// Capturing
+// ---------
 
 // Perform capture of upward references encountered during a computation.
 // Return tuple of result of computation and list of upwardables.
@@ -214,26 +202,6 @@ function capture(u) {
   return u;
 }
 
-// Check if something is upwardable, by looking for its `upward` property.
-function isUpwardable(u) {
-  return u && typeof u === 'object' && u.upward;
-}
-
-// Make something upwardable if it isn't already.
-function castUpwardable(u) {
-  return isUpwardable(u) ? u : Upwardable(u);
-}
-
-// Safely set an upward relationship, or not..
-function upward(o, fn) {
-  return isUpwardable(o) && o.upward(fn);
-}
-
-// Remove an upward relationship.
-function unupward(o, fn) {
-  return isUpwardable(o) && o.unupward(fn);
-}
-
 // Create an upwardable whose value is given by a function.
 // When any of the dependencies change, the value is recomputed,
 // triggering the upward behavior.
@@ -245,100 +213,38 @@ function computedUpwardable(fn, ctxt) {
   return u;
 }
 
-// Transform a function to make it upward-aware.
-// The first time, it calls the passed-in function, maintaining context.
-// When things change, it calls an alternative function.
-function upwardify(fn, changefn = fn) {
-  return function(v) {
-    upward(v, changefn.bind(this));
-    return fn.call(this, valueize(v));
-  };
+// Lists of upwardables and upwardifieds.
+// --------------------------------------
+
+// A list of all upwardables. Used to determine upwardified-ness.
+var upwardables = new WeakSet();
+
+// Is something an upwardable?
+function isUpwardable(u) {
+  return upwardables.has(Object(u));
 }
 
-// `upwardifyWithObjectParam` creates a function which takes a hash as its parameter.
-// On the first call, the underlying function is called with the cooked hash.
-// When properties in the hash change, a `changefn` is called with the key and new value.
-function upwardifyWithObjectParam(fn, changefn = fn) {
-  return function(o) {
-    upwardifyProperties(o);
-    keys(o).forEach(k => upward(o[k], nv => changefn.call(this, k, nv)));
-    return fn.call(this, valueizeObject(o));
-  };
+// A list of all objects which have been upwardified.
+// Used to prevent creating new upwardifieds on same object.
+var upwardifieds = new WeakMap();
+
+// Has something been upwardified?
+function isUpwardified(v) {
+  return upwardifieds.get(Object(v));
 }
 
+// A list of underlying object observers, indexed by upwardable.
+var underlyingObjectObservers = new WeakMap();
 
-// A common case for functions taking a hash as argument is to want to merge (assign)
-// the property/value pairs into an underlying hash, 
-// which should then be updated when the hash changes.
-// `upwardifyAssign` turns a hash into a function which modifies it.
-// It is passed on a function yielding the hash to be assigned to.
-function upwardifiedAssign(fn) {
-  return upwardifyWithObjectParam(
-    oo => assign(fn.call(this), oo),
-    (p, v) => fn.call(this)[p] = v
-  );
-}
-
-// `upwardifyProperty` modifies a single property on an object for upwardability.
-// This is mainly used from 'upwardifyProperties` below.
-function upwardifyProperty(o, p) {
-  castUpwardable(o[p]).define(o, p);
-  return o;
-}
-
-// `upwardifyProperties` modifies all properties in an object, in place, for upwardability.
-// A non-enumerable `upwardified` property is added to the object.
-// Note this is *not* the same as making the object itself upwardable.
-// Objects whose properties have been upwardified are recorded in a weakset.
-// @TODO: use a WeakSet for this to avoid polluting object.
-
-var upwardifiedObjectProp = '__upwardifed';
-
-function markUpwardifiedObject(o) {
-  defineProperty(o, upwardifiedObjectProp, { value: true });
-}
-
-function isUpwardifiedObject(o) {
-  return o[upwardifiedObjectProp];
-}
-
-function upwardifyProperties(o) {
-  if (!isUpwardifiedObject(o)) {
-    keys(o).forEach(k => upwardifyProperty(o, k));
-    markUpwardifiedObject(o);
-  }
-  return o;
-}
-
-// Create a mirrored object which is updated as the underlying object changes.
-// Dereference upwardable property values.
-function valueizeObject(o) {
-  var result = mapObject(o, valueize);
-  var upwardFuncs = {};
-
-  function _upward  (v, i) { upward(v, upwardFuncs[i] = nv => result[i] = valueize(nv)); }
-  function _unupward(v, i) { unupward(oldValue, upwardFuncs[i]); }
-
-  function add      (v, i)             { _upward(v, i); }
-  function update   (v, i, {oldValue}) { _unupward(oldValue, i); _upward(oldValue, i); }
-  function _delete  (v, i, {oldValue}) { _unupward(oldValue, i); delete upawrdFuncs[i]; }
-
-  observeObject(o, makeObserver({add, update, delete:_delete}));
-  return result;
-}
+// A list of observers for upwardable properties in underlying objects.
+// Indexed by {upwardable, upwardableProperty}.
+// Used to allow us to find and tearn down upwardable property observers.
+var upwardablePropertyObservers = new WeakMap();
 
 export {
-  Upwardable,
+  U,
   computedUpwardable,
-  upwardifyProperties,
-  upwardifyWithObjectParam,
   isUpwardable,
-  upward,
-  unupward,
-  upwardify,
-  mirrorProperties,
   upwardCapture,
-  upwardablePrototype,
-  upwardifiedObject,
-  valueizeObject
+  upwardablePrototype
 };
