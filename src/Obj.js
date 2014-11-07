@@ -9,7 +9,7 @@ function isObject(o) {
 }
 
 // Generic version of `valueOf` which works for anything.
-function valueize(v) { return isObject(o) ? v.valueOf() : v; }
+function valueize(v) { return isObject(v) ? v.valueOf() : v; }
 
 // User-friendly representation of an objectd.
 function objectToString(o) {

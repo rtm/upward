@@ -31,15 +31,17 @@
   <body>
     <script type="module">
       import {U} from '../src/Upw';
-      var a = U(5);
-      console.log(a);
-      Object.observe(a, console.log.bind(console), ['update', 'add', 'modify']);
-      a.set(6);
-      console.log(a);
+      //var a = U(5);
+      //onsole.log(a);
+      //Object.observe(a, console.log.bind(console), ['update', 'add', 'upward']);
+      //a.set(6);
+      //console.log(a);
+      //console.log(a.valueOf());
 
-      console.log("-------------");
       var b = U({a:1})
       console.log(b);
+      console.log(b.valueOf());
+      console.log(b.a);
     </script>
   </body>
 

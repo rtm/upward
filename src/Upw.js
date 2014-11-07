@@ -4,8 +4,29 @@
 // The heart and soul of the upward library.
 // Define An object which remembers its value and can report on changes.
 
+// The behavior of upwardables is as follows:
+//
+// `a = U(5) is an upwardable on a primitive.
+// `a` returns the upwardable.
+// To obtain its value, do `V(a)`.
+// `a = x` overwrites the variable, obviously.
+// `a.set(v)` is used to change the underlying value.
+// This generates an observable `'upward'` change on the upwarable.
+//
+// In something like `[1, 2, U(3), 4, 5]`, things work as expected.
+//
+// `a = U([1, 2, 3])` creates an upwardable on an array.
+// It is equivalent to `U([U(1), U(2), U(3)])`.
+// Therefore, `a[0]` returns an upwardable on 1.
+// Its value could be obtained by `+a[0]` or `V(a[0])`.
+// However, `a[0]` sets the **underlying value** on that upwardable.
+// Such a change is notified as an 'update' on the upwardable.
+// It can also be observed as an `'upward'` change on the upwardable.
+//
+// 
+
 // Convenience.
-var {create, keys, assign, getNotifier, freeze, observe, unobserve} = Object;
+var {create, keys, assign, getNotifier, observe, unobserve, defineProperty} = Object;
 
 import {isObject, valueize, mapObject} from './Obj';
 
@@ -41,7 +62,7 @@ function U(v) {
 // Return string representation of upwardable.
 function upwardableToString(u) {
   console.assert(upwardables.get(u), "Cannot stringify non-upwardable object.");
-  return `U (=${V(u)})`;
+  return `U (=${valueize(u)})`;
 }
 
 // Create a new upwardable.
@@ -50,40 +71,40 @@ function createUpwardable(v) {
   console.assert(arguments.length === 1, "createUpwardable() takes exactly one argument.");
   console.assert(!isUpwardable(v), "Cannot create upwardable from upwardable.");
 
-  var u, s, observer;
-
-  function shadow() {
-    s = Shadow(u);
-    observer = changes => changes.forEach(change => getNotifier(u).notify(change));
-    observe(s, observer);
-  }
-
-  function unshadow() {
-    unobserve(s, observer);
-  }
-
-  u = create(upwardablePrototype, {
+  var u = create(upwardablePrototype, {
     valueOf: { value: _  => v },   // get value, with capture handling
     set: {
       value: function(nv) {
         var oldValue = v;
         if (nv === v) { return; }
-        if (isObject(v)) unshadow();
+        if (isObject(v)) shadower.off();
         v = nv;
-        if (isObject(v)) shadow();
+        if (isObject(v)) shadower.on(v);
         
-        // Issue a 'modify' change on the upwardable.
-        getNotifier(u).notify({type: 'modify', object: u, oldValue});
+        // Notify an `'upward'` change on the upwardable.
+        getNotifier(u).notify({type: 'upward', object: u, oldValue});
       }
     }
   });
-  
-  shadow();
+
+  var shadower = makeShadower(u);
+  if (isObject(v)) shadower.on(v);
   return u;
 }
 
 // Upwardable prototype. Heavily adorned elsewhere with methods.
 var upwardablePrototype = {};
+
+function makeShadower(u) {
+  var s;
+  var notifier = getNotifier(u);
+  var observer = changes => changes.forEach(change => notifier.notify(change));
+
+  return {
+    on(v) { s = Shadow(v); observe(s, observer); },
+    off() { unobserve(s, observer); }
+  };
+}
 
 // Capturing
 // ---------
@@ -152,7 +173,17 @@ function createShadow(o) {
     unobserve(val, propertyObservers[k]);
   }
 
+  function upwardifyProperty(p) {
+    var u = U(o[p]);
+    defineProperty(o, p, {
+      set(v) { u.set(v); },
+      get()  { return u; }
+    });
+  }
+
   var shadow = mapObject(o, valueize);
+  keys(o).forEach(upwardifyProperty);
+  
   var propertyObservers = {};
   
   // Watch for changes in object, forward to shadow
@@ -161,7 +192,10 @@ function createShadow(o) {
     var newValue = o[name];
 
     if (type === 'delete') delete shadow[name];
-    else shadow[name] = valueize(newValue);
+    else {
+      shadow[name] = valueize(newValue);
+      upwardifyProperty(name);
+    }
         
     unobserveProperty(name, oldValue);
     observeProperty  (name, newValue);
