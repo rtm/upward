@@ -97,13 +97,13 @@ function makeSortfunc(key, desc) {
   };
 }
 
-// Copy an array into another one destructively
-function copyOnto(a1, a2) {
+// Copy a second array onto a first one destructively.
+function copyOntoArray(a1, a2) {
   for (let i = 0; i < a1.length; i++) {
-    a2[i] = a1[i];
+    a1[i] = a2[i];
   }
-  a2.length = a1.length;
-  return a2;
+  a1.length = a2.length;
+  return a1;
 }
 
 // Create an array of unique values.
@@ -191,7 +191,7 @@ function makeCounterMap() {
 }
 
 var prototypeFns = {
-  tail, sum, swap, append, replace, mapInPlace, omit, copyOnto, uniqueize,
+  tail, sum, swap, append, replace, mapInPlace, omit, copyOntoArray, uniqueize,
   indexesOf, interleave, runningMap, runningTotal, filterInPlace, chainPromises
 };
 
@@ -221,7 +221,7 @@ export {
   mapInPlace,
   repeat,
   makeSortfunc,
-  copyOnto,
+  copyOntoArray,
   uniqueize,
   indexesOf,
   interleave,

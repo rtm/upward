@@ -8,7 +8,7 @@ import keepMapped   from './Map';
 import keepFiltered from './Fil';
 
 export {
-  Upwardable as                U,
+  U,
   computedUpwardable as        C,
   upwardifyProperties as       P
 } from './Upw';

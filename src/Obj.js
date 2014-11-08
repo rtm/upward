@@ -41,10 +41,24 @@ function mapObjectInPlace(o, fn, ctxt) {
   return o;
 }
 
-// Overwrite one object entirely with another one.
+// Make a copy of something.
+function copyOf(o) {
+  if (Array.isArray(o)) return o.slice();
+  if (isObject(o)) return assign({}, o);
+  return o;
+}
+
+// Overwrite a first object entirely with a second one.
 function copyOntoObject(o1, o2) {
   keys(o1).forEach(key => (delete o1[key]));
   return assign(o1, o2);
+}
+
+// Copy a second object or array destructively onto a first one.
+function copyOnto(a1, a2) {
+  if (Array.isArray(a1) && Array.isArray(a2)) return copyOntoArray(a1, a2);
+  if (isObject     (a1) && isObject     (a2)) return copyOntoObject(a1, a2);
+  return (a1 = a2);
 }
 
 // "Invert" an object, swapping keys and values.
@@ -127,12 +141,19 @@ var assignAdd = makeAssigner((a, b) => a + b);
 export {
   isObject,
   objectToString,
+
   propGetter,
   propValueGetter,
   thisPropGetter,
+  thisPropValueGetter,
+
   mapObject,
   mapObjectInPlace,
+
+  copyOf,
   copyOntoObject,
+  copyOnto,
+
   invertObject,
   reduceObject,
   objectFromPairs,

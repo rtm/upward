@@ -61,9 +61,14 @@ function U(v) {
 
 // Return string representation of upwardable.
 function upwardableToString(u) {
-  console.assert(upwardables.get(u), "Cannot stringify non-upwardable object.");
-  return `U (=${valueize(u)})`;
+  console.assert(upwardables.has(u), "Cannot stringify non-upwardable object.");
+  return `U (='${valueize(u)}')`;
 }
+
+// Upwardable prototype. Heavily adorned elsewhere with methods.
+var upwardablePrototype = Object.create(null, {
+  toString: { value: function() { return upwardableToString(this); } }
+});
 
 // Create a new upwardable.
 // This is an ultra-lightweight object wrapping a value with getter and setter.
@@ -89,22 +94,71 @@ function createUpwardable(v) {
 
   var shadower = makeShadower(u);
   if (isObject(v)) shadower.on(v);
+  
   return u;
 }
 
-// Upwardable prototype. Heavily adorned elsewhere with methods.
-var upwardablePrototype = {};
-
+// Create on/off switches for handling object-valued upwardables.
 function makeShadower(u) {
-  var s;
-  var notifier = getNotifier(u);
-  var observer = changes => changes.forEach(change => notifier.notify(change));
 
-  return {
-    on(v) { s = Shadow(v); observe(s, observer); },
-    off() { unobserve(s, observer); }
-  };
-}
+  // Create an observer to set up new or deleted properties.
+  // Not tested and probably not working.
+  function observer(changes) {
+    notifier.notify(u, {type: 'upward'});
+    changes.forEach(change => {
+      var {type, name} = change;
+      switch (type) {
+      case 'delete': delete u[name]; break;
+      case 'add': upwardifyProperty(name);
+      }
+    });
+  }
+
+  // Turn on shadowing for an underlying object.
+  function on(v) {
+
+    // Set up a shadow property on upwardable.
+    function upwardifyProperty(p) {
+      var up = U(v[p]);
+      
+      // Place shadow properties directly on upwardable.
+      defineProperty(u, p, {
+        set(v) { up.set(v); },
+        get()  { return capture(up); },
+        enumerable: true
+      });
+      
+      // Pass through `'upward'` changes on upwardable properties as `'update'` events on shadowed prop.
+      observe(up, changes => changes.forEach(change => {
+        var {oldValue} = change;
+        const type = 'update';
+        notifier.notify({name: p, oldValue, type}); // what about object?
+      }), ['upward']);
+    }
+    
+    keys(v).forEach(upwardifyProperty);
+    
+    // Watch for properties being changed on underlying object.
+    // This applies, for instance, in case of `u = U(v); v.newprop = 99;`.
+    observe(v, observer);
+    
+    // Watch for properties being changed on upwarded object.
+    // This applies, for instance, in case of `u = U(v); u.newprop = 99;`.
+    // function upwardPropertiesObserver(changes) {
+    //   changes.forEach(change => notifier.notify({type: 'update', name: change.name}));
+    // }
+    // Report add/delete/update changes to upwardable as `'upward'` change type.
+    observe(u, changes => notifier.notify({type: 'upward'}));
+  }
+
+  // Turn off shadowing for an underlying object when swapped out.
+  // Not implemented.
+  function off(v) {
+  }
+  
+  var notifier = getNotifier(u);
+  return {on, off};
+} // makeShadower
 
 // Capturing
 // ---------
@@ -140,71 +194,6 @@ function computedUpwardable(fn, ctxt) {
   var u = Upwardable(fn());
   reporters.pop();
   return u;
-}
-
-// Shadowing
-// ---------
-
-// Create and maintain shadows of objects, whose upwardable properties are resolved.
-var shadows = new WeakMap();
-
-function Shadow(o) {
-  var shadow = shadows.get(o);
-  if (!shadow) {
-    shadow = createShadow(o);
-    shadows.set(o, shadow);
-  }
-  return shadow;
-}
-
-function createShadow(o) {
-  console.assert(arguments.length === 1, "createShadow() takes exactly one argument.");
-  console.assert(isObject(o), "Cannot create shadow of non-object.");
-  
-  function observeProperty(k, val) {
-    if (!isUpwardable(val)) return;
-    var observer = changes => change.forEach(change => shadow[k] = valueize(val));
-    propertyObservers[k] = observer;
-    observe(val, observer, 'modify');
-  }
-  
-  function unobserveProperty(k, val) {
-    if (!isUpwardable(val)) return;
-    unobserve(val, propertyObservers[k]);
-  }
-
-  function upwardifyProperty(p) {
-    var u = U(o[p]);
-    defineProperty(o, p, {
-      set(v) { u.set(v); },
-      get()  { return u; }
-    });
-  }
-
-  var shadow = mapObject(o, valueize);
-  keys(o).forEach(upwardifyProperty);
-  
-  var propertyObservers = {};
-  
-  // Watch for changes in object, forward to shadow
-  observe(o, changes => changes.forEach(change => {
-    var {type, name, oldValue} = change;
-    var newValue = o[name];
-
-    if (type === 'delete') delete shadow[name];
-    else {
-      shadow[name] = valueize(newValue);
-      upwardifyProperty(name);
-    }
-        
-    unobserveProperty(name, oldValue);
-    observeProperty  (name, newValue);
-  }));
-
-  // Observe upwardable properties on object.
-  mapObject(o, observeProperty);
-
-  return shadow;
 }
 
 export {
