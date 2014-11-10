@@ -91,6 +91,15 @@ function notifyRetroactively(object) {
   return object;
 }
 
+// Set up an observer and tear it down after the first report
+function observeOnce(object, observer, types) {
+  function _observer(changes) {
+    observer(changes);
+    unobserve(object, _observer);
+  }
+  observe(object, _observer, types);
+}
+
 // Keep an object in sync with another.
 function mirrorProperties(src, dest = {}) {
   function set(name) { dest[name] = src[name]; }
@@ -109,5 +118,6 @@ export {
   observeObjectNow,
   unobserveObject,
   notifyRetroactively,
+  observeOnce,
   mirrorProperties
 };

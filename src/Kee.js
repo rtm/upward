@@ -8,8 +8,10 @@ import {makeObserver} from './Obs';
 import {U} from './Upw';
 
 function keepify(fn) {
+
   return function(...args) {
-    
+
+    var xcompute = makeCapturer();
     function compute() {
       return fn.apply(
           ...valueize(inputs)
