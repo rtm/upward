@@ -149,6 +149,53 @@ function Capturer() {
   };
 }
   
+// Computables
+// ===========
+
+var computablePrototype = {
+  set(v)  { this.value = v; },
+  get(v)  { return this.value; },
+  valueOf { return this.value; },
+  addDependency(objprop) { this.dependencies.add(objprop); }
+  
+};
+
+function C(fn) {
+  var dependencies = new WeakSet();
+  var captures = new Map();
+
+  function addCapture({object, name}) {
+    var names = captures.get(object);
+    if (!names) { names = []; captures.set(object, names); }
+    names.push(name);
+  }
+  
+  function run() {
+    uninstallObservers();
+    installCapturer();
+    fn();
+    uninstallCapturer();
+    installObservers();
+  }
+
+  function installObservers() {
+    captures.forEach(({object, name}) => {
+      observe(object, fdkjdfjkdfjk, 'update');
+    });
+  }
+  
+  var c = create(computablePrototype, {
+    dependencies: { value: new WeakSet(); },
+    value: {
+      get() {},
+      set(v) { },
+    },
+  });
+
+  observe(c, run, 'upward');
+  return c;
+}
+
 
 function makeCapturer(u, fn) {
   var captures = new Set();
