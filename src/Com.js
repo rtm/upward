@@ -10,12 +10,13 @@
 var {create, assign, getNotifier, observe, unobserve, defineProperty} = Object;
 
 import {Observer} from './Obs';
+import {copyOnto, isObject} from './Obj';
 
 // A set of all computables.
 var computables = new WeakSet();
 
 function isComputable(c) {
-  return computables.has(c);
+  return isObject(c) && computables.has(c);
 }
 
 // A map of all functions which have been made into computables.
@@ -31,9 +32,6 @@ function C(f) {
 
 // Computable prototype. Heavily adorned elsewhere with methods.
 var computablePrototype = {
-  set(v)    { this.value = v; },
-  get()     { return this.value; },
-  valueOf() { return this.value; }
 };
 
 function createComputable(f) {
@@ -44,7 +42,6 @@ function createComputable(f) {
   var accesses = new Map();
   
   function observeAccess({object, name}) {
-    console.log("observeAccess", object, name);
     var accessor = accesses.get(object);
     if (accessor) {
       if (name && accessor.names) accessor.names.push(name);
@@ -53,10 +50,9 @@ function createComputable(f) {
       accessor = {
         names: name ? [name] : null,
         observer: Observer(object, function(changes) {
-          changes.forEach(change => {
-            console.log("detected change", change);
+          changes.forEach(({type, name}) => {
             if (!accessor.names ||
-                change.type === 'update' && accessor.names.indexOf(change.name) !== -1)
+                type === 'update' && accessor.names.indexOf(name) !== -1)
               notifier.notify({type: 'upward'});
           });
         })
@@ -69,22 +65,27 @@ function createComputable(f) {
     accesses.forEach(({observer}) => observer.unobserve());
     accesses.clear();
     accessNotifier.set(observeAccess);
-    f();
+    c.value = copyOnto(c.value, f());
     accessNotifier.clear();
     // apparently 'configure' change types are reported--why?
     accesses.forEach(({observer}) => observer.observe(['update', 'add', 'delete']));
   }
 
   var c = create(computablePrototype, {
-    value: {
-      get() {},
-      set(v) { },
+    valueOf: {
+      value: function() { return this.value; }
     },
+    value: {
+      value: undefined,
+      enumerable: true,
+      writable: true
+    }
   });
+  
   var notifier = getNotifier(c);
   observe(c, run, ['upward']);
-
   run();
+
   return c;
 }
 
@@ -94,25 +95,21 @@ var _accessNotifier;
 var accessNotifier = {
   clear:  function()             { _accessNotifier = null; },
   set:    function(notifier)     { _accessNotifier = notifier; },
-  notify: function(notification) { 
+  notify: function(notification) {
     if (_accessNotifier) _accessNotifier(notification) ;
   }
 };
 
-// `objectAccessNotifier` allows computables to request entire objects be watched.
-var _objectAccessNotifier;
-
-var objectAccessNotifier = {
-  clear:  function()             { _objectAccessNotifier = null; },
-  set:    function(notifier)     { _objectAccessNotifier = notifier; },
-  notify: function(notification) { 
-    if (_objectAccessNotifier) _objectAccessNotifier(notification) ;
-  }
-};
+// Convenience routine to allow functions to request an entire object be observed.
+// This would typically be called from within a computified function.
+function objectNotifier(o) {
+  accessNotifier.notify({object: o});
+}
 
 export {
   C,
   isComputable,
   computablePrototype,
-  accessNotifier
+  accessNotifier,
+  objectNotifier
 };

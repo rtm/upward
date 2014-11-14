@@ -30,14 +30,13 @@
 
   <body>
     <script type="module">
-      import {C, accessNotifier} from '../src/Com';
+      import {C, objectNotifier} from '../src/Com';
       import {U} from '../src/Upw';
-      var u = U([1]);
-      var aa = [1,2,3];
-      var x = C(function() { accessNotifier.notify({object: aa}); console.log("**VALUE**", u[0] + aa[1]); });
-      console.log("x is", x);
-      console.log("u is", u);
-      aa[1] = 99;
+      var u1 = U([1]);
+      var c = C(_ => u1[0]);
+      var u2 = U([c]);
+      Object.observe(u2, function(changes) { console.log("changes to u2 are", changes); });
+      u1[0] = 99;
     </script>
   </body>
 

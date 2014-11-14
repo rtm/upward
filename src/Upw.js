@@ -15,7 +15,8 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
-import {accessNotifier} from './Com';
+import {accessNotifier, isComputable} from './Com';
+import {valueize} from './Obj';
 
 var {create, keys, assign, getNotifier, observe, unobserve, defineProperty} = Object;
 var {set} = Map.prototype;
@@ -50,6 +51,14 @@ function createUpwardable(target) {
 
   // Set up a shadow property.
   function upwardifyProperty(name) {
+
+    if (isComputable(target[name])) {
+      observe(target[name], changes => changes.forEach(change => {
+        var {oldValue} = change;
+        notifier.notify({object, type: 'update', name, oldValue});
+      }));
+    }
+    
     defineProperty(object, name, {
       set: function(v) {
         var oldValue = target[name];
@@ -61,7 +70,7 @@ function createUpwardable(target) {
       get: function()  {
         const type = 'access';
         accessNotifier.notify({type, object, name});
-        return target[name];
+        return valueize(target[name]);
       },
       enumerable: true
     });

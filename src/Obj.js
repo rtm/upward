@@ -48,15 +48,27 @@ function copyOf(o) {
   return o;
 }
 
+// Copy a second array onto a first one destructively.
+function copyOntoArray(a1, a2) {
+  for (let i = 0; i < a2.length; i++) {
+    a1[i] = a2[i];
+  }
+  a1.length = a2.length;
+  return a1;
+}
+
 // Overwrite a first object entirely with a second one.
 function copyOntoObject(o1, o2) {
-  keys(o1).forEach(key => (delete o1[key]));
-  return assign(o1, o2);
+  assign(o1, o2);
+  keys(o1)
+    .filter(key => !(key in o2))
+    .forEach(key => (delete o1[key]));
+  return o1;
 }
 
 // Copy a second object or array destructively onto a first one.
 function copyOnto(a1, a2) {
-  if (Array.isArray(a1) && Array.isArray(a2)) return copyOntoArray(a1, a2);
+  if (Array.isArray(a1) && Array.isArray(a2)) return copyOntoArray (a1, a2);
   if (isObject     (a1) && isObject     (a2)) return copyOntoObject(a1, a2);
   return (a1 = a2);
 }
