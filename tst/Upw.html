@@ -30,9 +30,14 @@
 
   <body>
     <script type="module">
-      import {C} from '../src/Com';
-      var x = C(function() { });
-      console.log(x);
+      import {C, accessNotifier} from '../src/Com';
+      import {U} from '../src/Upw';
+      var u = U([1]);
+      var aa = [1,2,3];
+      var x = C(function() { accessNotifier.notify({object: aa}); console.log("**VALUE**", u[0] + aa[1]); });
+      console.log("x is", x);
+      console.log("u is", u);
+      aa[1] = 99;
     </script>
   </body>
 

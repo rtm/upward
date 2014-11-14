@@ -52,9 +52,10 @@ function createUpwardable(target) {
   function upwardifyProperty(name) {
     defineProperty(object, name, {
       set: function(v) {
-        var oldValue;
+        var oldValue = target[name];
         const type = 'update';
-        [oldValue, target[name]] = [target[name], v];
+        if (oldValue === v) return;
+        target[name] = v;
         notifier.notify({type, object, name, oldValue});
       },
       get: function()  {

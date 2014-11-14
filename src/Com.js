@@ -39,21 +39,29 @@ var computablePrototype = {
 function createComputable(f) {
   
   // The accesses map is indexed by object, with values of `{names: [], observer}`.
+  // `names` of null means to watch all types of changes.
   // It is built by calls to `observeAccess`, invoked through `accessNotifier`.
   var accesses = new Map();
   
   function observeAccess({object, name}) {
+    console.log("observeAccess", object, name);
     var accessor = accesses.get(object);
     if (accessor) {
-      accessor.names.push(name);
+      if (name && accessor.names) accessor.names.push(name);
+      else accessor.names = null;
     } else {
-      accessor.observer = Observer(object, function(changes) {
-        changes.forEach(change => {
-          if (!accessor.names || accessor.names.indexOf(change.name) !== -1) {
-            notifier.notify({type: 'upward'});
-          }
-        });
-      }, 'access');
+      accessor = {
+        names: name ? [name] : null,
+        observer: Observer(object, function(changes) {
+          changes.forEach(change => {
+            console.log("detected change", change);
+            if (!accessor.names ||
+                change.type === 'update' && accessor.names.indexOf(change.name) !== -1)
+              notifier.notify({type: 'upward'});
+          });
+        })
+      };
+      accesses.set(object, accessor);
     }
   }
   
@@ -63,7 +71,8 @@ function createComputable(f) {
     accessNotifier.set(observeAccess);
     f();
     accessNotifier.clear();
-    accesses.forEach(({observer}) => observer.observe());
+    // apparently 'configure' change types are reported--why?
+    accesses.forEach(({observer}) => observer.observe(['update', 'add', 'delete']));
   }
 
   var c = create(computablePrototype, {
@@ -79,13 +88,26 @@ function createComputable(f) {
   return c;
 }
 
-// The `accessNotifier` is exported to allow upwardables to report accesses.
+// `accessNotifier` allows upwardables to report property accesses.
 var _accessNotifier;
 
 var accessNotifier = {
   clear:  function()             { _accessNotifier = null; },
   set:    function(notifier)     { _accessNotifier = notifier; },
-  notify: function(notification) { _accessNotifier(notification); }
+  notify: function(notification) { 
+    if (_accessNotifier) _accessNotifier(notification) ;
+  }
+};
+
+// `objectAccessNotifier` allows computables to request entire objects be watched.
+var _objectAccessNotifier;
+
+var objectAccessNotifier = {
+  clear:  function()             { _objectAccessNotifier = null; },
+  set:    function(notifier)     { _objectAccessNotifier = notifier; },
+  notify: function(notification) { 
+    if (_objectAccessNotifier) _objectAccessNotifier(notification) ;
+  }
 };
 
 export {
