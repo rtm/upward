@@ -30,33 +30,9 @@
 
   <body>
     <script type="module">
-      import {U} from '../src/Upw';
-      import '../src/Kee';
-      import {valueize} from '../src/Obj';      
-
-      //var a = U(5);
-      //onsole.log(a);
-      //Object.observe(a, console.log.bind(console), ['update', 'add', 'upward']);
-      //a.set(6);
-      //console.log(a);
-      //console.log(a.valueOf());
-
-      //var b = U({a:1})
-      //console.log("upwardable is", b);
-      //console.log("valueof upwardable is", b.valueOf());
-      //console.log("prop is", b.a);
-      //console.log("valueof prop is", b.a.valueOf());
-      //Object.observe(b.a, function(changes) { console.log('event on b.a', changes); }, ['upward']);
-      //Object.observe(b, function(changes) { console.log('event on b', changes); }, ['upward', 'delete', 'add', 'update']);
-      //b.a = 2;
-
-      var a =['x', 'y'];
-      var b = U(a);
-      var result = b.join().log()
-      console.log("result is", valueize(result));
-      Object.observe(b, function(changes) { console.log("changes to b", changes); }, ['upward']);
-      b[0] = 'z';
-      console.log("new b[0] is", b[0], valueize(b[0]));
+      import {C} from '../src/Com';
+      var x = C(function() { });
+      console.log(x);
     </script>
   </body>
 

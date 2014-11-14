@@ -1,14 +1,15 @@
 // Computable
 // ==========
 
-// The **ccomputable** is one of the two key components of the upward library,
+// The **computable** is one of the two key components of the upward library,
 // along with the **upwardable**.
 // A **computable** is an enhanced function which recomputes itself
 // when its inputs change.
 
 // Convenience.
 var {create, assign, getNotifier, observe, unobserve, defineProperty} = Object;
-var {set} = Map.prototype;
+
+import {Observer} from './Obs';
 
 // A set of all computables.
 var computables = new WeakSet();
@@ -22,84 +23,74 @@ var computifieds = new WeakMap();
 
 // Constructor for computable.
 function C(f) {
-  if (isComputable(c)) return c;
-  var c = computifieds.get(c);
-  if (!c) {
-    c = createComputable(f);
-    computables.add(c);
-    computifieds.set(f, c);
-  }
+  var c = computifieds.get(f) || createComputable(f);
+  computables.add(c);
+  computifieds.set(f, c);
   return c;
 }
 
 // Computable prototype. Heavily adorned elsewhere with methods.
 var computablePrototype = {
-  set(v)  { this.value = v; },
-  get(v)  { return this.value; },
-  valueOf { return this.value; },
-  addDependency(objprop) { this.dependencies.add(objprop); }
-  
+  set(v)    { this.value = v; },
+  get()     { return this.value; },
+  valueOf() { return this.value; }
 };
 
 function createComputable(f) {
-  var dependencies = new WeakSet();
-  var captures = new Map();
-
-  function addCapture({object, name}) {
-    var names = captures.get(object);
-    if (!names) { names = []; captures.set(object, names); }
-    names.push(name);
+  
+  // The accesses map is indexed by object, with values of `{names: [], observer}`.
+  // It is built by calls to `observeAccess`, invoked through `accessNotifier`.
+  var accesses = new Map();
+  
+  function observeAccess({object, name}) {
+    var accessor = accesses.get(object);
+    if (accessor) {
+      accessor.names.push(name);
+    } else {
+      accessor.observer = Observer(object, function(changes) {
+        changes.forEach(change => {
+          if (!accessor.names || accessor.names.indexOf(change.name) !== -1) {
+            notifier.notify({type: 'upward'});
+          }
+        });
+      }, 'access');
+    }
   }
   
   function run() {
-    uninstallObservers();
-    installCapturer();
-    fn();
-    uninstallCapturer();
-    installObservers();
+    accesses.forEach(({observer}) => observer.unobserve());
+    accesses.clear();
+    accessNotifier.set(observeAccess);
+    f();
+    accessNotifier.clear();
+    accesses.forEach(({observer}) => observer.observe());
   }
 
-  function installObservers() {
-    captures.forEach(({object, name}) => {
-      observe(object, fdkjdfjkdfjk, 'update');
-    });
-  }
-  
   var c = create(computablePrototype, {
-    dependencies: { value: new WeakSet(); },
     value: {
       get() {},
       set(v) { },
     },
   });
+  var notifier = getNotifier(c);
+  observe(c, run, ['upward']);
 
-  observe(c, run, 'upward');
+  run();
   return c;
 }
 
+// The `accessNotifier` is exported to allow upwardables to report accesses.
+var _accessNotifier;
 
-function makeCapturer(u, fn) {
-  var captures = new Set();
-  var observer = changes => getNotifier(u).notify({type: 'upward'});
-  var result;
-  
-  return function run(...args) {
-    captures.forEach(capture => unobserve(capture, observer));
-    captures.clear();
-    {
-      capturers.unshift(capture => captures.set(capture));
-      result = fn.call(this, ...args);
-      capturers.shift();
-    }
-    captures.forEach(capture => observe(capture, observer));
-    return result;
-  };
-}
+var accessNotifier = {
+  clear:  function()             { _accessNotifier = null; },
+  set:    function(notifier)     { _accessNotifier = notifier; },
+  notify: function(notification) { _accessNotifier(notification); }
+};
 
 export {
-  U,
-  computedUpwardable,
-  isUpwardable,
-  upwardCapture,
-  upwardablePrototype
+  C,
+  isComputable,
+  computablePrototype,
+  accessNotifier
 };

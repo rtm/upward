@@ -112,6 +112,14 @@ function mirrorProperties(src, dest = {}) {
   return dest;
 }
 
+// Make an Observer object, which allows easy unobserving.
+function Observer(object, observer) {
+  return {
+    observe(types) { observe(object, observer, types); },
+    unobserve()    { unobserve(object, observer); }
+  };
+}
+
 export {
   makeObserver,
   observeObject,
@@ -119,5 +127,6 @@ export {
   unobserveObject,
   notifyRetroactively,
   observeOnce,
-  mirrorProperties
+  mirrorProperties,
+  Observer
 };

@@ -15,6 +15,8 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
+import {accessNotifier} from './Com';
+
 var {create, keys, assign, getNotifier, observe, unobserve, defineProperty} = Object;
 var {set} = Map.prototype;
 
@@ -57,7 +59,7 @@ function createUpwardable(target) {
       },
       get: function()  {
         const type = 'access';
-        capturer.notify({type, object, name});
+        accessNotifier.notify({type, object, name});
         return target[name];
       },
       enumerable: true
