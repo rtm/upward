@@ -8,7 +8,7 @@
 import {valueize, mapObject}            from './Obj';
 import {upwardConfig}                   from './Cfg';
 import {argify}                         from './Fun';
-import {Upwardable, upward}             from './Upw';
+import U                                from './Upw';
 import {makeObserver, observeObject}    from './Obs';
 
 var {create, assign, defineProperty} = Object;

@@ -106,8 +106,10 @@ function objectNotifier(o) {
   accessNotifier.notify({object: o});
 }
 
+C.objectNotifier = objectNotifier;
+C.is = isComputable;
+export default C;
 export {
-  C,
   isComputable,
   computablePrototype,
   accessNotifier,

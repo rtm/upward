@@ -2,7 +2,7 @@
 // ==========================
 
 import keepSliced from '../src/Slc';
-import {test, testGroup, expect, should, assert} from '../src/Tst';
+import {test, testGroup, assert} from '../src/Tst';
 
 var a = [1,2,3,4,5,6,7,8,9,10], b;
 

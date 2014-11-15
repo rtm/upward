@@ -1,7 +1,7 @@
 // keepReversed: Keep an array in reversed order.
 // ==============================================
 
-import {upward, valueizeObject} from './Upw';
+import {U, valueizeObject} from './Upw';
 import {makeObserver, observeObject, unobserveObject, observeObjectNow} from './Obs';
 import {mapObject} from './Obj';
 import {noop} from './Fun';

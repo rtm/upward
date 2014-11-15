@@ -2,7 +2,6 @@
 
 import {test, testGroup, assert} from '../src/Tst';
 import keepAssigned from '../src/Ass';
-import {upwardifyProperties} from '../src/Upw';
 import {invert, identity, debugify} from '../src/Fun';
 import {propGetter, propValueGetter, valueize} from '../src/Obj';
 

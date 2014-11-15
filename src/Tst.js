@@ -11,7 +11,10 @@ import {spawn, timeout}      from './Asy';
 import {makeStopwatch, sum}  from './Utl';
 import {assignAdd}           from './Obj';
 import {parseBody}           from './Fun';
-import {TEXT, R, M, DIV, DETAILS, SUMMARY} from './U';
+import {TEXT, DIV, DETAILS, SUMMARY} from './Dom';
+import R                     from './Ren';
+import M                     from './Map';
+import U                     from './Upw';
 
 const INSTALL_SHOULD = false;
 
@@ -87,7 +90,7 @@ function htmlReporter(reports, options = {}) {
     var text = [TEXT(desc)];
     var attrs = {class: {[status]: true}};
     if (children) {
-      return R(
+      return keepRendered(
         'details',
         [
           R('summary', text, attrs),
@@ -120,7 +123,8 @@ function testGroup(desc, tests, options = {}) {
       function *() {
         var counts = {fail: 0, pass: 0, skip: 0};
         var children = [];
-        var group = {desc, children, counts, time: 0, status: 'skip'};
+        const time = 0;
+        var group = {desc, children: U(children), counts, time, status: 'skip'};
 
         // Run each test in the group.
         for (var t of tests) {

@@ -3,7 +3,6 @@
 
 // Setup.
 import {dasherize} from './Str';
-//import {mirrorProperties} from './Obs';
 
 var {assign} = Object;
 

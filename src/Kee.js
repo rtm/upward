@@ -2,40 +2,9 @@
 
 var {observe, defineProperties} = Object;
 
-import {upwardablePrototype} from './Upw';
+import C                            from './Com';
 import {valueize, copyOnto, copyOf} from './Obj';
-import {makeObserver} from './Obs';
-import {U} from './Upw';
-
-function keepify(fn) {
-
-  return function(...args) {
-
-    var xcompute = makeCapturer();
-    function compute() {
-      return fn.apply(
-          ...valueize(inputs)
-          .map(valueize)
-          .map(copyOf)
-      );
-    }
-
-    function upward() {
-      copyOnto(valueize(result), compute());
-      // issue upward event?
-    }
-    
-    var inputs = U([this, ...args]);
-    var result = U(compute());
-    
-    // call the fn now and see what the type of result is.
-    // Also, do capturing here.
-    
-    observe(inputs, makeObserver({upward}));
- 
-    return result;
-  };
-}
+import {makeObserver}               from './Obs';
 
 var join   = keepify(function(d)        { return this.join(d);      });
 var max    = keepify(function()         { return Math.max(...this); });

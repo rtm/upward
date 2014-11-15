@@ -6,11 +6,12 @@
 // Also handles subobjects.
 
 // Convenience.
-import {valueize, mapObject, objectFromPairs, propGetter} from './Obj';
-import {upwardConfig, upwardableId}          from './Cfg';
-import {argify}                              from './Fun';
-import {Upwardable, upward}                  from './Upw';
-import {makeObserver, observeObject}         from './Obs';
+import {isObject, valueize, mapObject, objectFromPairs, propGetter} from './Obj';
+import {upwardConfig, upwardableId}   from './Cfg';
+import {argify}                       from './Fun';
+import U                              from './Upw';
+import {makeObserver, observeObject}  from './Obs';
+import {replace}                      from './Utl';
 
 var {create, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;
@@ -42,7 +43,7 @@ function calcProp(ka, p) {
 
 // Place a key in the kept object.
 function placeKey(ka, v, k, pusher) {
-  if (v && typeof v === 'object') {
+  if (isObject(v)) {
     if (k in ka) {
       _keepAssigned(ka[k], v, pusher);
     } else {
@@ -53,7 +54,7 @@ function placeKey(ka, v, k, pusher) {
       ka[k].val = calcProp(ka, k);
     } else { 
       defineProperty(ka, k, {
-        get() { return Upwardable(findFirstProp(ka.objs, k)); },
+        get() { return U(findFirstProp(ka.objs, k)); },
         enumerable: true
       });
       //upward(v, ka[k]);
@@ -87,8 +88,9 @@ function _keepAssigned(ka, o, pusher = unshift) {
     replace(ka.objs, o, _o);
     recalc(ka);
   }
-  
-  upward(o, objectChanged);
+
+  // @TODO: figure out how to handle this.
+  //  upward(o, objectChanged);
   
   function key(v, k) {
     placeKey(ka, v, k);
@@ -126,4 +128,4 @@ function isKeepAssigned(o) {
 }
 
 export default keepAssigned;
-export {isKeepAssigned};
+export {isKeepAssigned}; //needed?

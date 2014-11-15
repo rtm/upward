@@ -1,6 +1,6 @@
 import {sum}                   from './Utl';
 import keepMapped              from './Map';
-import {upwardCapture, upward} from './Upw';
+import U                       from './Upw';
 import {observeObject}         from './Obs';
 
 var {observe} = Array;

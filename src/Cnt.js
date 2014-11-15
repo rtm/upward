@@ -1,7 +1,7 @@
 // Upward-capable counter.
 // =======================
 
-import {Upwardable, upward}        from './Upw';
+import U                           from './Upw';
 import {valueizeObject, mapObject} from './Obj';
 import {observeObjectNow}          from './Obs';
 

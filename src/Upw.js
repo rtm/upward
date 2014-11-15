@@ -105,8 +105,8 @@ function createUpwardable(target) {
   return object;
 }
 
+U.is = isUpwardable;
+export default U;
 export {
-  U,
-  isUpwardable,
   upwardablePrototype
 };

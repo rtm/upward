@@ -1,17 +1,14 @@
 // Re-export external interfaces, so clients can import from this single module.
 
-import './Evt';
-import './Arr';
-import keepAssigned from './Ass';
+//import './Evt';
+//import './Arr';
+//import keepAssigned from './Ass';
 import keepRendered from './Ren';
-import keepMapped   from './Map';
-import keepFiltered from './Fil';
+import M from './Map';
+import C from './Com';
+import U from './Upw';
 
-export {
-  U,
-  computedUpwardable as        C,
-  upwardifyProperties as       P
-} from './Upw';
+//import keepFiltered from './Fil';
 
 export {
   INPUT,
@@ -22,7 +19,6 @@ export {
   DETAILS,
   SUMMARY
 } from './Dom';
-
 
 export {
   valueize as                  V
@@ -42,6 +38,11 @@ export {
 export {
   keepAssigned as              A,
   keepRendered as              R,
-  keepMapped as                M,
+  M,
   keepFiltered as              F
+};
+
+export {
+  U,
+  C
 };

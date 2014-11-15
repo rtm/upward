@@ -2,7 +2,7 @@
 // =================================================
 
 // Bookkeeping and initialization.
-import {upward, unupward, Upwardable, upwardify, upwardifyWithObjectParam} from './Upw';
+import U from './Upw';
 
 import {dasherize}                   from './Str';
 import {mapObject, valueize, valueizeObject}   from './Obj';
@@ -100,7 +100,7 @@ function _keepRendered(tagName, params) {
   var childrenObserver = makeChildrenObserver(result);
   var paramsObserver = makeParamsObserver();  
 
-  mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
+  //mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
   params = valueizeObject(params);
   params.attrs = keepAssigned(params.attrs, {style: {}, class: {}, dataset: {}}, push);
   params.children = params.children || [];

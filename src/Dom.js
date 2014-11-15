@@ -2,12 +2,11 @@
 // ===========================
 
 // Bookkeeping and initialization.
-import {Upwardable, upwardify, upwardifyWithObjectParam} from './Upw';
-
-import {dasherize}         from './Str';
-import {mapObject}         from './Obj';
-import {argify}            from './Fun';
-import keepRendered        from './Ren';
+import U              from './Upw';
+import {dasherize}    from './Str';
+import {mapObject}    from './Obj';
+import {argify}       from './Fun';
+import keepRendered   from './Ren';
 
 var {createTextNode, createElement} = document;
 var {appendChild}                   = HTMLElement.prototype;

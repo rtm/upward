@@ -1,7 +1,7 @@
 // keepSorted: Keep an array in sorted order.
 // ==========================================
 
-import {upward, unupward, valueizeObject, upwardCapture} from './Upw';
+import U from './Upw';
 import {makeObserver, observeObject, unobserveObject, observeObjectNow} from './Obs';
 import {valueize, mapObject} from './Obj';
 import {noop, identity} from './Fun';

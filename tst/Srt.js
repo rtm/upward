@@ -2,7 +2,7 @@
 
 import keepSorted from '../src/Srt';
 import {test, testGroup, assert} from '../src/Tst';
-import {upwardifyProperties} from '../src/Upw';
+import {U} from '../src/Upw';
 import {invert, identity, debugify} from '../src/Fun';
 import {propGetter, propValueGetter} from '../src/Obj';
 
@@ -39,7 +39,7 @@ export default testGroup(
     }(),
 
     function() {
-      var hash = upwardifyProperties({array: [3, 2, 1]});
+      var hash = U({array: [3, 2, 1]});
       var b;
       return testGroup(
         "Upwardly changed array",
@@ -54,7 +54,7 @@ export default testGroup(
 
     function() {
       var a = [3, 2, 1];
-      var hash = upwardifyProperties({fn: identity});
+      var hash = U({fn: identity});
       var b;
       return testGroup(
         "Upwardly changed function",
@@ -68,7 +68,7 @@ export default testGroup(
     }(),
     
     function() {
-      var a = [upwardifyProperties({v:3}), upwardifyProperties({v:2}), upwardifyProperties({v:1})];
+      var a = [U({v:3}), U({v:2}), U({v:1})];
       var fn = propGetter('v');
       var fn1 = propValueGetter('v');
       var b;

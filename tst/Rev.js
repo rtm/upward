@@ -2,7 +2,7 @@
 
 import keepReversed from '../src/Rev';
 import {test, testGroup, assert} from '../src/Tst';
-import {upwardifyProperties} from '../src/Upw';
+import {U} from '../src/Upw';
 
 export default testGroup(
   "module Rev (keepReversed, Array#up)",
@@ -50,7 +50,7 @@ export default testGroup(
     }(),
 
     function() {
-      var hash = upwardifyProperties({array: [1, 2, 3]});
+      var hash = U({array: [1, 2, 3]});
       var b;
       return testGroup(
         "Upwardly changed array",
@@ -65,7 +65,7 @@ export default testGroup(
     
     function() {
       var a = [1, 2, 3];
-      var hash = upwardifyProperties({order: false});
+      var hash = U({order: false});
       var b;
       return testGroup(
         "Upwardly changed order",

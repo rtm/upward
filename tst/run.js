@@ -1,32 +1,35 @@
 // Test harness for upward
 // =======================
 
-import slcTests from './Slc';
-import tstTests from './Tst';
-import revTests from './Rev';
-import srtTests from './Srt';
-import mapTests from './Map';
-import assTests from './Ass';
-import funTests from './Fun';
-import renTests from './Ren';
+import comTests from './Com';
 import upwTests from './Upw';
+//import slcTests from './Slc';
+//import tstTests from './Tst';
+//import revTests from './Rev';
+//import srtTests from './Srt';
+//import mapTests from './Map';
+//import assTests from './Ass';
+//import funTests from './Fun';
+//import renTests from './Ren';
 
-import {BUTTON, TEXT, DIV, R} from '../src/U';
+import {TEXT, DIV} from '../src/Dom';
+import R           from '../src/Ren';
 import {runTests, testGroup, skip, consoleReporter, htmlReporter, testCssRules} from '../src/Tst';
 import {createCSSStyleSheet, insertCSSStyleRules} from '../src/Css';
 
 var tests = testGroup(
   "All tests",
   [
-    tstTests,
-    slcTests,
-    revTests,
-    srtTests,
-    mapTests,
-    funTests,
-    assTests,
-    renTests,
-    upwTests.unskip(),
+    comTests.unskip(),
+    upwTests
+//    slcTests,
+//    tstTests,
+//    revTests,
+//    srtTests,
+//    mapTests,
+//    funTests,
+//    assTests,
+//    renTests
   ],
   { pause: 1000 }
 );

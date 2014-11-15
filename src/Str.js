@@ -19,7 +19,7 @@ function dasherize(str) {
 }
 
 if (upwardConfig.MODIFY_BUILTIN_PROTOTYPE) {
-  String.prototype.camelize =  function() { return camelize(this);  };
+  String.prototype.camelize =  function() { return camelize (this); };
   String.prototype.dasherize = function() { return dasherize(this); };
 }
 
