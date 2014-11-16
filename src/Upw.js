@@ -44,7 +44,8 @@ function U(v) {
 }
 
 // Upwardable prototype. Heavily adorned elsewhere with methods.
-var upwardablePrototype = Object.create(null);
+// Give upwardables all array prototype methods.
+var upwardablePrototype = Object.create(Array.prototype);
 
 // Create a new upwardable.
 function createUpwardable(target) {

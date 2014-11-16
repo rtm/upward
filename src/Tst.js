@@ -9,7 +9,7 @@
 // Setup.
 import {spawn, timeout}      from './Asy';
 import {makeStopwatch, sum}  from './Utl';
-import {assignAdd}           from './Obj';
+import {assignAdd, mapObject} from './Obj';
 import {parseBody}           from './Fun';
 import {TEXT, DIV, DETAILS, SUMMARY} from './Dom';
 import R                     from './Ren';
@@ -59,8 +59,8 @@ function makeCounts(counts) {
 }
 
 // Console reporter, which reports results on the console.
-function consoleReporter(reports, {hide}) {
-  hide = hide || {};
+function consoleReporter(reports, options = {}) {
+  var hide = options.hide || {};
   (function _consoleReporter(reports) {
     reports.forEach(
       ({children, desc, status, counts, time, code}) => {

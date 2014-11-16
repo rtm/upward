@@ -35,7 +35,10 @@ var tests = testGroup(
 );
 
 var results = runTests(tests, {}, true);
-var testDiv = DIV(htmlReporter(results));
+var testDiv = DIV();//htmlReporter(results));
+setTimeout(function() {
+  consoleReporter(results);
+});
 
 // Styles
 // ------

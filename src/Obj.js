@@ -25,18 +25,20 @@ function thisPropValueGetter(v) { return function() { return valueize(this[v]); 
 // Analog of `Array#map` for objects.
 function mapObject(o, fn, ctxt) {
   var result = {};
-  for (var pair of objectPairs(o)) {
-    let [key, val] = pair;
-    result[key] = fn.call(ctxt, val, key, o);
+  for (var key in o) {
+    if (o.hasOwnProperty(key)) {
+      result[key] = fn.call(ctxt, o[key], key, o);
+    }
   }
   return result;
 }
 
 // Map an object's values, replacing existing ones.
 function mapObjectInPlace(o, fn, ctxt) {
-  for (let pair of objectPairs(o)) {
-    let [key, val] = pair;
-    o[key] = fn.call(ctxt, val, key, o);
+  for (let key in o) {
+    if (o.hasOwnProperty(key)) {
+      o[key] = fn.call(ctxt, o[key], key, o);
+    }
   }
   return o;
 }
