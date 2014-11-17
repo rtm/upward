@@ -15,7 +15,7 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
-import {accessNotifier, isComputable} from './Com';
+import {accessNotifier, isComputed} from './Com';
 import {valueize} from './Obj';
 
 var {create, keys, assign, getNotifier, observe, unobserve, defineProperty} = Object;
@@ -53,7 +53,7 @@ function createUpwardable(target) {
   // Set up a shadow property.
   function upwardifyProperty(name) {
 
-    if (isComputable(target[name])) {
+    if (isComputed(target[name])) {
       observe(target[name], changes => changes.forEach(change => {
         var {oldValue} = change;
         notifier.notify({object, type: 'update', name, oldValue});

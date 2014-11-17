@@ -30,13 +30,14 @@
 
   <body>
     <script type="module">
-      import {C, objectNotifier} from '../src/Com';
-      import {U} from '../src/Upw';
-      var u1 = U([1]);
-      var c = C(_ => u1[0]);
-      var u2 = U([c]);
-      Object.observe(u2, function(changes) { console.log("changes to u2 are", changes); });
-      u1[0] = 99;
+      import {log} from '../src/Kee';
+      import U from '../src/Upw';
+      import C from '../src/Com';
+      var a = U({x:1});
+      var f = C(q => { console.log(q, q.x); });
+      f(a);
+      a.x = 2;
+      setTimeout(() => a.x = 3, 10);
     </script>
   </body>
 
