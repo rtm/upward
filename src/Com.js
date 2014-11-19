@@ -18,9 +18,9 @@ var computables  = new WeakSet();
 var computeds    = new WeakSet();
 var computifieds = new WeakMap();
 
-function isComputable (c)    { return isObject(c)  && computables .has(c); }
-function isComputed   (c)    { return isObject(c)  && computeds   .has(c); }
-function getComputable(f)    { return isObjectd(f) && computifieds.get(f); }
+function isComputable (c)    { return isObject(c) && computables .has(c); }
+function isComputed   (c)    { return isObject(c) && computeds   .has(c); }
+function getComputable(f)    { return isObject(f) && computifieds.get(f); }
 function addComputable(f, c) { computables.add(c); computifieds.set(f, addComputable); }
 function addComputed  (c)    { computeds.add(c); }
 
