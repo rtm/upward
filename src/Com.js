@@ -40,7 +40,7 @@ var computedPrototype = {
 
 function createComputable(f) {
 
-  return function computable(...args) {
+  function computable(...args) {
 
     // @TODO: observe arguments
 
@@ -72,11 +72,17 @@ function createComputable(f) {
     }
     
     function run() {
+      accessNotifier.notify({type: 'update',  object: c, name: 'value'});
+      
       accesses.forEach(({observer}) => observer.unobserve());
       accesses.clear();
-      accessNotifier.set(observeAccess);
-      c.value = copyOnto(c.value, call());
-      accessNotifier.clear();
+      {
+        accessNotifier.push(observeAccess);
+        {
+          c.value = copyOnto(c.value, call());
+        }
+        accessNotifier.pop();
+      }
       // apparently 'configure' change types are reported--why?
       accesses.forEach(({observer}) => observer.observe(['update', 'add', 'delete']));
     }
@@ -97,19 +103,19 @@ function createComputable(f) {
     run();
     
     return c;
-  };
+  }
 
   return computable;
 }
 
 // `accessNotifier` allows upwardables to report property accesses.
-var _accessNotifier;
+var _accessNotifier = [];
 
 var accessNotifier = {
-  clear:  function()             { _accessNotifier = null; },
-  set:    function(notifier)     { _accessNotifier = notifier; },
+  pop:  function()               { _accessNotifier.shift(); },
+  push: function(notifier)       { _accessNotifier.unshift(notifier); },
   notify: function(notification) {
-    if (_accessNotifier) _accessNotifier(notification) ;
+    if (_accessNotifier.length) _accessNotifier[0](notification) ;
   }
 };
 
@@ -127,5 +133,5 @@ export {
   accessNotifier,
   objectNotifier,
   isComputed,
-  computedPrototype,
+  computedPrototype
 };
