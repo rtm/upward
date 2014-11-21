@@ -34,41 +34,54 @@ function C(f) {
   return computable;
 }
 
-// Computed prototype. Heavily adorned elsewhere with methods.
-var computedPrototype = {
-};
-
 function createComputable(f) {
 
   function computable(...args) {
 
-    // @TODO: observe arguments
-
+    var result;
+    var notifier = getNotifier(WHAT???);
     var call = f.bind(this, ...args);
   
-    // The accesses map is indexed by object, with values of `{names: [], observer}`.
+    // Deal with properties accessed during execution of this function.
+    // Maintain an `accesses` map indexed by object,
+    // containing "access" entries with values of `{names: [], observer}`.
     // `names` of null means to watch properties of any name.
-    // It is built by calls to `observeAccess`, invoked through `accessNotifier`.
+    // It is built by calls to `notifyAccess`, invoked through `accessNotifier`.
     var accesses = new Map();
-    
-    function observeAccess({object, name}) {
-      var accessor = accesses.get(object);
-      if (accessor) {
-        if (name && accessor.names) accessor.names.push(name);
-        else accessor.names = null;
-      } else {
-        accessor = {
-          names: name ? [name] : null,
-          observer: Observer(object, function(changes) {
-            changes.forEach(({type, name}) => {
-              if (!accessor.names ||
-                  type === 'update' && accessor.names.indexOf(name) !== -1)
-                notifier.notify({type: 'upward'});
-            });
-          })
-        };
-        accesses.set(object, accessor);
+
+    function notifyAccess({object, name}) {
+
+      // Create an observer for changes in properties accessed during execution of this function.
+      function makeAccessedObserver() {
+        return Observer(object, function(changes) {
+          changes.forEach(({type, name}) => {
+            if (!accessEntry.names ||
+                type === 'update' && accessor.names.indexOf(name) !== -1)
+              notifier.notify({type: 'upward'});
+          });
+        });
       }
+
+      // Make a new entry in the access table, containing initial property name if any
+      // and observer for properties accessed on the object.
+      function makeAccessEntry() {
+        return {
+          names: name ? [name] : null,
+          observer: makeAccessedObserver()
+        };
+      }
+
+      // If properties on this object are already being watched, there is already an entry
+      // in the access table for it. Add a new property name to the existing entry.
+      function setAccessEntry() {
+        if (name && accessEntry.names) accessEntry.names.push(name);
+        else accessEntry.names = null;
+      }
+      
+      var accessEntry = accesses.get(object);
+      if (accessEntry) setAccessEntry();
+      else accessEntry = makeAccessEntry();
+      accesses.set(object, accessEntry);
     }
     
     function run() {
@@ -76,39 +89,24 @@ function createComputable(f) {
       
       accesses.forEach(({observer}) => observer.unobserve());
       accesses.clear();
-      {
-        accessNotifier.push(observeAccess);
-        {
-          c.value = copyOnto(c.value, call());
-        }
-        accessNotifier.pop();
-      }
-      // apparently 'configure' change types are reported--why?
+      accessNotifier.push(notifyAccess);
+      c.value = copyOnto(c.value, call());
+      accessNotifier.pop();
+      // @TODO: apparently 'configure' change types are reported--why?
       accesses.forEach(({observer}) => observer.observe(['update', 'add', 'delete']));
     }
     
-    var c = create(computedPrototype, {
-      valueOf: {
-        value: function() { return this.value; }
-      },
-      value: {
-        value: undefined,
-        enumerable: true,
-        writable: true
-      }
-    });
-    
-    var notifier = getNotifier(c);
     observe(c, run, ['upward']);
     run();
     
-    return c;
+    return result;
   }
 
   return computable;
 }
 
 // `accessNotifier` allows upwardables to report property accesses.
+// It is a stack to handle nested invocations of computables.
 var _accessNotifier = [];
 
 var accessNotifier = {
