@@ -50,15 +50,42 @@ var upwardablePrototype = Object.create(Array.prototype);
 // Create a new upwardable.
 function createUpwardable(target) {
 
+  // Remember computed observers by property name, so they can be torn down easily.
+  var computedObservers = {};
+
+  // Make an observer for computed properties.
+  function makeComputedObserver(name) {
+    var observer = Observer(target[name], function(changes) {
+      changes.forEach(change => {
+        target[name] = change.newValue;
+        observeComputable(name);
+      });
+    });
+    computedObservers[name] = observer;
+    return observer;
+  }
+
+  // Start observing computed properties.
+  function observeComputed(name) {
+    var computedObserver;
+    unobserveComputed(name);
+    if (isComputed(target[name])) {
+      computedObserver = Observer(target[name], makeComputedObserver(name));
+      computedObserver.observe(['modify']);
+    }
+  }
+
+  // Stop observing computed properties.
+  // This includes when its wrapper object changes, or when a property is deleted.
+  function unobserveComputed(name) {
+    var computedObserver = computedObservers[name];
+    if (computedObserver) computedObserver.unobserve();
+  }
+  
   // Set up a shadow property.
   function upwardifyProperty(name) {
 
-    if (isComputed(target[name])) {
-      observe(target[name], changes => changes.forEach(change => {
-        var {oldValue} = change;
-        notifier.notify({object, type: 'update', name, oldValue});
-      }));
-    }
+    observeComputed(name);
     
     defineProperty(object, name, {
       set: function(v) {
@@ -92,7 +119,10 @@ function createUpwardable(target) {
     changes.forEach(({type, name}) => {
       switch (type) {
       case 'add':    upwardifyProperty(name);     break;
-      case 'delete': delete object[name];         break;
+      case 'delete':
+        unobserveComputable(name);
+        delete object[name];
+        break;
       case 'update': object[name] = target[name]; break;
       }
     });

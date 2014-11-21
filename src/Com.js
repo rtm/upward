@@ -38,8 +38,9 @@ function createComputable(f) {
 
   function computable(...args) {
 
-    var result;
-    var notifier = getNotifier(WHAT???);
+    var value;
+    var observable = {};
+    var notifier = getNotifier(observable);
     var call = f.bind(this, ...args);
   
     // Deal with properties accessed during execution of this function.
@@ -55,8 +56,8 @@ function createComputable(f) {
       function makeAccessedObserver() {
         return Observer(object, function(changes) {
           changes.forEach(({type, name}) => {
-            if (!accessEntry.names ||
-                type === 'update' && accessor.names.indexOf(name) !== -1)
+            var {names} = accessEntry;
+            if (!names || type === 'update' && names.indexOf(name) !== -1)
               notifier.notify({type: 'upward'});
           });
         });
@@ -83,23 +84,42 @@ function createComputable(f) {
       else accessEntry = makeAccessEntry();
       accesses.set(object, accessEntry);
     }
-    
+
+    // Run the function.
+    // Stop observing dependencies, and set up capture of new dependencies.
+    // After computation, start observing newly captured dependencies.
+    // If value is scalar and changes, then alert upwardables who may be watching.
     function run() {
-      accessNotifier.notify({type: 'update',  object: c, name: 'value'});
-      
+
+      if (value) {
+        accessNotifier.notify({type: 'update',  object: value});
+      }
+
+      // Stop observing changes to accesses. Prepare to capture new accesses.
       accesses.forEach(({observer}) => observer.unobserve());
       accesses.clear();
       accessNotifier.push(notifyAccess);
-      c.value = copyOnto(c.value, call());
+
+      var newValue = Object(copyOnto(value, call()));
+
       accessNotifier.pop();
+
+      // Objects remain themselves, but scalars become new objects.
+      // Upwardables who are watching this computation need to know.
+      if (newValue !== value) {
+        notifier.notify({object: value, newValue, type: 'modify'});
+        value = newValue;
+      }
+
+      // Observe changes to newly-captured accesses.
       // @TODO: apparently 'configure' change types are reported--why?
       accesses.forEach(({observer}) => observer.observe(['update', 'add', 'delete']));
     }
     
-    observe(c, run, ['upward']);
+    observe(observable, run, ['upward']);
     run();
     
-    return result;
+    return value;
   }
 
   return computable;
