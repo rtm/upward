@@ -33,13 +33,13 @@
       import {log} from '../src/Kee';
       import U from '../src/Upw';
       import C from '../src/Com';
+      import {TEXT} from '../src/Dom';
       var a = U({x:1});
-      var f1 = C(q => { console.log('f1 is being executed'); return a.x + 1; });
-//      console.log(f1());
-//      var f2 = C(_ => { var x = f1() + 1; console.log("result is", x); });
-      //      f2();
-      f1();
-      a.x = 99;
+      var text = TEXT(a.x);
+      document.body.appendChild(text);
+      setTimeout(_ => {
+        console.log("in timeout");
+        a.x = 2}, 1000);
     </script>
   </body>
 

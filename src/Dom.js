@@ -2,6 +2,7 @@
 // ===========================
 
 // Bookkeeping and initialization.
+import C              from './Com';
 import U              from './Upw';
 import {dasherize}    from './Str';
 import {mapObject}    from './Obj';
@@ -41,9 +42,16 @@ var DETAILS = argify(keepRendered, 'details');
 var SUMMARY = argify(keepRendered, 'summary');
 
 // ### TextNode
-var TEXT = function(text) {
-  return document.createTextNode(text); // for now
-};
+//var TEXT = function(text) {
+//  return document.createTextNode(text); // for now
+//};
+
+var TEXT = C(function(text) {
+  var computed = this.computed;
+  if (!computed) computed = document.createTextNode(text);
+  else computed.nodeValue = text;
+  return computed;
+});
 
 // Allow the String prototype methods to be applied to Text nodes.
 

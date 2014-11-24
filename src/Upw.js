@@ -15,7 +15,7 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
-import {accessNotifier, isComputed} from './Com';
+import {accessNotifier, isComputed, getComputedProperty} from './Com';
 import {valueize} from './Obj';
 
 var {create, keys, assign, getNotifier, observe, unobserve, defineProperty} = Object;
@@ -98,7 +98,7 @@ function createUpwardable(target) {
       get: function()  {
         const type = 'access';
         accessNotifier.notify({type, object, name});
-        return valueize(target[name]);
+        return getComputedProperty(target, name);
       },
       enumerable: true
     });
@@ -125,6 +125,9 @@ function createUpwardable(target) {
         break;
       case 'update': object[name] = target[name]; break;
       }
+
+      // In case someone is watching the upwardable, pass through changes on target.
+      notifier.notify(change);
     });
   }
     
