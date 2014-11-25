@@ -32,14 +32,14 @@
     <script type="module">
       import {log} from '../src/Kee';
       import U from '../src/Upw';
-      import C from '../src/Com';
+      import C  from '../src/Com';
+      import {getComputedProperty} from '../src/Com';
       import {TEXT} from '../src/Dom';
-      var a = U({x:1});
-      var text = TEXT(a.x);
-      document.body.appendChild(text);
-      setTimeout(_ => {
-        console.log("in timeout");
-        a.x = 2}, 1000);
+      var a = 1;
+      var o = {x: 42};
+      log(getComputedProperty(o, 'x'));
+      o.x = 442;
+      setTimeout(_ => { console.log("Setting o.x to 443"); o.x = 443; }, 100);
     </script>
   </body>
 

@@ -2,8 +2,8 @@
 // =====================
 
 // Setup.
-// This module has no dependencies; please keep it that way.
 var {keys, create, assign, observe, unobserve} = Object;
+import {isObject} from './Obj';
 
 // Make an observation handler, given a target and an object of handlers
 // with function-valued keys such as "add", "delete", and "update".
@@ -112,11 +112,21 @@ function mirrorProperties(src, dest = {}) {
   return dest;
 }
 
-// Make an Observer object, which allows easy unobserving.
-function Observer(object, observer) {
+// Make an Observer object, which allows easy unobserving and resobserving.
+function Observer(object, observer, types) {
   return {
-    observe(types) { observe(object, observer, types); },
-    unobserve()    { unobserve(object, observer); }
+    observe(_types) {
+      types = _types || types;
+      if (isObject(object)) observe(object, observer, types);
+    },
+    unobserve() {
+      if (isObject(object)) unobserve(object, observer);
+    },
+    reobserve(_object) {
+      this.unobserve();
+      object = _object;
+      this.observe();
+    }
   };
 }
 

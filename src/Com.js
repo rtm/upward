@@ -9,7 +9,7 @@
 // A computed is always an object; if primitive, it is wrapped.
 
 // Convenience.
-var {getNotifier, observe, unobserve} = Object;
+var {getNotifier, observe, unobserve, defineProperty} = Object;
 
 import {Observer} from './Obs';
 import {copyOnto, isObject} from './Obj';
@@ -120,7 +120,7 @@ function createComputable(f, options = {}) {
           Object.getNotifier(computed).notify({object: computed, newValue: newComputed, type});
         }
         computed = newComputed;
-        computed.id = computedId++;
+        defineProperty(computed, 'id', { value: computedId++ });
       }
 
       addComputed(computed);
@@ -131,16 +131,30 @@ function createComputable(f, options = {}) {
     }
 
     // Make stack traces friendlier.
-    run.displayName = `[run '${f.displayName}']`;
+    run.displayName = `[run '${f.displayName || f.name}']`;
 
-    // Observe the arguments and recompute on changes.
-    args.forEach(arg => {
-      if (isComputed(arg)) {
-        observe(arg, changes => {
+    // Set up an observer for changes to an argument.
+    // This will handle 'compute' changes, and eventually cause the fn to recompute.
+    // If the argument changes, the new argument is reobserved.
+    function observeArg(arg, i, args) {
+      var observer = Observer(
+        arg,
+        function argObserver(changes) {
+          changes.forEach(({type, newValue}) => {
+            if (type === 'compute') {
+              args[i] = newValue;
+              observer.reobserve(newValue);
+            }
+          });
           notifier.notify({type: 'recompute'});
-        }, ['compute', 'delete', 'update', 'add']);
-      }
-    });
+        },
+//        ['compute', 'delete', 'update', 'add'] // @TODO: check all these are necessary
+        ['compute'] // @TODO: check all these are necessary
+      );
+      observer.observe();
+    }
+
+    args.forEach(observeArg);
     
     observe(observable, run, ['recompute']);
     run();
@@ -151,11 +165,9 @@ function createComputable(f, options = {}) {
   return computable;
 }
 
-var tmpArg;
-
 // The ur-computable is to get a property from an object.
 var getComputedProperty = C(
-  function(object, name) {
+  function getProperty(object, name) {
     observe(object, changes => changes.forEach(change => {
       if (change.name === name) this.run();
     }));

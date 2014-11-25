@@ -20,9 +20,9 @@ import {upwardablePrototype}        from './Upw';
 // var push   = keepify(function(...args)  { this.push(...args); return this; });
 // var concat = keepify(function(...args)  { return this.concat(...args); });
 
-var log = function(...args) {
-  return C(_ => { console.log("LOG:", this, ...args); });
-}
+var log = C(function(...args) {
+  console.log("LOG:", this, ...args);
+});
 
 defineProperties(upwardablePrototype, {
 //  join: { value: join },
