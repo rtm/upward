@@ -1,7 +1,7 @@
 // Asynchronous functions
 // ======================
 
-var {assign, defineProperty} = Object;
+var {assign, defineProperty, observe, unobserve} = Object;
 
 // Run values from a generator through promises.
 // Return a promise for when everything is done.
@@ -77,8 +77,45 @@ function PromiseQueue() {
   };
 }
 
+// Promise from one-time Object.observe.
+// Usage: ```promiseChanges(obj, ['update']).then(function(changes) {...`
+function promiseChanges(object, types) {
+  return new Promise(function(resolve) {
+    function observer(changes) {
+      resolve(changes);
+      unobserve(object, observer);
+    }
+    observe(object, observer, types);
+  };
+}
+
+function castPromise(p) {
+  return p && typeof p === 'object' && p.then ? p : Promise.resolve(p);
+}
+
+// Create a `Deferred` object, a combination of a promise and its
+// resolver and rejector.
+function Deferred() {
+  var deferred = {};
+  deferred.promise = new Promise(function(resolve, reject) {
+    deferred.resolve = resolve;
+    deferred.reject  = reject;
+  });
+  return deferred;
+}
+
+function *generateForever(x) {
+  while (true) [
+    yield x;
+  }
+}
+
 export {
   spawn,
   timeout,
-  PromiseQueue
+  PromiseQueue,
+  promiseChanges,
+  castPromise,
+  Deferred,
+  generateForever
 };
