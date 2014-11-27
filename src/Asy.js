@@ -3,6 +3,8 @@
 
 var {assign, defineProperty, observe, unobserve} = Object;
 
+import {upwardConfig} from './Cfg';
+
 // Run values from a generator through promises.
 // Return a promise for when everything is done.
 function spawn(generator) {
@@ -31,7 +33,7 @@ function timeout(ms = 0) {
 }
 
 // Implement Promise.done.
-// Set Promise.onDoneError to trap errors.
+// Use may set Promise.onDoneError to trap errors.
 function _throw(e) { throw e; }
 if (!Promise.prototype.done) {
   defineProperty(Promise.prototype, 'done', {
@@ -50,14 +52,21 @@ if (!Promise.prototype.get) {
   });
 }
 
-// Implement `defer`, which returns an object with the promise and resolve and reject methods.
-if (!Promise.defer) {
+// Create a `Deferred` object, a combination of a promise and its
+// resolve and reject functions.
+function Deferred() {
+  var deferred = {};
+  deferred.promise = new Promise(function(resolve, reject) {
+    deferred.resolve = resolve;
+    deferred.reject  = reject;
+  });
+  return deferred;
+}
+
+// Implement `defer` on `Promise`.
+if (upwardConfig.MODIFY_BUILTIN_PROTOTYPE && !Promise.defer) {
   defineProperty(Promise, 'defer', {
-    value() {
-      var ret = {};
-      ret.promise = new Promise((resolve, reject) => assign(ret, {resolve, reject}) );
-      return ret;
-    }
+    value: Deferred
   });
 }
 
@@ -93,21 +102,8 @@ function castPromise(p) {
   return p && typeof p === 'object' && p.then ? p : Promise.resolve(p);
 }
 
-// Create a `Deferred` object, a combination of a promise and its
-// resolver and rejector.
-function Deferred() {
-  var deferred = {};
-  deferred.promise = new Promise(function(resolve, reject) {
-    deferred.resolve = resolve;
-    deferred.reject  = reject;
-  });
-  return deferred;
-}
-
-function *generateForever(x) {
-  while (true) [
-    yield x;
-  }
+function *generateForever(f) {
+  while (true) yield f();
 }
 
 export {

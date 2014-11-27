@@ -13,6 +13,7 @@ var {getNotifier, observe, unobserve, defineProperty} = Object;
 
 import {Observer} from './Obs';
 import {copyOnto, isObject} from './Obj';
+import {generateForever} from './Asy';
 
 // Keep track of computables, computeds, and computifieds.
 var computables  = new WeakSet();
@@ -27,9 +28,10 @@ function addComputed  (c)    { computeds.add(c); }
 
 var computedId = 0;
 
-// Constructor for computable.
+// Convenience constructor for computable when on simple function.
+// To provide generator, use `constructComputable`.
 function C(f, options) {
-  return constructComputable(generateCallForever(f), options);
+  return constructComputable(generateForever(f), options);
 }
 
 function constructComputable(f, options) {
@@ -50,16 +52,27 @@ function createComputable(generator, options = {}) {
     function rerunner() { rerun(); }
     
     function iterate() {
+      // Make a promise which will trigger rerunning the function.
       var changed = new Promise(resolve => rerun = resolve);
 
-      stopWatching();
-      startCapturing(accesses);
+      // Stop observing changes to accessed dependencies.
+      accesses.forEach(({observer}) => observer.unobserve());
+
+      // Start capturing accessed dependencies.
+      accesses.clear();
+      accessNotifier.push(notifyAccess);
 
       Promise.resolve(iterator.next().value)
         .then(function(value) {
           // handle value
-          stopCapturing();
-          startWatching(accesses, rerunner);
+
+          // Stop capturing accessed dependencies.
+          accessNotifier.pop();
+
+          // Start observing changes to accessed dependencies.
+          accesses.forEach(
+            ({observer}) => observer.observe(['update', 'add', 'delete']));
+
           changed.then(iterate);
         })
       ;
@@ -75,13 +88,17 @@ function createComputable(generator, options = {}) {
     // `names` of null means to watch properties of any name.
     // It is built by calls to `notifyAccess`, invoked through `accessNotifier`.
     var accesses = new Map();
-  
+    
+    if (computed) {
+      accessNotifier.notify({type: 'update',  object: computed});
+    }
+
     observeArgs(args, rerunner);
     iterate();
   }
 
   return computable;
-)
+}
 
 function notifyAccess({object, name}) {
 
@@ -118,17 +135,10 @@ function notifyAccess({object, name}) {
   accesses.set(object, accessEntry);
 }
 
-// Run the function.
-// Stop observing dependencies, and set up capture of new dependencies.
-// After computation, start observing newly captured dependencies.
-// If computed is scalar and changes, then alert upwardables who may be watching.
 function run() {
   
   // If this function is running in the context of another computed function,
   // let it know that there has been an access.
-      if (computed) {
-        accessNotifier.notify({type: 'update',  object: computed});
-      }
 }
 
 function startWatching() {
@@ -146,7 +156,6 @@ function startCapturing(accesses) {
 }
 
 function stopCapturing() {
-  accessNotifier.pop();
 }
 
 function setValue(value) {
@@ -165,7 +174,7 @@ function setValue(value) {
   addComputed(computed);
 }
 
-    
+
 // Observe changes to arguments.
 // This will handle 'compute' changes, and trigger recomputation of function.
 // If the argument changes, the new argument is reobserved.
@@ -222,8 +231,9 @@ function objectNotifier(o) {
 export default C;
 
 export {
+  constructComputable,
+  getComputedProperty,
   isComputable,
   accessNotifier,
-  isComputed,
-  getComputedProperty
+  isComputed
 };

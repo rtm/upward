@@ -3,8 +3,9 @@
 
 // Setup.
 import {dasherize} from './Str';
+import {upwardConfig} from './Cfg';
 
-var {assign} = Object;
+var {assign, defineProperty} = Object;
 
 var scopedSupported = 'scoped' in document.createElement('style');
 
@@ -100,6 +101,21 @@ CSSStyleSheet.prototype.rule = function(selector, styles) {
   return this;
 };
 
+// Define CSS units on numbers, as non-enumerable properties on prototype.
+// Cannot call as `12.px`; instead, try `12..px`, or `12 .px`.
+if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
+  [
+    'em', 'ex', 'ch', 'rem', 'px', 'mm', 'cm', 'in', 'pt', 'pc', 'px', 
+    'vh', 'vw', 'vmin', 'vmax', 
+    'pct', 
+    'deg', 'grad', 'rad', 'turn',
+    'ms', 's',
+    'Hz', 'kHz'
+  ].forEach(unit => defineProperty(Number.prototype, unit, {
+    get() { return this + unit; }
+  }));
+}
+    
 export {
   createCSSStyleSheet,
   insertCSSStyleRules

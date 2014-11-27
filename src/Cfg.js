@@ -7,15 +7,15 @@ var {assign} = Object;
 var upwardConfig = {
   LOGGING: true,
   DEBUG: true,
-	MODIFY_BUILTIN_PROTOTYPES: false,
-	TEST: false
+  MODIFY_BUILTIN_PROTOTYPES: false,
+  TEST: false
 };
 
 // Keep a counter which identifies upwardables for debugging purposes.
 var id = 0;
 
 function upwardableId() {
-	return id++;
+  return id++;
 }
 
 // Set configuration options.
@@ -30,8 +30,8 @@ function log(...args) {
 }
 
 export {
-	upwardConfig,
+  upwardConfig,
   configureUpwardable,
-	upwardableId,
+  upwardableId,
   log
 };
