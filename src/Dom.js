@@ -43,10 +43,12 @@ var DETAILS = argify(keepRendered, 'details');
 var SUMMARY = argify(keepRendered, 'summary');
 
 // ### TextNode
-var TEXT = constructComputableC(function *(text) {
+var TEXT = constructComputableC(function *_TEXT(args) {
+  var [text] = args;
   var node = document.createTextNode(text);
   while (true) {
     yield node;
+    [text] = args;
     node.nodeValue = text;
   }
 };

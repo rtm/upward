@@ -11,9 +11,10 @@
 // Convenience.
 var {getNotifier, observe, unobserve, defineProperty} = Object;
 
-import {Observer} from './Obs';
-import {copyOnto, isObject} from './Obj';
-import {generateForever} from './Asy';
+import {Observer}             from './Obs';
+import {copyOnto, isObject}   from './Obj';
+import {generateForever}      from './Asy';
+import {makeAccessController} from './Acc';
 
 // Keep track of computables, computeds, and computifieds.
 var computables  = new WeakSet();
@@ -29,16 +30,17 @@ function addComputed  (c)    { computeds.add(c); }
 var computedId = 0;
 
 // Convenience constructor for computable when on simple function.
-// To provide generator, use `constructComputable`.
+// To provide your own generator, use `constructComputable`.
 function C(f, options) {
   return constructComputable(generateForever(f), options);
 }
 
-function constructComputable(f, options) {
-  var computable = getComputable(f);
+// Construct computable from generator (if not already constructed).
+function constructComputable(generator, options) {
+  var computable = getComputable(generator);
   if (!computable) {
-    computable = createComputable(f, options);
-    addComputable(f, computable);
+    computable = createComputable(generator, options);
+    addComputable(generator, computable);
   }
   return computable;
 }
@@ -52,43 +54,26 @@ function createComputable(generator, options = {}) {
     function rerunner() { rerun(); }
     
     function iterate() {
-      // Make a promise which will trigger rerunning the function.
+      // Make a promise the resolution of which will trigger rerunning the function.
       var changed = new Promise(resolve => rerun = resolve);
 
-      // Stop observing changes to accessed dependencies.
-      accesses.forEach(({observer}) => observer.unobserve());
-
-      // Start capturing accessed dependencies.
-      accesses.clear();
-      accessNotifier.push(notifyAccess);
-
-      Promise.resolve(iterator.next().value)
+      accessController.start();
+      var {done, value} = iterator.next();
+      console.assert(!done, "Iterator underlying computable ran out of gas.");
+      Promise.resolve(value)
         .then(function(value) {
           // handle value
-
-          // Stop capturing accessed dependencies.
-          accessNotifier.pop();
-
-          // Start observing changes to accessed dependencies.
-          accesses.forEach(
-            ({observer}) => observer.observe(['update', 'add', 'delete']));
-
+          accessController.stop();
           changed.then(iterate);
         })
       ;
     }
 
     var computed;
-
+    var accessController = makeAccessController(rerunner);
     var iterator = generator(rerunner);
     var rerun;
 
-    // `accesses` is a map indexed by object,
-    // containing "access" entries with values of `{names: [], observer}`.
-    // `names` of null means to watch properties of any name.
-    // It is built by calls to `notifyAccess`, invoked through `accessNotifier`.
-    var accesses = new Map();
-    
     if (computed) {
       accessNotifier.notify({type: 'update',  object: computed});
     }
@@ -98,64 +83,6 @@ function createComputable(generator, options = {}) {
   }
 
   return computable;
-}
-
-function notifyAccess({object, name}) {
-
-  // Create an observer for changes in properties accessed during execution of this function.
-  function makeAccessedObserver() {
-    return Observer(object, function(changes) {
-      changes.forEach(({type, name}) => {
-        var {names} = accessEntry;
-        if (!names || type === 'update' && names.indexOf(name) !== -1)
-          notifier.notify({type: 'recompute'});
-      });
-    });
-  }
-  
-  // Make a new entry in the access table, containing initial property name if any
-  // and observer for properties accessed on the object.
-  function makeAccessEntry() {
-    return {
-      names:    name ? [name] : null,
-      observer: makeAccessedObserver()
-    };
-  }
-  
-  // If properties on this object are already being watched, there is already an entry
-  // in the access table for it. Add a new property name to the existing entry.
-  function setAccessEntry() {
-    if (name && accessEntry.names) accessEntry.names.push(name);
-    else accessEntry.names = null;
-  }
-  
-  var accessEntry = accesses.get(object);
-  if (accessEntry) setAccessEntry();
-  else accessEntry = makeAccessEntry();
-  accesses.set(object, accessEntry);
-}
-
-function run() {
-  
-  // If this function is running in the context of another computed function,
-  // let it know that there has been an access.
-}
-
-function startWatching() {
-  accesses.forEach(({observer}) => observer.observe(['update', 'add', 'delete']));
-}
-
-function stopWatching(accesses) {
-  // Stop observing changes to accesses. Prepare to capture new accesses.
-  accesses.forEach(({observer}) => observer.unobserve());
-}
-
-function startCapturing(accesses) {
-  accesses.clear();
-  accessNotifier.push(notifyAccess);
-}
-
-function stopCapturing() {
 }
 
 function setValue(value) {
@@ -177,8 +104,8 @@ function setValue(value) {
 
 // Observe changes to arguments.
 // This will handle 'compute' changes, and trigger recomputation of function.
-// If the argument changes, the new argument is reobserved.
-function observeArgs(args, changed) {
+// When args changes, the new value is reobserved.
+function observeArgs(args, rerun) {
 
   function observeArg(arg, i, args) {
     var observer = Observer(
@@ -190,7 +117,7 @@ function observeArgs(args, changed) {
             observer.reobserve(newValue);
           }
         });
-        changed();
+        rerun();
       },
       //        ['compute', 'delete', 'update', 'add'] // @TODO: check all these are necessary
       ['compute'] // @TODO: check all these are necessary
@@ -201,32 +128,15 @@ function observeArgs(args, changed) {
 }
 
 // The ur-computable is to get a property from an object.
+// This version does not support computeds as arguments.
 var getComputedProperty = C(
-  function getProperty(object, name) {
+  function getProperty([object, name], rerun) {
     observe(object, changes => changes.forEach(change => {
-      if (change.name === name) this.run();
+      if (change.name === name) rerun();
     }));
     return object[name];
   }
 );
-
-// `accessNotifier` allows upwardables to report property accesses.
-// It is a stack to handle nested invocations of computables.
-var _accessNotifier = [];
-
-var accessNotifier = {
-  pop:  function()               { _accessNotifier.shift(); },
-  push: function(notifier)       { _accessNotifier.unshift(notifier); },
-  notify: function(notification) {
-    if (_accessNotifier.length) _accessNotifier[0](notification) ;
-  }
-};
-
-// Convenience routine to allow functions to request an entire object be observed.
-// This would typically be called from within a computified function.
-function objectNotifier(o) {
-  accessNotifier.notify({object: o});
-}
 
 export default C;
 
@@ -234,6 +144,5 @@ export {
   constructComputable,
   getComputedProperty,
   isComputable,
-  accessNotifier,
   isComputed
 };
