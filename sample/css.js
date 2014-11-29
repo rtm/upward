@@ -1,7 +1,7 @@
-import {P, createCSSStyleSheet, insertCSSStyleRules} from '../src/U';
+import {U, createCSSStyleSheet, insertCSSStyleRules} from '../src/U';
 var {assign, keys} = Object;
 
-var theme = P({
+var theme = U({
 });
 
 var setTheme = t => assign(theme, themes[t]);

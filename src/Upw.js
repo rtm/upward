@@ -15,7 +15,8 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
-import {accessNotifier, isComputed, getComputedProperty} from './Com';
+import {isComputed, getComputedProperty} from './Com';
+import {accessNotifier} from './Acc';
 import {valueize} from './Obj';
 
 var {create, keys, assign, getNotifier, observe, unobserve, defineProperty} = Object;

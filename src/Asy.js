@@ -2,6 +2,7 @@
 // ======================
 
 var {assign, defineProperty, observe, unobserve} = Object;
+var {apply} = Function.prototype;
 
 import {upwardConfig} from './Cfg';
 
@@ -95,15 +96,32 @@ function promiseChanges(object, types) {
       unobserve(object, observer);
     }
     observe(object, observer, types);
-  };
+  });
 }
 
 function castPromise(p) {
   return p && typeof p === 'object' && p.then ? p : Promise.resolve(p);
 }
 
-function *generateForever(f) {
-  while (true) yield f();
+// Make a generator which calls a function over and over.
+// Each iteration's arguments are the parameters passed to `iterate.next()`.
+function generateForever(f, init = null) {
+  return function *_generateForever() {
+    var args;
+    yield init;
+    while (true) args = yield f.apply(0, args);
+  };
+}
+
+// "Promisify" a function, meaning to create a function which returns a promise
+// for the value of the function once all arguments have been fulfilled.
+function promisify(f) {                              // given an underlying function,
+  return function _promisify(...args) {              // return a function which
+    return new Promise(                              // returns a promise
+      resolve => Promise.all(args)                   // which, when all args are resolved,
+        .then(args => resolve(f.apply(this, args)))  // resolves to the function result
+    );
+  };
 }
 
 export {
@@ -113,5 +131,6 @@ export {
   promiseChanges,
   castPromise,
   Deferred,
-  generateForever
+  generateForever,
+  promisify
 };

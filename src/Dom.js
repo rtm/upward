@@ -17,16 +17,22 @@ var {appendChild}                   = HTMLElement.prototype;
 // --------------------
 
 // ### INPUT
-var INPUT = function() {
+var lastInputValue = constructComputable(function *_lastInputValue(rerun) {
+  input.addEventListener('change', rerun);
+  var [input] = yield "";
+  while (true) [input] = yield input.value;
+});
+
+var currentInputValue = constructComputable(function *_currentInputValue(rerun) {
+  input.addEventListener('input', rerun);
+  var [input] = yield "";
+  while (true) [input] = yield input.value;
+});
+
+function INPUT() {
   var input = document.createElement('input');
-  var propname = evt_type => `val_${evt_type}`;
-  var handler = { handleEvent(evt) { input[propname(evt.type)] = input.value; } };
-  ['input', 'change'].forEach(evt_type => {
-    input.addEventListener(evt_type, handler);
-    Upwardable("").define(input, propname(evt_type));
-  });
   return input;
-};
+}
 
 // ### Buttons
 var BUTTON = function(label, handler) {
@@ -43,15 +49,13 @@ var DETAILS = argify(keepRendered, 'details');
 var SUMMARY = argify(keepRendered, 'summary');
 
 // ### TextNode
-var TEXT = constructComputableC(function *_TEXT(args) {
-  var [text] = args;
-  var node = document.createTextNode(text);
+var TEXT = constructComputable(function *_TEXT() {
+  var node = document.createTextNode("");
   while (true) {
-    yield node;
-    [text] = args;
+    let [text] = yield node;
     node.nodeValue = text;
   }
-};
+});
 
 // Allow the String prototype methods to be applied to Text nodes.
 

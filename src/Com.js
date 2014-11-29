@@ -58,49 +58,44 @@ function createComputable(generator, options = {}) {
       var changed = new Promise(resolve => rerun = resolve);
 
       accessController.start();
-      var {done, value} = iterator.next();
+      var {done, value} = iterator.next(args);
       console.assert(!done, "Iterator underlying computable ran out of gas.");
       Promise.resolve(value)
-        .then(function(value) {
-          // handle value
+        .then(function(newComputed) {
+          newComputed = Object(newComputed);
+          if (newComputed !== computed) {
+            const type = 'compute';
+            if (computed) {
+              Object.getNotifier(computed).notify({object: computed, newValue: newComputed, type});
+            }
+            // DO COPYONTO
+            computed = newComputed;
+            addComputed(computed);
+            defineProperty(computed, 'id', { value: computedId++ });
+          }            
           accessController.stop();
           changed.then(iterate);
         })
       ;
     }
 
-    var computed;
-    var accessController = makeAccessController(rerunner);
     var iterator = generator(rerunner);
+    var computed = Object(iterator.next().value);
+    addComputed(computed);
+    var accessController = makeAccessController(rerunner);
     var rerun;
 
-    if (computed) {
-      accessNotifier.notify({type: 'update',  object: computed});
-    }
+//    if (computed) {
+//      accessNotifier.notify({type: 'update',  object: computed});
+//    }
 
     observeArgs(args, rerunner);
     iterate();
+    return computed;
   }
 
   return computable;
 }
-
-function setValue(value) {
-  // Objects remain themselves, but primitives become new objects.
-  // Upwardables who are watching this computed need to know.
-  if (newComputed !== computed) {
-    const type = 'compute';
-    //        notifier.notify({object: computed, newValue: newComputed, type});
-    if (computed) {
-      Object.getNotifier(computed).notify({object: computed, newValue: newComputed, type});
-    }
-    computed = newComputed;
-    defineProperty(computed, 'id', { value: computedId++ });
-  }
-  
-  addComputed(computed);
-}
-
 
 // Observe changes to arguments.
 // This will handle 'compute' changes, and trigger recomputation of function.

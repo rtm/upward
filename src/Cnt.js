@@ -5,14 +5,16 @@ import {constructComputable} from './Com';
 
 // Counts up by one every `tick` ms.
 var COUNT = constructComputable(
-  function *(args, rerun) {
+  function *(rerun) {
     var timer;
+    var start = 0;
     while (true) {
-      let [tick] = args;
+      let [tick] = yield start++;
       tick = tick || 1000;
       clearTimeout(timer);
-      timer = setTimeout(return, tick);
-      yield start++;
+      timer = setTimeout(rerun, tick);
     }
   }
 );                          
+
+export default COUNT;
