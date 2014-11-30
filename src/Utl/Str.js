@@ -1,7 +1,7 @@
 // String utilities
 // ----------------
 
-import {upwardConfig} from './Cfg';
+import {upwardConfig} from '../Cfg';
 
 // `my-class` => `myClass`
 function camelize(str) {

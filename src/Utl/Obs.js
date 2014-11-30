@@ -118,14 +118,16 @@ function Observer(object, observer, types) {
     observe(_types) {
       types = _types || types;
       if (isObject(object)) observe(object, observer, types);
+      return this;
     },
     unobserve() {
       if (isObject(object)) unobserve(object, observer);
+      return this;
     },
     reobserve(_object) {
       this.unobserve();
       object = _object;
-      this.observe();
+      return this.observe();
     }
   };
 }

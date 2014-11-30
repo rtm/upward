@@ -7,10 +7,10 @@
 // HTML and console reporters are provided.
 
 // Setup.
-import {spawn, timeout}      from './Asy';
-import {makeStopwatch, sum}  from './Utl';
-import {assignAdd, mapObject} from './Obj';
-import {parseBody}           from './Fun';
+import {spawn, timeout}      from '../Utl/Asy';
+import {makeStopwatch, sum}  from '../Utl/Utl';
+import {assignAdd, mapObject} from '..Utl/Obj';
+import {parseBody}           from '../Utl/Fun';
 import {TEXT, DIV, DETAILS, SUMMARY} from './Dom';
 import R                     from './Ren';
 import M                     from './Map';

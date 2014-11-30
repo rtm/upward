@@ -4,7 +4,7 @@
 var {assign, defineProperty, observe, unobserve} = Object;
 var {apply} = Function.prototype;
 
-import {upwardConfig} from './Cfg';
+import {upwardConfig} from '../Cfg';
 
 // Run values from a generator through promises.
 // Return a promise for when everything is done.

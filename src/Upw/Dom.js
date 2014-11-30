@@ -2,13 +2,11 @@
 // ===========================
 
 // Bookkeeping and initialization.
-import C              from './Com';
-import {constructComputable} from './Com';
-import U              from './Upw';
-import {dasherize}    from './Str';
-import {mapObject}    from './Obj';
-import {argify}       from './Fun';
-import keepRendered   from './Ren';
+import {makeUpwardableFunction} from './Fun';
+import {dasherize}    from '../Utl/Str';
+import {mapObject}    from '../Utl/Obj';
+import {argify}       from '../Utl/Fun';
+//import keepRendered   from './Ren';
 
 var {createTextNode, createElement} = document;
 var {appendChild}                   = HTMLElement.prototype;
@@ -17,25 +15,25 @@ var {appendChild}                   = HTMLElement.prototype;
 // --------------------
 
 // ### INPUT
-var lastInputValue = constructComputable(function *_lastInputValue(rerun) {
+var lastInputValue = makeUpwardableFunction(function *_lastInputValue(rerun) {
   input.addEventListener('change', rerun);
   var [input] = yield "";
   while (true) [input] = yield input.value;
 });
 
-var currentInputValue = constructComputable(function *_currentInputValue(rerun) {
+var currentInputValue = makeUpwardableFunction(function *_currentInputValue(rerun) {
   input.addEventListener('input', rerun);
   var [input] = yield "";
   while (true) [input] = yield input.value;
 });
 
-function INPUT() {
+function UpInput() {
   var input = document.createElement('input');
   return input;
 }
 
 // ### Buttons
-var BUTTON = function(label, handler) {
+var UpButton = function(label, handler) {
 	var button = createElt('button', {}, [TEXT(label)]);
   if (handler) { button.events({click: handler}); }
   return button;
@@ -43,13 +41,13 @@ var BUTTON = function(label, handler) {
 
 
 // ### SPAN
-var SPAN = argify(keepRendered, 'span');
-var DIV  = argify(keepRendered, 'div');
-var DETAILS = argify(keepRendered, 'details');
-var SUMMARY = argify(keepRendered, 'summary');
+//var UpSpan = argify(keepRendered, 'span');
+//var UpDiv  = argify(keepRendered, 'div');
+//var UpDetails = argify(keepRendered, 'details');
+//var UpSummary = argify(keepRendered, 'summary');
 
 // ### TextNode
-var TEXT = constructComputable(function *_TEXT() {
+var UpText = makeUpwardableFunction(function *_TEXT() {
   var node = document.createTextNode("");
   while (true) {
     let [text] = yield node;
@@ -86,4 +84,13 @@ function HTML(strings, ...values) {
   return fragment;
 }
 
-export {INPUT, BUTTON, DIV, TEXT, SPAN, HTML, DETAILS, SUMMARY};
+export {
+  UpInput,
+  UpButton,
+  UpDiv,
+  UpText,
+  UpSpan,
+  UpHtml,
+  UpDetails,
+  UpSummary
+};

@@ -1,20 +1,18 @@
 // Counter as computable.
 // ======================
 
-import {constructComputable} from './Com';
+import {makeUpwardableFunction} from './Fun';
 
 // Counts up by one every `tick` ms.
-var COUNT = constructComputable(
-  function *(rerun) {
+export default makeUpwardableFunction(
+  function *(run) {
     var timer;
     var start = 0;
     while (true) {
       let [tick] = yield start++;
       tick = tick || 1000;
       clearTimeout(timer);
-      timer = setTimeout(rerun, tick);
+      timer = setTimeout(run, tick);
     }
   }
 );                          
-
-export default COUNT;

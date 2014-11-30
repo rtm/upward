@@ -8,26 +8,24 @@
   </head>
   
   <body>
-    <h1 id="message">Test App</h1>
+    <h1 id="message">Upward Samples</h1>
+
     <script src="helper.js"></script>
-    <script>
-      traceur.options.experimental = true;
-    </script>
-<!--    <script type="module" src="./index.js"></script> -->
+    <script>traceur.options.experimental = true;</script>
 
   <div id="app"></div>
 
   <section id="count">
     <h3>Counting</h3>
     <p class="desc">
-      We display an auto-updating counter <code>COUNT()</code> as a DOM element (<code>TEXT</code>)..
+      We display an auto-updating counter <code>UpCount()</code> as a DOM element (<code>UpText</code>)..
     </p>
   </section>
 
   <section id="template">
     <h3>Templating</h3>
     <p class="desc">
-      ES6 format strings with the <code>T</code> tag are auto-updated.
+      ES6 format strings with the <code>Up</code> tag are auto-updated.
     </p>
   </section>
 
@@ -78,8 +76,7 @@
   <script>
 		window.addEventListener("DOMContentLoaded", function() {
 //      ["upwarded-properties", "input", "html-helper", "computed", "class"]
-//      ['count', 'template']
-      ['template']
+      ['count', 'template']
   		.forEach(sample);
     });
   </script>

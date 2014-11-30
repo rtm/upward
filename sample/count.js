@@ -1,4 +1,3 @@
-import COUNT from '../src/Cnt';
-import {TEXT} from '../src/U';
+import {UpCount, UpText} from '../src/Up';
 
-export default TEXT(COUNT());
+export default UpText(UpCount());

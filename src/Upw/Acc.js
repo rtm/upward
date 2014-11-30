@@ -6,7 +6,7 @@
 // Convenience.
 var {observe, unobserve} = Object;
 
-import {Observer} from './Obs';
+import {Observer} from '../Utl/Obs';
 
 // AccessNotifier
 // --------------

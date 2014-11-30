@@ -1,4 +1,3 @@
-import COUNT from '../src/Cnt';
-import {TEXT, T} from '../src/U';
+import {Up, UpCount, UpText} from '../src/Up';
 
-export default TEXT(T`There have been ${COUNT()} ticks so far.`);
+export default UpText(Up`There have been ${UpCount()} ticks so far.`);

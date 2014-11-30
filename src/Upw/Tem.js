@@ -1,5 +1,5 @@
-import C from './Com';
-import {interleave} from './Utl';
+import C from './Fun';
+import {interleave} from '../Utl/Utl';
 
 // String templates
 // ----------------
@@ -23,4 +23,4 @@ function HTML(strings, ...values) {
   return fragment;
 }
 
-export default C(compose);
+export default C(compose, "");

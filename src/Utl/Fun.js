@@ -2,7 +2,7 @@
 // --------------------
 
 // Housekeeping.
-import {upwardConfig} from './Cfg';
+import {upwardConfig} from '../Cfg';
 
 var {prototype}                        = Function;
 var {call, bind, apply}                = prototype;

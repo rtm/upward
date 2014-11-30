@@ -1,7 +1,7 @@
-import {U, createCSSStyleSheet, insertCSSStyleRules} from '../src/U';
+import {Up, createCSSStyleSheet, insertCSSStyleRules} from '../src/Up';
 var {assign, keys} = Object;
 
-var theme = U({
+var theme = Up({
 });
 
 var setTheme = t => assign(theme, themes[t]);

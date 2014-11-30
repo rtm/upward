@@ -7,11 +7,11 @@
 
 // Convenience.
 import {isObject, valueize, mapObject, objectFromPairs, propGetter} from './Obj';
-import {upwardConfig, upwardableId}   from './Cfg';
-import {argify}                       from './Fun';
+import {upwardConfig, upwardableId}   from '../Cfg';
+import {argify}                       from '../Utl//Fun';
 import U                              from './Upw';
-import {makeObserver, observeObject}  from './Obs';
-import {replace}                      from './Utl';
+import {makeObserver, observeObject}  from '../Utl/Obs';
+import {replace}                      from '../Utl/Utl';
 
 var {create, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;
