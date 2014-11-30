@@ -67,6 +67,8 @@ function makeAccessController(rerun) {
   // It records the access in the `accesses` map.
   function notifyAccess({object, name}) {
     
+    var accessEntry = accesses.get(object);
+    
     // Create an observer for changes in properties accessed during execution of this function.
     function makeAccessedObserver() {
       return Observer(object, function(changes) {
