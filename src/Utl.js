@@ -123,7 +123,7 @@ function indexesOf(a, elt) {
 }
 
 // Interleave an element into an array (adding at end too).
-function interleave(a1, elt) {
+function interleaveElement(a1, elt) {
   return [].concat(...a1.map(v => [v, elt]));
 }
 
@@ -190,6 +190,37 @@ function makeCounterMap() {
   };
 }
 
+// Interleave multiple arrays.
+function interleave(...arrays) {
+  var more = true;
+  var n = 0;
+  var result = [];
+  while (more) {
+    more = false;
+    for (var array of arrays) {
+      if (n >= array.length) continue;
+      result.push(array[n]);
+      more = true;
+    }
+    n++;
+  }
+  return result;
+}
+    
+// Generator for interleaved values from multiple iteratables.
+function *interleaveIterables(...iterables) {
+  var more = true;
+  while (more) {
+    more = false;
+    for (var it of iterables) {
+      var {done, value} = it.next();
+      if (done) continue;
+      more = true;
+      yield value;
+    }
+  }
+}
+
 var prototypeFns = {
   tail, sum, swap, append, replace, mapInPlace, omit, copyOntoArray, uniqueize,
   indexesOf, interleave, runningMap, runningTotal, filterInPlace, chainPromises
@@ -224,12 +255,14 @@ export {
   copyOntoArray,
   uniqueize,
   indexesOf,
-  interleave,
+  interleaveElement,
   runningMap,
   runningTotal,
   filterInPlace,
   chainPromises,
   makeSortFunc,
   makeStopwatch,
-  makeCounterMap
+  makeCounterMap,
+  interleave,
+  interleaveIterables
 };

@@ -1,29 +1,20 @@
 import C from './Com';
-
-var {appendChild} = Node.prototype;
-var {forEach} = Array.prototype;
+import {interleave} from './Utl';
 
 // String templates
 // ----------------
 
 // Utility routine to compose a string by interspersing literals and values.
-var compose = (strings, ...values) => {
-  values.push('');
-  return [].concat(...strings.map((e, i) => [e, valueize(values[i])])).join('');
-};
-
-// Template helper which detects upwardified parameters and adds notifiers.
-var upwardifyTemplate = (strings, ...values) => computedUpwardable(() => compose(strings, ...values),  values);
-
-// Template helper which detects upwardified parameters and adds notifiers.
-/*jshint -W061 */
-var upwardifyTemplateFormula = (strings, ...values) => computedUpwardable(() => eval(compose(strings, ...values)), values);
+function compose(strings, ...values) {
+  return strings && values && interleave(strings, values).join('');
+}
 
 // Template helper which handles HTML; return a document fragment.
 // Example:
 // ```
 // document.body.appendChild(HTML`<span>${foo}</span><span>${bar}</span>`);
 // ```
+// NEEDS WORK
 function HTML(strings, ...values) {
   var dummy = document.createElement('div');
   var fragment = document.createDocumentFragment();
@@ -32,9 +23,4 @@ function HTML(strings, ...values) {
   return fragment;
 }
 
-export {
-  upwardifyTemplate,
-  upwardifyTemplateFormula,
-  HTML
-};
-
+export default C(compose);

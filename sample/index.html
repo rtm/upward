@@ -20,7 +20,14 @@
   <section id="count">
     <h3>Counting</h3>
     <p class="desc">
-      We display an auto-updating counter as a DOM element.
+      We display an auto-updating counter <code>COUNT()</code> as a DOM element (<code>TEXT</code>)..
+    </p>
+  </section>
+
+  <section id="template">
+    <h3>Templating</h3>
+    <p class="desc">
+      ES6 format strings with the <code>T</code> tag are auto-updated.
     </p>
   </section>
 
@@ -71,7 +78,8 @@
   <script>
 		window.addEventListener("DOMContentLoaded", function() {
 //      ["upwarded-properties", "input", "html-helper", "computed", "class"]
-      ['count']
+//      ['count', 'template']
+      ['template']
   		.forEach(sample);
     });
   </script>

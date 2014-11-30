@@ -46,6 +46,12 @@ function constructComputable(generator, options) {
 }
 
 // Create a computable function based on a generator.
+// The generator must provide the following behavior.
+// The first `iterator.next()` is invoked synchronously, and must yield a neutral, default, safe value.
+// Following `iterator.next()` calls are passed function arguments as an array.
+// In other words, `yield` statements should be written as `args = yield x;`,
+// where `args` will be/should be/might be used in deriving the next value to yield.
+// The yielded value may be (but not need be) be a promise to be waited for.
 function createComputable(generator, options = {}) {
 
   function computable(...args) {

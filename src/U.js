@@ -7,8 +7,7 @@ import keepRendered from './Ren';
 import M from './Map';
 import C from './Com';
 import U from './Upw';
-
-//import keepFiltered from './Fil';
+import T from './Tmp';
 
 export {
   INPUT,
@@ -25,12 +24,6 @@ export {
 } from './Obj';
 
 export {
-  upwardifyTemplate as         S,
-  upwardifyTemplateFormula as  S$,
-  HTML
-} from './Tmp';
-
-export {
   createCSSStyleSheet,
   insertCSSStyleRules
 } from './Css';
@@ -44,5 +37,6 @@ export {
 
 export {
   U,
-  C
+  C,
+  T
 };
