@@ -2,7 +2,8 @@ import {Up, UpCount, UpText} from '../src/Up';
 var dom;
 
 //===START
-dom = UpText(Up`There have been ${UpCount()} ticks so far.`);
+var UpSquare = Up(x => x * x);
+dom = UpText(UpSquare(UpCount()));
 //===END
 
 export default dom;

@@ -1,5 +1,11 @@
 function sample(id) {
 
+  function shave(code) {
+    return code
+      .replace(/^[^]*?\/\/===START\n/, '')
+      .replace(/\/\/===END[^]*/, '');
+  }
+  
   function setup(dom) {
 		var elt = document.getElementById(id);
 
@@ -11,7 +17,7 @@ function sample(id) {
 		var code = document.createElement('div');
 		elt.appendChild(code);
 		code.className = 'code';
-		code.appendChild(document.createTextNode(xhr.responseText));
+		code.appendChild(document.createTextNode(shave(xhr.responseText)));
 		
 		// result block
 		var result = document.createElement('div');

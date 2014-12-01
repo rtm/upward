@@ -13,9 +13,10 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
+import makeUpwardable          from './Upw';
 import {isUpwardable}          from './Upw';
-import {getUpwardableProperty} from './Fun';
 import {accessNotifier}        from './Acc';
+import {Observer}              from '../Utl/Obs';
 
 var {create, keys, getNotifier, observe, unobserve, defineProperty} = Object;
 
@@ -42,70 +43,54 @@ function make(o) {
   return u;
 }
 
-// Create a "property observer", which creates and installs
-// observers for upwardable properties.
-function makePropObservers(o) {
-
-  // Remember observers by name, so they can be torn down easily.
-  var observers = {};
-  
-  // Make an observer for an upwardable property.
-  function make(name) {
-    var observer = Observer(o[name], function(changes) {
-      changes.forEach(change => {
-        o[name] = change.newValue;
-        observe(name);
-      });
-    });
-    return (observers[name] = observer);
-  }
-
-  // Stop observing upwardable properties.
-  // This includes when its wrapper object changes, or when a property is deleted.
-  function unobserve(name) {
-    var observer = observers[name];
-    if (observer) observer.unobserve();
-  }
-
-  // Start observing an upwardable property.
-  return function observe(name) {
-
-    unobserve(name);
-    if (name in o && isUpwardable(o[name])) {
-      observers[name] = Observer(o[name], make(name)).observe(['upward']);
-    }
-  };
-
-}
-
 // Create a new upwardable object.
 function _make(o) {
 
-  var propObserver = makePropObservers(o);
+  var shadow = {};
+  var observers = {};
+  var actions = {add, update, delete: _delete};
+  
+  // Delete a property. Unobserve it, delete shadow and proxy entries.
+  function _delete(name) {
+    observers[name].unobserve();
+    delete observers[name];
+    delete u        [name];
+    delete shadow   [name];
+  }
+  
+  // Update a property by reobserving.
+  function update(name) {
+    observers[name].reobserve(shadow[name]);
+  }
+  
+  // Add a property. Set up getter and setter, Observe. Populate shadow.
+  function add(name) {
+
+    function set(v) {
+      var oldValue = shadow[name];
+      if (oldValue === v) return;
+      o[name] = v;
+      notifier.notify({type: 'update', object: u, name, oldValue});
+    }
+
+    // When property on upwardable object is accessed, report it and return shadow value.
+    function get() {
+      accessNotifier.notify({type: 'access', object: u, name});
+      return shadow[name];
+    }
+
+    function observe(changes) {
+      changes.forEach(change => shadow[name] = shadow[name].change(change.newValue));
+      observers[name].reobserve(shadow[name]);
+    }
     
-  // Set up a shadow property.
-  function upwardifyProperty(name) {
-    
-    propObserver(name);
-    
-    defineProperty(object, name, {
-      set: function(v) {
-        var oldValue = o[name];
-        const type = 'update';
-        if (oldValue === v) return;
-        target[name] = v;
-        notifier.notify({type, object: u, name, oldValue});
-      },
-      get: function()  {
-        const type = 'access';
-        accessNotifier.notify({type, object: u, name});
-        return getComputedProperty(o, name);
-      },
-      enumerable: true
-    });
+    shadow[name] = makeUpwardable(o[name]);
+    observers[name] = Observer(shadow[name], observe, ['upward']).observe();
+    defineProperty(u, name, {set: set, get: get, enumerable: true});
   }
   
   // Observer to handle new or deleted properties on the object.
+  // Pass through to underlying object, which will cause the right things to happen.
   function objectObserver(changes) {
     changes.forEach(({type, name}) => {
       switch (type) {
@@ -117,31 +102,20 @@ function _make(o) {
 
   // Observer to handle new, deleted or updated properties on the target.
   function targetObserver(changes) {
-    changes.forEach(({type, name}) => {
-      switch (type) {
-      case 'add':    upwardifyProperty(name); break;
-      case 'delete':
-        propObserver(name);
-        delete u[name];
-        break;
-      case 'update': u[name] = o[name]; break;
-      }
-
-      // In case someone is watching the upwardable, pass through changes on target.
-      notifier.notify(change);
-    });
+    changes.forEach(({type, name}) => actions[type](name));
+    notifier.notify(change);
   }
     
-  var u = create({});
+  var u = create({}); // null?
   var notifier = getNotifier(u);
-  keys(o).forEach(upwardifyProperty);
+  keys(o).forEach(add);
   observe(o, targetObserver);
   observe(u, objectObserver);
   return u;
 }
 
 export default make;
-var isUpwardableObjectd = is;
+var isUpwardableObject = is;
 export {
   isUpwardableObject
 };

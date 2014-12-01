@@ -15,7 +15,7 @@ or even logic and styles inside mark-up inside logic.
 We have build a tangled web of templating languages, libraries, frameworks, 
 and CSS preprocessors.
 We have complex build systems to preprocess, precommpile, and transpile this steaming mess.
-We have monstrous config files fed to black box add-ons which do magical stuff.
+We have monstrous config objects with mysterious properties fed to black box add-ons which do magical stuff.
 In the name of "convention over configuration",
 we have build monolithic frameworks that work great--until you move past toy systems.
 
@@ -29,47 +29,39 @@ It is a context for declaring objects and transformations and dynamically keepin
 Upward does not make any assumptions about what you want to do.
 It is ultimately unopinionated.
 
-### Hello, World
+### Basic architecture
 
-    pieces   = ['Hello, ', 'World'];
-    children = pieces.as(TEXT(;
-    dom      = R('div', {}, children);
-    document.body.appendChild(dom);
+The upward library is based around
 
-`as` formats the array as DOM text nodes to be placed as children to the `div`.
-`R` <u>r</u>enders a DOM element.
+ 1. **Upwardables**, which are objects that know how to notify changes to themselves
 
-As mentioned above, this is declarative, not procedural. For instance:
+ 1. **Upwardable functions**, which take and return upwardables, both built-in and user-defined
+ 
+ 1. **Upwardable objects**, whose properties are upwardables
 
-    model    = {name: 'World'};
-    pieces   = ['Hello, ', model.name];
-    children = pieces.as(TEXT(;
-    dom      = R('div', {}, children);
-    document.body.appendChild(dom);
+Other features include:
 
-works as above, but now
+ 1. Upwardable template strings, which auto-update to reflect changes to upwardable placeholders
 
-    model.name = 'Universe';
+ 1. Routines such as `UpText` which create DOM elements based on upwardables, and thus auto-update themselves
 
-automatically updates the DOM representation, with no further ado.
+ 1. A broad selection of upward-aware data manipulation functions such as `map`.
 
-We could also do
+ 1. APIs for defining CSS, which are also upward-aware and thus dynamically changeable
 
-    pieces.push(' and how are you');
+ 1. Utilities such as timers.
 
-And the DOM is also automatically updated.
-
-This model of programming is sometimes called "reactive".
-    
 ### Project status
 
-Raw, bleeding edge.
+In progress, unusable.
 
 ### Environment
 
-Upward is written completely in ES6 and targeted for compilation by Traceur.
-The environment it runs in needs to support ES features such as `Map`.
-It has been tested only in Chrome, but has a reasonable chance of running in FF or IE11.
+**Upward** is written completely in ES6 and targeted for compilation by Traceur.
+The environment it runs in needs to support ES6 features such as `Map` and 'Object.observe'.
+It has been tested only in Chrome.
+It will not run in other browsers due to their lack of support for `Object.observe`.
+
 At present, we recommend including the traceur compiler and runtime in your web page:
 
 ```html

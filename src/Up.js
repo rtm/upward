@@ -10,9 +10,10 @@ import Up from './Upw/Up';
 import UpCount from './Upw/Cnt';
 
 export {
-// UpInput,
-//  UpButton,
-//  UpDiv,
+  // UpInput,
+  UpElement,
+  UpButton,
+  UpDiv,
   UpText//,
 //  UpSpan,
 //  UpDetails,

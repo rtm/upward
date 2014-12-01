@@ -1,3 +1,8 @@
 import {UpCount, UpText} from '../src/Up';
+var dom;
 
-export default UpText(UpCount());
+//===START
+dom = UpText(UpCount());
+//===END
+
+export default dom;

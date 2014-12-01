@@ -6,7 +6,17 @@ import {makeUpwardableFunction} from './Fun';
 import {dasherize}    from '../Utl/Str';
 import {mapObject}    from '../Utl/Obj';
 import {argify}       from '../Utl/Fun';
+import                     './Evt';
+
+var {appendChild} = HTMLElement.prototype;
+
 //import keepRendered   from './Ren';
+
+function UpElement(tag, children, attrs) {
+  var elt = document.createElement(tag);
+  (children || []).forEach(appendChild, elt);
+  return elt;
+}
 
 var {createTextNode, createElement} = document;
 var {appendChild}                   = HTMLElement.prototype;
@@ -34,7 +44,7 @@ function UpInput() {
 
 // ### Buttons
 var UpButton = function(label, handler) {
-	var button = createElt('button', {}, [TEXT(label)]);
+	var button = UpElement('button', [UpText(label)]);
   if (handler) { button.events({click: handler}); }
   return button;
 };
@@ -42,7 +52,7 @@ var UpButton = function(label, handler) {
 
 // ### SPAN
 //var UpSpan = argify(keepRendered, 'span');
-//var UpDiv  = argify(keepRendered, 'div');
+var UpDiv  = argify(UpElement, 'div');
 //var UpDetails = argify(keepRendered, 'details');
 //var UpSummary = argify(keepRendered, 'summary');
 
@@ -85,6 +95,7 @@ function HTML(strings, ...values) {
 }
 
 export {
+  UpElement,
   UpInput,
   UpButton,
   UpDiv,
