@@ -33,7 +33,7 @@ function scopifySelectors(selectors, scope_id) {
 
 // Create a new stylesheet.
 // Optionally provide a parent and/or a `scoped` attribute.
-function createCSSStyleSheet(parent = document.head, scoped = false) {
+function UpSheet(parent = document.head, scoped = false) {
   var style = document.createElement('style');
   document.head.appendChild(style);
   var sheet = style.sheet;
@@ -53,7 +53,7 @@ function createCSSStyleSheet(parent = document.head, scoped = false) {
 // If the scoped attribute was specified, and scoping is not supported,
 // then emulate scoping, by adding a data-* attribute to the parent element,
 // and rewriting the selectors.
-function insertCSSStyleRule(sheet, [selectors, styles]) {
+function insert(sheet, [selectors, styles]) {
   if (sheet.scopedStyleId) {
     selectors = scopifySelectors(selectors, sheet.scopedStyleId);
   }
@@ -71,8 +71,8 @@ function insertCSSStyleRule(sheet, [selectors, styles]) {
   return rule;
 }
 
-function insertCSSStyleRules(sheet, rules) {
-  rules.forEach(rule => insertCSSStyleRule(sheet, rule));
+function UpRules(sheet, rules) {
+  rules.forEach(rule => insert(sheet, rule));
 }
 
 // `assignStyle` is an Upwardified function which on first invocation 
@@ -116,7 +116,4 @@ if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
   }));
 }
     
-export {
-  createCSSStyleSheet,
-  insertCSSStyleRules
-};
+export {UpSheet, UpRules};

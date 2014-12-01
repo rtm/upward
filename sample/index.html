@@ -36,6 +36,34 @@
     </p>
   </section>
 
+  <section id="button-label">
+    <h3>Buttons and labels</h3>
+    <p class="desc">
+      Let's move on from timers and work with real data.
+      To create an object which upwards its properties, we use <code>Up</code>.
+      To create an HTML element, we use <code>UpElement</code>,
+      and provide the tag, children, attributes, and event handlers.
+      We then use the property as the label of a button.
+      When the button is clicked, changing the label property automatically updates the button label.
+    </p>
+    <p class="desc">
+      Why is there no function to create a button directly,
+      such as <code>UpButton(labelText, clickHandler)</code>?
+      Upward maintains a compact surface area.
+      If you want a convenience function, write one yourself.
+    </p>
+  </section>
+
+  <section id="css-example">
+    <h3>CSS</h3>
+    <p class="desc">
+      All app logic in Upward is written in JavaScript.
+      We don't need no stinkin&rsquo; CSS preprocessors with weird syntax.
+      Here is a styled div for your enjoyment.
+      By the way, Upward suppports scoped CSS rules.
+    </p>
+  </section>
+
   <section id="button">
     <h3>Buttons and controls</h3>
     <p class="desc">
@@ -89,9 +117,12 @@
 
   <script>
 		window.addEventListener("DOMContentLoaded", function() {
-//      ["upwarded-properties", "input", "html-helper", "computed", "class"]
-      [/*'count', 'template', 'function', */'button']
-  		.forEach(sample);
+    [
+    'count', 'template', 'function',
+    'button-label',
+    'css-example'
+    ]
+  	.forEach(sample);
     });
   </script>
 

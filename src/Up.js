@@ -6,24 +6,12 @@
 //import keepRendered from './Ren';
 
 //import M from './Upw/Map';
-import Up from './Upw/Up';
-import UpCount from './Upw/Cnt';
+import Up           from './Upw/Up';
+import UpCount      from './Upw/Cnt';
+import UpText       from './Upw/Txt';
+import UpElement    from './Upw/Elt';
 
-export {
-  // UpInput,
-  UpElement,
-  UpButton,
-  UpDiv,
-  UpText//,
-//  UpSpan,
-//  UpDetails,
-//  UpSummary
-} from './Upw/Dom';
-
-export {
-  createCSSStyleSheet,
-  insertCSSStyleRules
-} from './Upw/Css';
+export {UpSheet, UpRules} from './Upw/Css';
 
 //export {
 //  keepAssigned as              A,
@@ -32,4 +20,4 @@ export {
 //  keepFiltered as              F
 //};
 
-export {Up, UpCount};
+export {Up, UpCount, UpElement, UpText};

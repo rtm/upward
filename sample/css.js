@@ -1,4 +1,4 @@
-import {Up, createCSSStyleSheet, insertCSSStyleRules} from '../src/Up';
+import {Up, UpSheet, UpRules} from '../src/Up';
 var {assign, keys} = Object;
 
 var theme = Up({
@@ -15,7 +15,7 @@ var themes = {
 
 setTheme("sunset");
 
-insertCSSStyleRules(createCSSStyleSheet(), [
+UpRules(UpSheet(), [
 
   ["body", { 
 		fontFamily : 'sans-serif',
@@ -33,7 +33,8 @@ insertCSSStyleRules(createCSSStyleSheet(), [
 		fontFamily: 'monospace', 
 		backgroundColor: 'pink', 
 		margin: '12px 40px', 
-		padding: '12px'
+		padding: '12px',
+    fontSize: 'larger'
 	}],
 
   [".result", { 

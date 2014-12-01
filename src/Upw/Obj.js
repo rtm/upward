@@ -71,6 +71,7 @@ function _make(o) {
       if (oldValue === v) return;
       o[name] = v;
       notifier.notify({type: 'update', object: u, name, oldValue});
+      shadow[name] = oldValue.change(v);
     }
 
     // When property on upwardable object is accessed, report it and return shadow value.
@@ -80,8 +81,8 @@ function _make(o) {
     }
 
     function observe(changes) {
-      changes.forEach(change => shadow[name] = shadow[name].change(change.newValue));
-      observers[name].reobserve(shadow[name]);
+//      changes.forEach(change => shadow[name] = shadow[name].change(change.newValue));
+//      observers[name].reobserve(shadow[name]);
     }
     
     shadow[name] = makeUpwardable(o[name]);
