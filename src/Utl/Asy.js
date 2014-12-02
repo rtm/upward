@@ -107,8 +107,7 @@ function castPromise(p) {
 // Each iteration's arguments are the parameters passed to `iterate.next()`.
 function generateForever(f, init = null) {
   return function *_generateForever() {
-    var args = [];
-    yield init;
+    var args = yield init;
     while (true) args = yield f.apply(0, args);
   };
 }

@@ -54,24 +54,28 @@ function _make(g) {
   function f(...args) {
     
     // Resolve the promise which will trigger recomputation.
-    function run() { runner(); }
+    function run()         { runner(); }
+    function accessStart() { accessController.start(); }
+    function accessStop()  { accessController.stop(); }
     
     function iterate() {
-      // Make a promise the resolution of which will trigger rerunning the function.
-      var changed = new Promise(resolve => runner = resolve);
+      var change = new Promise(resolve => runner = resolve);
+      function reiterate() { change.then(iterate); }
 
-      accessController.start();
+      accessStart();
       var {done, value} = iterator.next(args);
       console.assert(!done, "Iterator underlying computable ran out of gas.");
-      Promise.resolve(value)
-        .then(function(newValue) {
-          result = result.change(newValue);
-          accessController.stop();
-          changed.then(iterate);
-        })
-      ;
-    }
 
+      var promise = Promise.resolve(value);
+      promise.then(accessStop, accessStop); // should this be synchronous?
+      promise
+        .then(
+          newValue => result = result.change(newValue),
+          reason => { console.log(reason); }
+        )
+        .then(reiterate);
+    }
+    
     var iterator = g(run);
     var result = makeUpwardable(iterator.next().value);
     var accessController = makeAccessController(run);
