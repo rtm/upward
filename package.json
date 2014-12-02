@@ -1,7 +1,7 @@
 {
   "name":            "upward",
-  "description":     "Definitive framework for modern JS programming",
-  "version":         "0.0.6",
+  "description":     "The front-end framework for modern boys and girls",
+  "version":         "0.0.7",
   "licenses":        [ { "type": "MIT" } ],
 
   "homepage":        "https://github.com/rtm/upward",
@@ -13,12 +13,10 @@
 
   "dependencies":    {},
   "devDependencies": {},
-  "main":            "src/U.js",
+  "main":            "src/Up.js",
 
   "scripts":         {
     "docs": "docco src/*.js",
     "test": "open http://localhost:8000/tst/index.html"
-  },
-
-  "engines":         { "node": ">= 0.6.x" }
+  }
 }
