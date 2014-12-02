@@ -19,15 +19,19 @@ function UpElement(tag, children, attrs, handlers) {
 
 // ### INPUT
 var lastInputValue = makeUpwardableFunction(function *_lastInputValue(rerun) {
-  input.addEventListener('change', rerun);
   var [input] = yield "";
-  while (true) [input] = yield input.value;
+  while (true) {
+    [input] = yield input.value;
+    input.addEventListener('change', rerun);
+  }
 });
 
 var currentInputValue = makeUpwardableFunction(function *_currentInputValue(rerun) {
-  input.addEventListener('input', rerun);
   var [input] = yield "";
-  while (true) [input] = yield input.value;
+  while (true) {
+    input.addEventListener('input', rerun);
+    [input] = yield input.value;
+  }
 });
 
 // Template helper which handles HTML; return a document fragment.
@@ -45,3 +49,4 @@ function HTML(strings, ...values) {
 }
 
 export default UpElement;
+export {lastInputValue, currentInputValue};

@@ -45,7 +45,13 @@ UpRules(UpSheet(), [
 
   [".hide", { 
 		display: 'none'
-	}]
+	}],
+
+  ["code", {
+    fontSize: 'larger',
+    backgroundColor: 'lightgray',
+    border: "1px solid gray"
+  }]
 
 ]);
 

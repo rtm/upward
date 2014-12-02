@@ -1,6 +1,14 @@
-import {INPUT,  TEXT, DIV} from '../src/U';
-var input = INPUT();
-export default DIV()
-  .child(input)
-  .child(TEXT("You input:"))
-  .child(TEXT(input.val_input));
+import {UpElement, Up, UpText} from '../src/Up';
+
+var dom, input;
+
+//===START
+input = UpElement('input');
+
+dom = UpElement('div', [
+  input,
+  UpText(Up`You input '${input.input}'`)
+]);
+//===END
+
+export default dom;

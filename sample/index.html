@@ -54,6 +54,15 @@
     </p>
   </section>
 
+  <section id="input">
+    <h3>Inputs</h3>
+    <p class="desc">
+      Input elements are also created using <code>UpElement</code>.
+      Input values are available via the `input` property on the input element.
+      A `change` property is also available, which is updated when input finishes.
+    </p>
+  </section>
+
   <section id="css-example">
     <h3>CSS</h3>
     <p class="desc">
@@ -61,6 +70,10 @@
       We don't need no stinkin&rsquo; CSS preprocessors with weird syntax.
       Here is a styled div for your enjoyment.
       By the way, Upward suppports scoped CSS rules.
+    </p>
+    <p class="desc">
+      This is the approach to emulating <code>STYLE</code> elements, or external CSS.
+      Of Course, classes and styles can be placed on elements, as shown in a later example.
     </p>
   </section>
 
@@ -83,13 +96,6 @@
     <p class="desc">
       Here we construct a DOM text node whose value is upwardable.
       We increment the value every second, and the DOM is automatically updated.
-    </p>
-  </section>
-
-  <section id="input">
-    <h3>Input fields</h3>
-    <p class="desc">
-      The value of an input field may be dynamically accessed via <code>input.val_input</code>.
     </p>
   </section>
 
@@ -118,9 +124,10 @@
   <script>
 		window.addEventListener("DOMContentLoaded", function() {
     [
-    'count', 'template', 'function',
-    'button-label',
-    'css-example'
+//    'count', 'template', 'function',
+//    'button-label',
+    'input'//,
+//    'css-example'
     ]
   	.forEach(sample);
     });

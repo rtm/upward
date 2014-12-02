@@ -10,6 +10,7 @@ import Up           from './Upw/Up';
 import UpCount      from './Upw/Cnt';
 import UpText       from './Upw/Txt';
 import UpElement    from './Upw/Elt';
+import                   './Upw/Inp';
 
 export {UpSheet, UpRules} from './Upw/Css';
 

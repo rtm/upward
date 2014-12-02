@@ -1,14 +1,13 @@
 Upward is a JavaScript framework where you declare how things should be,
 and it makes sure things are like that and stay that way.
-With upward, JavaScript becomes a "declarative", rather than an "imperative" language.
-Upward is an all-JavaScript framework, so all your CSS and HTML is written in JavaScript as well.
+With Upward, JavaScript becomes a "declarative", rather than an "imperative" language.
+In Upward, all your CSS and HTML is written in JavaScript as well,
+so there's a single language to write, preprocess, and run.
 
 ### Introduction
 
 In its struggles to integrate the front-end technologies that have been developed
 for mark-up, styling, and program logic, the computing community has ended up with a witches brew.
-We have mark-up languages with half-baked logic (templates) and 
-CSS pre-processors like LESS providing their own programming constructs.
 We have ended up with styles inside logic, logic inside styles,
 logic inside mark-up, and mark-up inside logic, 
 or even logic and styles inside mark-up inside logic.
@@ -16,8 +15,6 @@ We have build a tangled web of templating languages, libraries, frameworks,
 and CSS preprocessors.
 We have complex build systems to preprocess, precommpile, and transpile this steaming mess.
 We have monstrous config objects with mysterious properties fed to black box add-ons which do magical stuff.
-In the name of "convention over configuration",
-we have build monolithic frameworks that work great--until you move past toy systems.
 
 All of this makes our systems hard to write, debug, and maintain, and complicated and slow to build.
 In Upward, in contrast, everything is logic.
@@ -41,15 +38,15 @@ The upward library is based around
 
 Other features include:
 
- 1. Upwardable template strings, which auto-update to reflect changes to upwardable placeholders
+ 1. **Upwardable template strings**, which auto-update to reflect changes to upwardable placeholders
 
- 1. Routines such as `UpText` which create DOM elements based on upwardables, and thus auto-update themselves
+ 1. Routines such as `UpElement` and `UpText` which create DOM nodes based on upwardables, and thus auto-update themselves
 
- 1. A broad selection of upward-aware data manipulation functions such as `map`.
+ 1. A broad selection of upward-aware **data manipulation functions** such as `map`.
 
- 1. APIs for defining CSS, which are also upward-aware and thus dynamically changeable
+ 1. APIs for defining **CSS**, which are also upward-aware and thus dynamically changeable
 
- 1. Utilities such as timers.
+ 1. **Utilities** such as timers.
 
 ### Project status
 

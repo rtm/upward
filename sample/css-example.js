@@ -1,22 +1,21 @@
-import {UpElement, UpSheet, UpRules} from '../src/Up';
+import {UpElement, UpText, UpSheet, UpRules} from '../src/Up';
 var {assign, keys} = Object;
 var sheet, dom;
 
 //===START
-var sheet = UpSheet(                       // Create a stylesheet
-  document.getElementById('css-example'),  // scoped to this element.
-  true
-);
+dom = UpElement('div', [UpText("Look Mom, I'm styled")]);
+
+var sheet = UpSheet(dom,true);             // Create a scoped stylesheet
 
 var rules = [                              // Define the rules as an array
-  ["div", {                                // or selector
-    color: 'white',                        // and properties pairs.
-    backgroundColor: 'blue'
+  ["div", {                                // of pairs of selector
+    color: 'white',                        // and properties object.
+    backgroundColor: 'blue',
+    fontWeight: 'bold'
   }]
 ];
 
 UpRules(sheet, rules);                     // Insert the rules.
 //===END
-dom = UpElement('div');
 
 export default dom;
