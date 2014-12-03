@@ -7,6 +7,7 @@ import {dasherize}    from '../Utl/Str';
 import {mapObject}    from '../Utl/Obj';
 import {argify}       from '../Utl/Fun';
 import                     './Evt';
+import                     './Chi';
 
 var {appendChild} = HTMLElement.prototype;
 

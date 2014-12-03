@@ -29,11 +29,11 @@ It is ultimately unopinionated.
 
 ### Basic architecture
 
-The upward library is based around
+The Upward framework is based around
 
- 1. **Upwardables**, which are objects that know how to notify changes to themselves
+ 1. **Upwardablefs**, values which observe themselves
 
- 1. **Upwardable functions**, which take and return upwardables, both built-in and user-defined
+ 1. **Upwardable functions**, both built-in and user-defined, which take and return upwardables
  
  1. **Upwardable objects**, whose properties are upwardables
 

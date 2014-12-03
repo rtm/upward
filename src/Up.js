@@ -1,16 +1,16 @@
 // Re-export external interfaces, so clients can import from this single module.
 
 //import './Evt';
-//import './Arr';
 //import keepAssigned from './Ass';
 //import keepRendered from './Ren';
 
 //import M from './Upw/Map';
-import Up           from './Upw/Up';
-import UpCount      from './Upw/Cnt';
-import UpText       from './Upw/Txt';
-import UpElement    from './Upw/Elt';
-import                   './Upw/Inp';
+import Up      from './Upw/Up';
+import UpCount from './Upw/Cnt';
+import Tx      from './Upw/Txt';
+import El      from './Upw/Elt';
+import              './Upw/Inp';
+import              './Upw/Arr';
 
 export {UpSheet, UpRules} from './Upw/Css';
 
@@ -21,4 +21,4 @@ export {UpSheet, UpRules} from './Upw/Css';
 //  keepFiltered as              F
 //};
 
-export {Up, UpCount, UpElement, UpText};
+export {Up, UpCount, El, Tx};

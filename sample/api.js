@@ -1,4 +1,4 @@
-import {Up, UpText} from '../src/Up';
+import {Up, Tx} from '../src/Up';
 import XHR from '../src/Utl/XHR';
 
 var get, dom, data;
@@ -18,7 +18,7 @@ get = Up(function(repo) {
     .catch(_    => Error("There was a problem with the request"));
 });
 
-dom = UpText(get(data.repo));
+dom = Tx(get(data.repo));
 //===END
 
 export default dom;

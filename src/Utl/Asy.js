@@ -113,12 +113,14 @@ function generateForever(f, init = null) {
 }
 
 // "Promisify" a function, meaning to create a function which returns a promise
-// for the value of the function once all arguments have been fulfilled.
+// for the value of the function once `this` and all arguments have been fulfilled.
 function promisify(f) {                              // given an underlying function,
   return function _promisify(...args) {              // return a function which
     return new Promise(                              // returns a promise
-      resolve => Promise.all(args)                   // which, when all args are resolved,
-        .then(args => resolve(f.apply(this, args)))  // resolves to the function result
+      resolve => Promise.all([this, ...args])        // which, when all args are resolved,
+        .then(
+          parms => resolve(f.call(...parms))         // resolves to the function result
+        )
     );
   };
 }

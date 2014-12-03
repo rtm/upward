@@ -104,7 +104,7 @@ function _make(o) {
   // Observer to handle new, deleted or updated properties on the target.
   function targetObserver(changes) {
     changes.forEach(({type, name}) => actions[type](name));
-    notifier.notify(change);
+    //notifier.notify(change); // TODO: figure out what this line was suppsoed to do
   }
     
   var u = create({}); // null?

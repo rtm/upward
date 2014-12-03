@@ -18,7 +18,7 @@
   <section id="count">
     <h3>Counting</h3>
     <p class="desc">
-      We display an auto-updating counter <code>UpCount()</code> as a DOM element (<code>UpText</code>)..
+      We display an auto-updating counter <code>UpCount()</code> as a DOM text node (<code>Tx</code>)..
     </p>
   </section>
 
@@ -41,8 +41,8 @@
     <p class="desc">
       Let's move on from timers and work with real data.
       To create an object which upwards its properties, we use <code>Up</code>.
-      To create an HTML element, we use <code>UpElement</code>,
-      and provide the tag, children, attributes, and event handlers.
+      To create an HTML element, we use <code>El</code>,
+      and provide the tag, children, and event handlers.
       We then use the property as the label of a button.
       When the button is clicked, changing the label property automatically updates the button label.
     </p>
@@ -57,7 +57,7 @@
   <section id="input">
     <h3>Inputs</h3>
     <p class="desc">
-      Input elements are also created using <code>UpElement</code>.
+      Input elements are also created using <code>El</code>.
       Input values are available via the `input` property on the input element.
       A `change` property is also available, which is updated when input finishes.
     </p>
@@ -68,6 +68,16 @@
     <p class="desc">
       Upwardable functions can return asynchronous data, such as the result of API calls.
       Here we display the most recent commit message from a Github repository.
+    </p>
+  </section>
+
+  <section id="map">
+    <h3>Mapping</h3>
+    <p class="desc">
+      To map one array to another in upward-aware fashion, we use <code>UpMap</code>.
+      This is also available on the array prototype as <code>as</code>.
+      A common use is to map an array into DOM elements to use as child elements.
+      Here we map an array of numbers onto text nodes inside divs.
     </p>
   </section>
 
@@ -136,7 +146,8 @@
 //    'button-label',
 //    'input'//,
     //    'css-example'
-    'api'
+//    'api',
+    'map'
     ]
   	.forEach(sample);
     });

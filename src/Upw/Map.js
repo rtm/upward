@@ -1,16 +1,31 @@
-// Keepmapped: Keep a map of an array up-to-date.
-// ==============================================
+// UpMap: upward-aware version of Array#map
+// ========================================
 
-import U from './Upw';
-import C from './Com';
+import {makeUpwardableFunction} from './Fun';
+import {copyOntoArray} from '../Utl/Obj';
 
-export default function(a, fn = identity) {
-  var cache = new WeakMap();
+export default makeUpwardableFunction(function *UpMap(run) {
+  var r = [];
+  var a, newa;
+  var f, newf;
+  var ctxt, newctxt;
+  var map = new Map();
 
-  function f() {
-    C.objectNotifier(a);
-    return a.map(f);
+  function _map(elt) {
+    var ret = map.get(Object(elt));
+    if (!ret) {
+      ret = f.call(ctxt, elt);
+      map.set(Object(elt), ret);
+    }
+    return ret;
   }
-  
-  return C(f);
-}
+            
+  while (true) {
+    [newa, newf, newctxt] = yield r;
+    if (newf !== f) map.clear();
+    a = newa;
+    f = newf;
+    ctxt = newctxt;
+    copyOntoArray(r, a.map(_map));
+  }
+});

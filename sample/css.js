@@ -50,7 +50,10 @@ UpRules(UpSheet(), [
   ["code", {
     fontSize: 'larger',
     backgroundColor: 'lightgray',
-    border: "1px solid gray"
+    border: "1px solid gray",
+    paddingLeft: "0.2em",
+    paddingRight: "0.2em",
+    
   }]
 
 ]);

@@ -167,6 +167,7 @@ export {
   copyOf,
   copyOntoObject,
   copyOnto,
+  copyOntoArray,
 
   invertObject,
   reduceObject,

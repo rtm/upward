@@ -111,11 +111,12 @@ function observeArgs(args, run) {
 
         run();
       },
-      //        ['compute', 'delete', 'update', 'add'] // @TODO: check all these are necessary
-      ['upward'] // @TODO: check all these are necessary
+      // @TODO: consider whether to check for D/A/U here, or use 'modify' change type
+      ['upward', 'delete', 'add', 'update'] // @TODO: check all these are necessary
     );
     observer.observe();
   }
+
   args.forEach(observeArg);
 }
 

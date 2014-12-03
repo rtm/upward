@@ -2,8 +2,8 @@ import {Up, UpCount, UpText} from '../src/Up';
 var dom;
 
 //===START
-var UpSquare = Up(x => x * x);
-dom = UpText(UpSquare(UpCount()));
+var square = Up(x => x * x);
+dom = Tx(square(UpCount()));
 //===END
 
 export default dom;

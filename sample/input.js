@@ -1,14 +1,16 @@
-import {UpElement, Up, UpText} from '../src/Up';
+import {El, Tx, Up} from '../src/Up';
 
 var dom, input;
 
 //===START
-input = UpElement('input');
+input = El('input');
 
-dom = UpElement('div', [
-  input,
-  UpText(Up`You input '${input.input}'`)
-]);
+dom = El('div')
+  .has([
+    input,
+    Txt(Up`You input '${input.input}'`)
+  ])
+;
 //===END
 
 export default dom;
