@@ -1,14 +1,14 @@
-import {El, Tx, Up} from '../src/Up';
+import {E, T, F} from '../src/Up';
 
 var dom, input;
 
 //===START
-input = El('input');
+input = E('input');
 
-dom = El('div')
+dom = E('div')
   .has([
     input,
-    Txt(Up`You input '${input.input}'`)
+    T(F`You input '${input.input}'`)
   ])
 ;
 //===END

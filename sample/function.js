@@ -1,9 +1,9 @@
-import {Up, UpCount, UpText} from '../src/Up';
+import {C, T, UpCount} from '../src/Up';
 var dom;
 
 //===START
-var square = Up(x => x * x);
-dom = Tx(square(UpCount()));
+var square = C(x => x * x);
+dom = T(square(UpCount()));
 //===END
 
 export default dom;

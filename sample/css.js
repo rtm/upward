@@ -1,7 +1,7 @@
-import {Up, UpSheet, UpRules} from '../src/Up';
+import {U, UpSheet, UpRules} from '../src/Up';
 var {assign, keys} = Object;
 
-var theme = Up({
+var theme = U({
 });
 
 var setTheme = t => assign(theme, themes[t]);

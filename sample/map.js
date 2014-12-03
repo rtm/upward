@@ -1,17 +1,17 @@
-import {Up, Tx, El} from '../src/Up';
-var dom, config, arr;
+import {U, T, E} from '../src/Up';
+var dom, arr;
 
 //===START
 arr = [1, 2, 3];
 function add() { arr.push(Math.random()) }
 
-dom = El('div').has([
-  El('div')
+dom = E('div').has([
+  E('div')
     .has(arr.as(
-      val => El('div').has(Tx(val))
+      val => E('div').has(T(val))
     )),
-  El('button')
-    .has ([Tx("Add")])
+  E('button')
+    .has (T("Add"))
     .does({click: add})
 ]);
 //===END

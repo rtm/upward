@@ -1,8 +1,8 @@
-import {Up, Tx, UpCount} from '../src/Up';
+import {T, F, UpCount} from '../src/Up';
 var dom;
 
 //===START
-dom = Tx(Up`There have been ${UpCount()} ticks so far.`);
+dom = T(F`There have been ${UpCount()} ticks so far.`);
 //===END
 
 export default dom;

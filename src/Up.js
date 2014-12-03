@@ -5,10 +5,12 @@
 //import keepRendered from './Ren';
 
 //import M from './Upw/Map';
-import Up      from './Upw/Up';
+import U       from './Upw/Up';
+import T       from './Upw/Txt';
+import E       from './Upw/Elt';
+import F       from './Upw/Tem';
+import C       from './Upw/Fun';
 import UpCount from './Upw/Cnt';
-import Tx      from './Upw/Txt';
-import El      from './Upw/Elt';
 import              './Upw/Inp';
 import              './Upw/Arr';
 
@@ -21,4 +23,4 @@ export {UpSheet, UpRules} from './Upw/Css';
 //  keepFiltered as              F
 //};
 
-export {Up, UpCount, El, Tx};
+export {Up, UpCount, El, Tx, E, T, F, U};

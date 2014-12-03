@@ -1,9 +1,9 @@
-import {El, Tx, UpSheet, UpRules} from '../src/Up';
+import {E, T, UpSheet, UpRules} from '../src/Up';
 var {assign, keys} = Object;
 var sheet, dom;
 
 //===START
-dom = El('div').has([Tx("Look Mom, I'm styled")]);
+dom = E('div').has([T("Look Mom, I'm styled")]);
 
 var sheet = UpSheet(dom,true);             // Create a scoped stylesheet
 

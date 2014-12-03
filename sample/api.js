@@ -1,10 +1,10 @@
-import {Up, Tx} from '../src/Up';
+import {U, T} from '../src/Up';
 import XHR from '../src/Utl/XHR';
 
 var get, dom, data;
 
 //===START
-data = Up({repo: 'rtm/upward'});
+data = U({repo: 'rtm/upward'});
 
 function getGithubEvents(repo) {
   return XHR(
@@ -18,7 +18,7 @@ get = Up(function(repo) {
     .catch(_    => Error("There was a problem with the request"));
 });
 
-dom = Tx(get(data.repo));
+dom = T(get(data.repo));
 //===END
 
 export default dom;

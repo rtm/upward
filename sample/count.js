@@ -1,8 +1,8 @@
-import {UpCount, Tx} from '../src/Up';
+import {UpCount, T} from '../src/Up';
 var dom;
 
 //===START
-dom = Tx((UpCount());
+dom = T((UpCount());
 //===END
 
 export default dom;
