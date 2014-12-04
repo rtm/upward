@@ -5,7 +5,7 @@ import {mapObject}  from '../Utl/Obj';
 //import keepUnique   from './Unq';
 //import keepFiltered from './Fil';
 import UpMap from './Map';
-//import keepSorted   from './Srt';
+import UpSort from './Srt';
 //import keepSliced   from './Slc';
 
 var {defineProperty, defineProperties} = Object;
@@ -13,8 +13,8 @@ var {prototype} = Array;
 
 // Place the methods on the Array and Upwardable prototype.
 var methodMap = {
-  as:   UpMap//,
-//  by:   keepSorted,
+  as:   UpMap,
+  by:   UpSort//,
 //  if:   keepFiltered,
 //  of:   keepSliced,
 //  up:   keepReversed,
