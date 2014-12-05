@@ -2,7 +2,7 @@ import {UpCount, T} from '../src/Up';
 var dom;
 
 //===START
-dom = T((UpCount());
+dom = T(UpCount());
 //===END
 
 export default dom;

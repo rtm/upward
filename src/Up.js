@@ -23,4 +23,4 @@ export {UpSheet, UpRules} from './Upw/Css';
 //  keepFiltered as              F
 //};
 
-export {Up, UpCount, El, Tx, E, T, F, U};
+export {U, T, E, F, C, UpCount};
