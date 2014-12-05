@@ -1,11 +1,12 @@
-import {E, T, UpSheet, UpRules} from '../src/Up';
+// CSS sheet and rule insertion sample.
+// ====================================
+
+import {E, T, UpStyle} from '../src/Up';
 var {assign, keys} = Object;
-var sheet, dom;
+var dom;
 
 //===START
-dom = E('div').has([T("Look Mom, I'm styled")]);
-
-var sheet = UpSheet(dom,true);             // Create a scoped stylesheet
+dom = E('div') . has(T("Look Ma, I'm styled"));
 
 var rules = [                              // Define the rules as an array
   ["div", {                                // of pairs of selector
@@ -15,7 +16,7 @@ var rules = [                              // Define the rules as an array
   }]
 ];
 
-UpRules(sheet, rules);                     // Insert the rules.
+UpStyle(rules, dom);                       // Insert the rules (scoped).
 //===END
 
 export default dom;

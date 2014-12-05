@@ -1,4 +1,4 @@
-import {U, UpSheet, UpRules} from '../src/Up';
+import {U, UpStyle} from '../src/Up';
 var {assign, keys} = Object;
 
 var theme = U({
@@ -15,7 +15,7 @@ var themes = {
 
 setTheme("sunset");
 
-UpRules(UpSheet(), [
+UpStyle([
 
   ["body", { 
 		fontFamily : 'sans-serif',

@@ -7,6 +7,9 @@ import {upwardConfig} from '../Cfg';
 
 var {assign, defineProperty} = Object;
 
+// Handle scoping.
+// ---------------
+
 var scopedSupported = 'scoped' in document.createElement('style');
 
 var scopedStyleId = 0;
@@ -31,17 +34,16 @@ function scopifySelectors(selectors, scope_id) {
   ).join(',');
 }
 
-// Create a new stylesheet.
-// Optionally provide a parent and/or a `scoped` attribute.
-function UpSheet(parent = document.head, scoped = false) {
+// Create a new stylesheet, optionally scoped to a DOM element.
+function makeSheet(scope) {
   var style = document.createElement('style');
   document.head.appendChild(style);
   var sheet = style.sheet;
   
-  if (scoped) { 
+  if (scope) { 
     style.setAttribute('scoped', "scoped"); 
     if (!scopedSupported) {
-      parent.dataset[scopedStyleIdsProp] = (parent.dataset[scopedStyleIdsProp] || "") + " " +
+      scope.dataset[scopedStyleIdsProp] = (scope.dataset[scopedStyleIdsProp] || "") + " " +
         (sheet.scopedStyleId = makeScopedStyleId(scopedStyleId++));
     }
   }
@@ -71,10 +73,6 @@ function insert(sheet, [selectors, styles]) {
   return rule;
 }
 
-function UpRules(sheet, rules) {
-  rules.forEach(rule => insert(sheet, rule));
-}
-
 // `assignStyle` is an Upwardified function which on first invocation 
 // "assigns" hash passed as argument to the `style` attribute of `this`.
 // When properties within the hash change, style attribute are updated.
@@ -97,6 +95,7 @@ CSSStyleSheet.prototype.replaceRule = function(rule, idx) {
 CSSStyleSheet.prototype.rule = function(selector, styles) {
   var idx = this.insertRule(`${selector} { }`, this.rules.length);
   var rule = this.rules[idx];
+  // TODO: replace with assignStyle.
   assign(rule.style, styles);
   return this;
 };
@@ -116,4 +115,8 @@ if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
   }));
 }
     
-export {UpSheet, UpRules};
+export default function UpStyle(rules, scope) {
+  var sheet = makeSheet(scope);
+  rules.forEach(rule => insert(sheet, rule));
+  return sheet;
+}

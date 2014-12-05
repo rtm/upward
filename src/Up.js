@@ -13,8 +13,7 @@ import C       from './Upw/Fun';
 import UpCount from './Upw/Cnt';
 import              './Upw/Inp';
 import              './Upw/Arr';
-
-export {UpSheet, UpRules} from './Upw/Css';
+import UpStyle from './Upw/Css';
 
 //export {
 //  keepAssigned as              A,
@@ -23,4 +22,4 @@ export {UpSheet, UpRules} from './Upw/Css';
 //  keepFiltered as              F
 //};
 
-export {U, T, E, F, C, UpCount};
+export {U, T, E, F, C, UpCount, UpStyle};
