@@ -1,28 +1,41 @@
-// HTML input elements.
-// ====================
+// HTML input element transputting.
+// ================================
 
 // Bookkeeping and initialization.
-import makeUpwardable from './Upw';
+import {isUpwardable} from './Upw';
+var {defineProperty, observe} = Object;
 
-var {defineProperty} = Object;
+// UpInputs associates an upwardable with the value of an input element.
+// It is also available via the `inputs` method on HTMLInputElement.
+// The 'realtime' parameter (default: false) controls whether each key in a text input is reported,
+// or if the change is not reported until the control loses focus.
 
-// Input elements themselves are created using `UpElement`.
-// Here we define upwardables to obtain current and most recent value
-// as 'change' and 'input' properties on the input element.
-// The initial access is to the property on the prototype,
-// which immediately sets up an upwardable property on the element.
+function UpInputs(elt, upwardable, realtime) {
+  console.assert(elt instanceof HTMLInputElement, "First argument to UpInputs must be input element");
+  console.assert(isUpwardable(upwardable), "Second argument to UpInputs (.inputs) must be upwardable");
 
-['change', 'input'].forEach(
-  prop => defineProperty(HTMLInputElement.prototype, prop, {
-    get() {
-      var value = makeUpwardable(this.value);
-      defineProperty(this, prop, {value, writable: true});
-      this.addEventListener(prop, _ => this[prop] = this[prop].change(this.value));
-      return value;
-    },
-    configurable: true
-  })
-);
+  function observeUpwardable() {
+    observe(upwardable, changes => changes.forEach(
+      change => elt.value = change.newValue), ['upward']);
+  }
 
-// This module exports nothing. It merely affects the HTMLInputElement prototype.
-// It must be imported somewhere with `import 'src/Inp.js';`.
+  elt.addEventListener(realtime ? 'input' : 'change', _ => {
+    upwardable = upwardable.change(elt.value);
+    observeUpwardable();
+  });
+
+  observeUpwardable();
+  return elt;
+}
+
+var prototype = HTMLInputElement.prototype;
+var INPUTSPROP = 'inputs';
+
+if (!prototype[INPUTSPROP]) {
+  defineProperty(prototype, INPUTSPROP, {
+    value(upwardable, realtime) { return UpInputs(this, upwardable, realtime); }
+  });
+}
+
+// Normally this module will be imported as `import './src/Inp';`.
+export default UpInputs;

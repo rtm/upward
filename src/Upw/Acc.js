@@ -94,7 +94,8 @@ function makeAccessController(rerun) {
       else accessEntry.names = null;
     }
     
-    if (accesses.get(object)) setAccessEntry();
+    var accessEntry = accesses.get(object);
+    if (accessEntry) setAccessEntry();
     else makeAccessEntry();
   }
   

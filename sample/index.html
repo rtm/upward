@@ -4,7 +4,7 @@
   <head>
     <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
     <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
-    <script type="module" src="css.js"></script>
+    <script type="module">System.import('./css');</script>
   </head>
   
   <body>
@@ -94,6 +94,7 @@
     <p class="desc">
       All app logic in Upward is written in JavaScript.
       We don't need no stinkin&rsquo; CSS preprocessors with weird syntax.
+      The <code>UpStyle</code> API is used to insert rulesheets.
       Here is a styled div for your enjoyment.
       By the way, Upward suppports scoped CSS rules.
     </p>
@@ -150,15 +151,15 @@
   <script>
 		window.addEventListener("DOMContentLoaded", function() {
     [
-    'count',
-    'template',
-    'function',
-    'button-label',
+    //'count',
+    //'template',
+    //'function',
+    //'button-label',
     'input',
-    'css-example',
-    'api',
-    'map',
-    'sort'
+    //'css-example',
+    //'api',
+    //'map',
+    //'sort'
     ]
   	.forEach(sample);
     });

@@ -11,6 +11,7 @@ import {upwardConfig} from '../Cfg';
 
 // Manage upwardables.
 var set = new WeakSet();
+var set = new Set(); // debug
 
 function is (u) { return u && typeof u === 'object' && set.has(u); }
 function add(u) { set.add(u); addId(u); }

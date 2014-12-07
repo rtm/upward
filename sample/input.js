@@ -1,16 +1,15 @@
-import {E, T, F} from '../src/Up';
+import {E, U, T, F} from '../src/Up';
 
-var dom, input;
+var dom, input, model;
 
 //===START
-input = E('input');
+model = U({input: ''}) 
+input = E('input') . inputs(model.input, true);
 
-dom = E('div')
-  .has([
-    input,
-    T(F`You input '${input.input}'`)
-  ])
-;
+dom = E('div') . has([
+  input,
+  T(F`You input '${model.input}'`)
+]);
 //===END
 
 export default dom;
