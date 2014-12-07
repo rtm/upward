@@ -2,38 +2,27 @@
 // =============================================
 
 // Bookkeeping and initialization.
-import {makeUpwardableFunction} from './Fun';
-import {dasherize}    from '../Utl/Str';
-import {mapObject}    from '../Utl/Obj';
-import {argify}       from '../Utl/Fun';
-import                     './Evt';
-import                     './Chi';
+import './Evt';
+import './Chi';
+import './Inp';
 
 var {appendChild} = HTMLElement.prototype;
 
-function UpElement(tag, children, attrs, handlers) {
+// Create an element.
+// Support low-level sugar in form of `div#id.class`.
+function UpElement(tag) {
+  var parts = tag.split(/([#.])/);
+  tag = parts.shift();
   var elt = document.createElement(tag);
-  (children || []).forEach(appendChild, elt);
-  if (handlers) { elt.events(handlers); }
+
+  for (var i = 0; i < parts.length; i += 2) {
+    let symbol = parts[i], val = parts[i+1];
+    if (symbol === '#') elt.id = val;
+    else if (symbol === '.') elt.classList.add(val);
+  }
+  
   return elt;
 }
-
-// ### INPUT
-var lastInputValue = makeUpwardableFunction(function *_lastInputValue(rerun) {
-  var [input] = yield "";
-  while (true) {
-    [input] = yield input.value;
-    input.addEventListener('change', rerun);
-  }
-});
-
-var currentInputValue = makeUpwardableFunction(function *_currentInputValue(rerun) {
-  var [input] = yield "";
-  while (true) {
-    input.addEventListener('input', rerun);
-    [input] = yield input.value;
-  }
-});
 
 // Template helper which handles HTML; return a document fragment.
 // Example:
@@ -50,4 +39,3 @@ function HTML(strings, ...values) {
 }
 
 export default UpElement;
-export {lastInputValue, currentInputValue};
