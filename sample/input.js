@@ -4,7 +4,7 @@ var dom, input, model;
 
 //===START
 model = U({input: ''}) 
-input = E('input') . inputs(model.input, true);
+input = E('input') . sets(model.input, true);
 
 dom = E('div') . has([
   input,

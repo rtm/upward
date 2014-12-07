@@ -29,7 +29,7 @@ function UpInputs(elt, upwardable, realtime) {
 }
 
 var prototype = HTMLInputElement.prototype;
-var INPUTSPROP = 'inputs';
+var INPUTSPROP = 'sets';
 
 if (!prototype[INPUTSPROP]) {
   defineProperty(prototype, INPUTSPROP, {
