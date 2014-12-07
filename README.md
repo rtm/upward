@@ -74,7 +74,7 @@ At present, we recommend including the traceur compiler and runtime in your web 
 
     npm install upward
 
-Upward has no dependencies, although you should install docco globally to create documentation.
+Upward has no dependencies, although you should install docker globally to create documentation.
 
 ### License
 

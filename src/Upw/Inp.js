@@ -24,6 +24,7 @@ function UpInputs(elt, upwardable, realtime) {
     observeUpwardable();
   });
 
+  elt.value = upwardable;
   observeUpwardable();
   return elt;
 }

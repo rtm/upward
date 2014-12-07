@@ -16,7 +16,9 @@
   "main":            "src/Up.js",
 
   "scripts":         {
-    "docs": "docco src/*.js",
-    "test": "open http://localhost:8000/tst/index.html"
+    "docs":   "docker -i src -o doc/docco",
+    "test":   "open http://localhost:8000/tst/index.html",
+    "sample": "open http://localhost:8000/sample",
+    "server": "bin/server"
   }
 }

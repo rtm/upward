@@ -1,7 +1,7 @@
-node_modules
+# .gitignore for upward
 
-# should not have any of these POS anyway
+# omit imported components
+node_modules
 bower_components
 
-docs
 npm-debug.log
