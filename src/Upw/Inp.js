@@ -1,14 +1,19 @@
-// HTML input element transputting.
-// ================================
+// HTML input elements
+// ===================
 
 // Bookkeeping and initialization.
 import {isUpwardable} from './Upw';
 var {defineProperty, observe} = Object;
 
-// UpInputs associates an upwardable with the value of an input element.
-// It is also available via the `inputs` method on HTMLInputElement.
-// The 'realtime' parameter (default: false) controls whether each key in a text input is reported,
-// or if the change is not reported until the control loses focus.
+/**
+ * ## UpInputs (.sets)
+ *
+ * Associates an upwardable with the value of an input element.
+ *
+ * @param {HTMLInputElement} elt element to associate
+ * @param {Upwardable} upwardable upwardable to associate
+ * @param {boolean} realtime if true, update upwardable each char
+ */
 
 function UpInputs(elt, upwardable, realtime) {
   console.assert(elt instanceof HTMLInputElement, "First argument to UpInputs must be input element");
@@ -29,6 +34,7 @@ function UpInputs(elt, upwardable, realtime) {
   return elt;
 }
 
+// Extend HTMLInputElement prototype with `sets` method.
 var prototype = HTMLInputElement.prototype;
 var INPUTSPROP = 'sets';
 

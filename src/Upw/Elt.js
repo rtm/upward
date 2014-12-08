@@ -1,5 +1,4 @@
-// Create HTML Element with upwardable features.
-// =============================================
+// # UpElement/E
 
 // Bookkeeping and initialization.
 import './Evt';
@@ -8,7 +7,7 @@ import './Inp';
 
 var {appendChild} = HTMLElement.prototype;
 
-// Create an element.
+// ## Create an element.
 // Support low-level sugar in form of `div#id.class`.
 function UpElement(tag) {
   var parts = tag.split(/([#.])/);
@@ -24,6 +23,7 @@ function UpElement(tag) {
   return elt;
 }
 
+// ## HTML templates
 // Template helper which handles HTML; return a document fragment.
 // Example:
 // ```

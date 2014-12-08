@@ -1,5 +1,5 @@
-// Create text node.
-// =================
+// Create text node (T)
+// ====================
 
 // Bookkeeping and initialization.
 import {makeUpwardableFunction} from './Fun';
@@ -12,6 +12,8 @@ export default makeUpwardableFunction(function *upText() {
   }
 });
 
+// Extend String prototype
+// -------------------------
 // Allow the String prototype methods to be applied to Text nodes.
 
 // These are methods that overwrite the node value.

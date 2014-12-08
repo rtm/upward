@@ -19,7 +19,10 @@
     <div id="tree"></div>
     <div id="headings">
       <div class="heading h1">
-        <a href="#html%20input%20element%20transputting.">HTML input element transputting.</a>
+        <a href="#html%20input%20elements">HTML input elements</a>
+      </div>
+      <div class="heading h2">
+        <a href="#upinputs%20(.sets)">UpInputs (.sets)</a>
       </div>
     </div>
   </div>
@@ -29,10 +32,10 @@
   <tbody>
       <tr>
         <td class="docs">
-<div class="pilwrap" id="html%20input%20element%20transputting.">
+<div class="pilwrap" id="html%20input%20elements">
   <h1>
-    <a href="#html%20input%20element%20transputting." name="html%20input%20element%20transputting." class="pilcrow">&#182;</a>
-    HTML input element transputting.
+    <a href="#html%20input%20elements" name="html%20input%20elements" class="pilcrow">&#182;</a>
+    HTML input elements
   </h1>
 </div>
 
@@ -56,14 +59,37 @@
         </td>
       </tr>
       <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="upinputs%20(.sets)">
+  <h2>
+    <a href="#upinputs%20(.sets)" name="upinputs%20(.sets)" class="pilcrow">&#182;</a>
+    UpInputs (.sets)
+  </h2>
 </div>
-<p>UpInputs associates an upwardable with the value of an input element.
-It is also available via the <code>inputs</code> method on HTMLInputElement.
-The 'realtime' parameter (default: false) controls whether each key in a text input is reported,
-or if the change is not reported until the control loses focus.</p>
+
+  </div>
+  <div class="body"><p>Associates an upwardable with the value of an input element.</p>
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">elt</span>
+      <span class="dox_type">HTMLInputElement</span>
+      <span>element to associate</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">upwardable</span>
+      <span class="dox_type">Upwardable</span>
+      <span>upwardable to associate</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">realtime</span>
+      <span class="dox_type">boolean</span>
+      <span>if true, update upwardable each char</span>
+    </div>
+  </div>
+</div>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 
@@ -86,6 +112,18 @@ or if the change is not reported until the control loses focus.</p>
   <span class="k">return</span> <span class="nx">elt</span><span class="p">;</span>
 <span class="p">}</span>
 
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Extend HTMLInputElement prototype with <code>sets</code> method.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
 <span class="kd">var</span> <span class="nx">prototype</span> <span class="o">=</span> <span class="nx">HTMLInputElement</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
 <span class="kd">var</span> <span class="nx">INPUTSPROP</span> <span class="o">=</span> <span class="s1">&#39;sets&#39;</span><span class="p">;</span>
 
@@ -102,7 +140,7 @@ or if the change is not reported until the control loses focus.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
 </div>
 <p>Normally this module will be imported as <code>import './src/Inp';</code>.</p>
         </td>

@@ -1,0 +1,19 @@
+{
+  "name": "todo",
+  "version": "0.0.0",
+  "homepage": "https://github.com/rtm/upward",
+  "authors": [
+    "Bob Myers <rtm@gol.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "todomvc-common": "~0.3.1"
+  }
+}
