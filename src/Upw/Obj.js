@@ -1,12 +1,14 @@
 // Upwardable Objects
 // ===================
 
-// Upwardable objects are one of the two key components of the upward library,
-// along with upwardable functions.
+// Upwardable objects are one of the three key components of the upward library,
+// along with upwardable values and upwardable functions.
 // An **upwardable object** is an enhanced object which can detect and and act on
 // accesses to its properties.
 
-// An upwardable object is created by calling `Up` on an object.
+// An upwardable object is created by calling `makeUpwardableObject`,
+// the default export from this module, on an object.
+// In `src/Up.js`, this is aliased to `Up`.
 // `a = Up([1, 2, 3])` or `o=Up({x: 1, y: 2}` create upwardables.
 // All accesses to the elements of `a` and `o` continue to function as usual:
 // `a[0]`, `a[0] = 1;`, `o.x`, and `o.x = 1`.
@@ -20,18 +22,32 @@ import {Observer}              from '../Utl/Obs';
 
 var {create, keys, getNotifier, observe, unobserve, defineProperty} = Object;
 
-// A list of all upwardables. Used to determine upwardified-ness.
-var set = new WeakSet();
-
-function is(u) { return u && typeof u === 'object' && set.has(u); }
-
-// A list of all objects which have been upwardified.
+// Lists of all upwardables, and objects which have been upwardified.
+var set          = new WeakSet();
 var upwardifieds = new WeakMap();
 
+/**
+* ## is
+*
+* Check if an object is upwardified.
+* Exported as `isUpwardableObject`.
+*/
+function is(u) { return u && typeof u === 'object' && set.has(u); }
+
+/**
+ * ## get
+ *
+ * Get the upwardable version of an object.
+ */
 function get(o) { return o && typeof o === 'object' && upwardifieds.get(o); }
 
-// Constructor for upwardable object.
-// Default export from this module, often imported as makeUpwardableObject.
+/**
+ * ## make
+ *
+ * Constructor for upwardable object.
+ * Default export from this module, often imported as `makeUpwardableObject`,
+ * and aliased as `Up` in `src/Up.js`.
+ */
 function make(o) {
   if (is(o)) return o;
   var u = get(o);
@@ -43,7 +59,11 @@ function make(o) {
   return u;
 }
 
-// Create a new upwardable object.
+/**
+ * ## _make
+ *
+ * Low-level constructor for upwardable object.
+ */
 function _make(o) {
 
   var shadow = {};
@@ -115,6 +135,7 @@ function _make(o) {
   return u;
 }
 
+// Exports.
 export default make;
 var isUpwardableObject = is;
 export {

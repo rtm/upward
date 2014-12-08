@@ -19,7 +19,10 @@
     <div id="tree"></div>
     <div id="headings">
       <div class="heading h1">
-        <a href="#upchildren%3A%20specify%20children%20of%20a%20dom%20element">upChildren: specify children of a DOM element</a>
+        <a href="#upchildren">upChildren</a>
+      </div>
+      <div class="heading h2">
+        <a href="#upchildren">upChildren</a>
       </div>
     </div>
   </div>
@@ -29,10 +32,10 @@
   <tbody>
       <tr>
         <td class="docs">
-<div class="pilwrap" id="upchildren%3A%20specify%20children%20of%20a%20dom%20element">
+<div class="pilwrap" id="upchildren">
   <h1>
-    <a href="#upchildren%3A%20specify%20children%20of%20a%20dom%20element" name="upchildren%3A%20specify%20children%20of%20a%20dom%20element" class="pilcrow">&#182;</a>
-    upChildren: specify children of a DOM element
+    <a href="#upchildren" name="upchildren" class="pilcrow">&#182;</a>
+    upChildren
   </h1>
 </div>
 
@@ -43,29 +46,51 @@
 <span class="kd">var</span> <span class="p">{</span><span class="nx">filter</span><span class="p">}</span>                   <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
 <span class="kd">var</span> <span class="p">{</span><span class="nx">defineProperty</span><span class="p">}</span>           <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
 
-<span class="kd">function</span> <span class="nx">upChildren</span><span class="p">(</span><span class="nx">elt</span><span class="p">,</span> <span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span> <span class="nx">_upChildren</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">oldChildren</span> <span class="o">=</span> <span class="nx">filter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">elt</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">,</span> <span class="nx">child</span> <span class="o">=&gt;</span> <span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
-    <span class="nx">children</span>   <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">appendChild</span><span class="p">,</span> <span class="nx">elt</span><span class="p">);</span>
-    <span class="nx">oldChildren</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">removeChild</span><span class="p">,</span> <span class="nx">elt</span><span class="p">);</span>
-  <span class="p">});</span>
-  <span class="nx">f</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="o">?</span> <span class="nx">children</span> <span class="o">:</span> <span class="p">[</span><span class="nx">children</span><span class="p">]);</span>
-  <span class="k">return</span> <span class="nx">elt</span><span class="p">;</span>
-<span class="p">}</span>
-
 
 </pre></div>
         </td>
       </tr>
       <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="upchildren">
+  <h2>
+    <a href="#upchildren" name="upchildren" class="pilcrow">&#182;</a>
+    upChildren
+  </h2>
 </div>
-<p>Add <code>upChildren</code> as property on Node prototype.</p>
+
+  </div>
+  <div class="body"><p>Specify the children of an HTML element.
+As the input array changes, the element's children are added and removed.</p>
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">elt</span>
+      <span class="dox_type">HTMLElement</span>
+      <span>element to add children to</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">children</span>
+      <span class="dox_type">Node[]</span>
+      <span>array of nodes to add as children</span>
+    </div>
+  </div>
+</div>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-<span class="kr">const</span> <span class="nx">HASPROP</span> <span class="o">=</span> <span class="s1">&#39;has&#39;</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">UpChildren</span><span class="p">(</span><span class="nx">elt</span><span class="p">,</span> <span class="p">...</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span> <span class="nx">_UpChildren</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">filter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">elt</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">,</span> <span class="nx">child</span> <span class="o">=&gt;</span> <span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">removeChild</span><span class="p">,</span> <span class="nx">elt</span><span class="p">);</span>
+
+    <span class="nx">children</span>
+      <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">appendChild</span><span class="p">,</span> <span class="nx">elt</span><span class="p">);</span>
+  <span class="p">});</span>
 
 
 </pre></div>
@@ -76,12 +101,37 @@
 <div class="pilwrap">
   <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
 </div>
-<p>@TODO: Make this a non-enumerable property on prototype.</p>
+<p>Permit any combination of single nodes and arrays as arguments.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-<span class="nx">Node</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">has</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">upChildren</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">children</span><span class="p">);</span>
+  <span class="nx">f</span><span class="p">([].</span><span class="nx">concat</span><span class="p">(...</span><span class="nx">children</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">elt</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Add <code>UpChildren</code> as property on Node prototype, named <code>has</code>.
+Usage:</p>
+
+<div class='highlight'><pre><code language=''>E('div') . has ([children, ...])
+</code></pre></div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">const</span> <span class="nx">HASPROP</span> <span class="o">=</span> <span class="s1">&#39;has&#39;</span><span class="p">;</span>
+
+<span class="cm">/* @TODO: Make this a non-enumerable property on prototype. */</span>
+<span class="nx">Node</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">has</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">UpChildren</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">...</span><span class="nx">children</span><span class="p">);</span>
 <span class="p">};</span>
+
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">UpChildren</span><span class="p">;</span>
 </pre></div>
         </td>
       </tr>

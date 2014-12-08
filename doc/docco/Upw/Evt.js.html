@@ -29,25 +29,6 @@
   <tbody>
       <tr>
         <td class="docs">
-          <h1>Evt.js</h1>
-        </td>
-        <td class="code highlight"></td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
-</div>
-
-        </td>
-        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="p">{</span><span class="nx">create</span><span class="p">,</span> <span class="nx">keys</span><span class="p">,</span> <span class="nx">assign</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
 <div class="pilwrap" id="event%20handling">
   <h1>
     <a href="#event%20handling" name="event%20handling" class="pilcrow">&#182;</a>
@@ -56,7 +37,20 @@
 </div>
 
         </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Events are handled by calling <code>does</code> on an element, and passing a hash of handlers.</p>
+        </td>
         <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kd">var</span> <span class="p">{</span><span class="nx">create</span><span class="p">,</span> <span class="nx">keys</span><span class="p">,</span> <span class="nx">assign</span><span class="p">,</span> <span class="nx">defineProperty</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">prototype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">HTMLElement</span><span class="p">;</span>
 
 
 </pre></div>
@@ -67,32 +61,7 @@
 <div class="pilwrap">
   <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
 </div>
-<p>Events are handled by calling <code>does</code> on an element, and passing a hash of handlers.</p>
-
-<p>Example:</p>
-
-<div class='highlight'><pre><code language=''>El('button').does({click: handleButtonClick});
-
-function handleButtonClick(evt) {
-    // this.context is the button
-}
-</code></pre></div>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
-
-<span class="kd">var</span> <span class="p">{</span><span class="nx">defineProperty</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
-<span class="kd">var</span> <span class="p">{</span><span class="nx">prototype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">HTMLElement</span><span class="p">;</span>
-
-
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
-</div>
-<p>Define a prototypical <code>handleEvent</code> for event listeners,
+<p>Prototype for event listeners, defining <code>handleEvent</code>,
 which dispatches events to a method of the same name.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
@@ -107,23 +76,17 @@ which dispatches events to a method of the same name.</p>
       <tr>
         <td class="docs">
 <div class="pilwrap">
-  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
 </div>
-<p>@TODO: define stand-along UpHandlers routine and export it.</p>
-        </td>
-        <td class="code highlight"><div class="highlight"><pre>
+<p>Place property on <code>Element</code> prototype.
+Usage:</p>
 
+<div class='highlight'><pre><code language=''>E('button') . does({click: handleButtonClick})
 
-</pre></div>
-        </td>
-      </tr>
-      <tr>
-        <td class="docs">
-<div class="pilwrap">
-  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
-</div>
-<p><code>does</code> is a method on <code>HTMLElement</code>
-to which you pass event handlers in the form of a hash keyed by event name.</p>
+function handleButtonClick(evt) {
+    // this.context is the button
+}
+</code></pre></div>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 <span class="kr">const</span> <span class="nx">DOESPROP</span> <span class="o">=</span> <span class="s1">&#39;does&#39;</span><span class="p">;</span>
