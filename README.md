@@ -31,7 +31,7 @@ It is ultimately unopinionated.
 
 The Upward framework is based around
 
- 1. **Upwardablefs**, values which observe themselves
+ 1. **Upwardables**, values which observe themselves
 
  1. **Upwardable functions**, both built-in and user-defined, which take and return upwardables
  
@@ -45,7 +45,7 @@ Other features include:
 
  1. A broad selection of upward-aware **data manipulation functions** such as `map`.
 
- 1. APIs for defining **CSS**, which are also upward-aware and thus dynamically changeable
+ 1. An API for defining **CSS**, which is also upward-aware and thus dynamically changeable
 
  1. **Utilities** such as timers.
 
@@ -53,7 +53,7 @@ Other features include:
 
 ### Project status
 
-In progress, unusable.
+In progress, bleeding edge, changing frenetically, unusable.
 
 ### Environment
 
