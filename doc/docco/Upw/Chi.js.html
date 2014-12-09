@@ -81,7 +81,7 @@ As the input array changes, the element's children are added and removed.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
 
-<span class="kd">function</span> <span class="nx">UpChildren</span><span class="p">(</span><span class="nx">elt</span><span class="p">,</span> <span class="p">...</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">function</span> <span class="nx">UpChildren</span><span class="p">(</span><span class="nx">elt</span><span class="p">,</span> <span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span> <span class="nx">_UpChildren</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
 
     <span class="nx">filter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">elt</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">,</span> <span class="nx">child</span> <span class="o">=&gt;</span> <span class="nx">children</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
@@ -104,7 +104,7 @@ As the input array changes, the element's children are added and removed.</p>
 <p>Permit any combination of single nodes and arrays as arguments.</p>
         </td>
         <td class="code highlight"><div class="highlight"><pre>
-  <span class="nx">f</span><span class="p">([].</span><span class="nx">concat</span><span class="p">(...</span><span class="nx">children</span><span class="p">);</span>
+  <span class="nx">f</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="o">?</span> <span class="nx">children</span> <span class="o">:</span> <span class="p">[</span><span class="nx">children</span><span class="p">]);</span>
   <span class="k">return</span> <span class="nx">elt</span><span class="p">;</span>
 <span class="p">}</span>
 
@@ -127,8 +127,8 @@ Usage:</p>
 <span class="kr">const</span> <span class="nx">HASPROP</span> <span class="o">=</span> <span class="s1">&#39;has&#39;</span><span class="p">;</span>
 
 <span class="cm">/* @TODO: Make this a non-enumerable property on prototype. */</span>
-<span class="nx">Node</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">has</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(...</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">UpChildren</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="p">...</span><span class="nx">children</span><span class="p">);</span>
+<span class="nx">Node</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">has</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">UpChildren</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">children</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="kr">export</span> <span class="k">default</span> <span class="nx">UpChildren</span><span class="p">;</span>

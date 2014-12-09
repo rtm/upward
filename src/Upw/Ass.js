@@ -6,7 +6,7 @@
 // Also handles subobjects.
 
 // Convenience.
-import {isObject, valueize, mapObject, objectFromPairs, propGetter} from './Obj';
+import {isObject, valueize, mapObject, objectFromPairs, propGetter} from '../Utl/Obj';
 import {upwardConfig, upwardableId}   from '../Cfg';
 import {argify}                       from '../Utl//Fun';
 import U                              from './Upw';

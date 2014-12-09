@@ -1,8 +1,8 @@
-import C from './Fun';
-import {interleave} from '../Utl/Utl';
-
 // String templates
 // ----------------
+
+import C from './Fun';
+import {interleave} from '../Utl/Utl';
 
 // Utility routine to compose a string by interspersing literals and values.
 function compose(strings, ...values) {
@@ -14,7 +14,7 @@ function compose(strings, ...values) {
 // ```
 // document.body.appendChild(HTML`<span>${foo}</span><span>${bar}</span>`);
 // ```
-// NEEDS WORK
+/* NEEDS WORK */
 function HTML(strings, ...values) {
   var dummy = document.createElement('div');
   var fragment = document.createDocumentFragment();
@@ -23,4 +23,9 @@ function HTML(strings, ...values) {
   return fragment;
 }
 
+// Will often be imported/re-exported as `upwardableTemplate`, or `F`.
+// Usage:
+// ```
+// T(F`There are ${model.count} items.`))
+// ```
 export default C(compose, "");
