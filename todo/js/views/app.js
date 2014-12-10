@@ -30,3 +30,13 @@ function footer() {
 export default function app() {
   return E('div') . has([header(), todosView(), footer()]);
 }
+
+// Todo item model
+// ===============
+
+import {U} from '../../../src/Up';
+
+export default function(title, completed) {
+  title = title.trim();
+  return U({title, completed});
+}
