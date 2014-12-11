@@ -1,8 +1,8 @@
 // Upward version of Todos MVC
 // ===========================
 
-import LocalStorage from '../../../src/Utl/Sto';
-import {U, E, T, H1, P, A, C} from '../../../src/Up';
+import LocalStorage from '../src/Utl/Sto';
+import {U, E, T, H1, P, A, C, F} from '../src/Up';
 
 var {keys} = Object;
 
@@ -28,40 +28,30 @@ function todoItem(title, completed) {
 // Controllers
 // -----------
 
-// Todos controller
-function todosController(todos) {
-  this.todos = todos;
+// init()    { this.model = todosModel().load(); },
+// add(item) { this.model.add(item); }
+// clearCompleted() { this.todos.filter(todo => this.todos.remove(todo)); }
+// remove(item) { // FIX
+//   this.remove = function (key) {
+//     this.list.splice(key, 1);
+//     app.storage.put(this.list);
+//   }
+// },
 
-  return {
-    init()    { this.model = todosModel().load(); },
-    add(item) { this.model.add(item); }
-    clearCompleted() { this.todos.filter(todo => this.todos.remove(todo)); }
-    remove(item) { // FIX
-      this.remove = function (key) {
-        this.list.splice(key, 1);
-        app.storage.put(this.list);
-      }
-    },
-    amountCompleted() { return this.todos.filter(todo => todo.completed).length },
-    allCompleted()    { return this.todos.every(todo => todo.completed); },
-    completeAll()     {
-      var allCompleted = this.allCompleted();
-      this.todos.forEach(todo => todo.completed = allCompleted);
-    },
-    clearCompleted()  { }
-  };
-};
+var amountCompleted = C(todos => todos.filter(todo => todo.completed).length);
+var allComplete     = C(todos => todos.every(todo => todo.completed));
 
-// Todo item controller
-function todoController() {
-  return {
-    toggleComplete() { this.model.completed = !+this.model.completed; },
-    edit()           { this.editing = true; },
-    doneEditing()    { this.editing = false; /* handle empty title */},
-    cancelEditing()  { this.editing = false; /* revert title*/ },
-    clearTitle()     { this.title = ''; },
-    remove()         { },
-  };
+var completeAll     = C(todos => {
+  var allCompleted = allCompleted(todos);
+  todos.forEach(todo => todo.completed = allCompleted);
+});
+
+function toggleComplete(todo) { todo.completed = !this.model.completed.valueOf(); }
+function edit()           { this.editing = true; }
+function doneEditing()    { this.editing = false; /* handle empty title */}
+function cancelEditing()  { this.editing = false; /* revert title*/ }
+function clearTitle(todo) { todo.title = ''; }
+function remove()         { }
 
 // Views
 // -----
@@ -74,21 +64,26 @@ function todoController() {
  */
 
 function todoViews() {
-  var model = todosModel();
-  var data = U({ filter: 'all' });
+  var model  = todosModel();
+  var todosConfig = U({ filter: 'all' });
 
   // View for one todo item.
   function todoView(item) {
+    var todoConfig    = U({ editing: false });
+    var toggleEditing = C(_ => todoConfig.editing = !Boolean(todoConfig.editing));
+    var doneEditing   = C(_ => todoConfig.editing = false);
+    var edit          = C(_ => todoConfig.editing = true );
+    
     return E('li') .
-      is({ class: { completed: item.completed, editing: item.editing} }) .
+      is({ class: { completed: item.completed, editing: config.editing} }) .
       has([
         
         E('div#view') . has ([
-          E('input') . is({type: 'checkbox'}) . does({click: 0}) . sets(item.complete),
+          E('input') . is({type: 'checkbox'}) . does({click: 0}) . sets(item.completed),
           LABEL(item.title) . does({ doubleclick: edit })
         ]),
         
-        E('input.edit') . sets(item.title) . does({ blur: doneediting })
+        E('input.edit') . sets(item.title) . does({ blur: doneEditing })
       ])
     ;
   }
@@ -101,7 +96,7 @@ function todoViews() {
     return E('footer') . is ({ id: 'footer' }) . has([
       
       E('span') . is ({ id: 'todo-count' }) . has([
-        E('strong') . has (T(F`${count} items left`))
+//        E('strong') . has (T(F`${count} items left`)) // jshint ignore:line
       ]),
       
       // Filters (all, active, completed)
@@ -111,10 +106,12 @@ function todoViews() {
         E('li') . has(T("Completed")) . does({ click: _ => data.filter = 'completed' })
       ]),
       
+      /* jshint ignore:start */
       E('button') .
-        has (T(F`Clear completed ${completedcount}`)) .
+        has (T(F`Clear completed ${completedcount}`)) . // jshint ignore:line
         is  ({ id: 'clear-completed' }) .
-        does({ click: clearCompleted })
+        does({ click: _ => 0 }) //clearCompleted })
+      /* jshint ignore:end */
     ]);
   }
 
@@ -144,7 +141,7 @@ export default function appView() {
   function header() {
     return E('header#header') . has([
       H1("todos") // some kind of placeholder?
-    ])
+    ]);
   }
 
   // Create page footer.
