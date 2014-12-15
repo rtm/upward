@@ -1,3 +1,6 @@
+Upward
+======
+
 Upward is a JavaScript framework where you declare how things should be,
 and it makes sure things are like that and stay that way.
 With Upward, JavaScript becomes a "declarative" rather than an "imperative" language.
@@ -46,6 +49,8 @@ Other features include:
  1. A broad selection of upward-aware **data manipulation functions** such as `map`.
 
  1. An API for defining **CSS**, which is also upward-aware and thus dynamically changeable
+
+ 1. A minimalistic, upward-aware **MVC framework**.
 
  1. **Utilities** such as timers.
 

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>README.md</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "README.md", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#upward">Upward</a>
+      </div>
+      <div class="heading h3">
+        <a href="#introduction">Introduction</a>
+      </div>
+      <div class="heading h3">
+        <a href="#basic%20architecture">Basic architecture</a>
+      </div>
+      <div class="heading h3">
+        <a href="#project%20status">Project status</a>
+      </div>
+      <div class="heading h3">
+        <a href="#environment">Environment</a>
+      </div>
+      <div class="heading h3">
+        <a href="#installation">Installation</a>
+      </div>
+      <div class="heading h3">
+        <a href="#license">License</a>
+      </div>
+      <div class="heading h3">
+        <a href="#acronym">Acronym</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="docs markdown">
+<div class="pilwrap" id="upward">
+  <h1>
+    <a href="#upward" name="upward" class="pilcrow">&#182;</a>
+    Upward
+  </h1>
+</div>
+
+
+<p>Upward is a JavaScript framework where you declare how things should be,
+and it makes sure things are like that and stay that way.
+With Upward, JavaScript becomes a "declarative" rather than an "imperative" language.
+In Upward, all your CSS and HTML is written in JavaScript as well,
+so there's a single language to write, preprocess, and run.</p>
+
+
+<div class="pilwrap" id="introduction">
+  <h3>
+    <a href="#introduction" name="introduction" class="pilcrow">&#182;</a>
+    Introduction
+  </h3>
+</div>
+
+
+<p>In our struggles to integrate the front-end technologies that have emerged
+for mark-up, styling, and program logic, we have created a witches&rsquo; brew.
+We have styles inside logic, logic inside styles,
+logic inside mark-up, and mark-up inside logic.
+We have build a tangled web of templating languages, libraries, frameworks, 
+and CSS preprocessors.
+We have complex build systems to preprocess, precompile, and transpile this steaming mess.
+We have monstrous config objects with mysterious properties fed to black box add-ons to control magic behaviors.
+We build assumptions upon assumptions and dependencies upon dependencies.
+All of this makes our systems hard to write, debug, maintain, build, and deploy.</p>
+
+<p>In Upward, in contrast, everything is logic.
+Mark-up and styling is all described by logic.
+It is a purely JS, declarative world.</p>
+
+<p>Upward is not an MVC framework, nor a library.
+It is a context for declaring the relationships among objects
+and dynamically keeping them up to date.
+Upward does not make any assumptions about what you want to do.
+It is ultimately unopinionated.</p>
+
+
+<div class="pilwrap" id="basic%20architecture">
+  <h3>
+    <a href="#basic%20architecture" name="basic%20architecture" class="pilcrow">&#182;</a>
+    Basic architecture
+  </h3>
+</div>
+
+
+<p>The Upward framework is based around</p>
+
+<ol>
+<li><p><strong>Upwardables</strong>, values which observe themselves</p></li>
+<li><p><strong>Upwardable functions</strong>, both built-in and user-defined, which take and return upwardables</p></li>
+<li><p><strong>Upwardable objects</strong>, whose properties are upwardables</p></li>
+</ol>
+
+<p>Other features include:</p>
+
+<ol>
+<li><p><strong>Upwardable template strings</strong>, which auto-update to reflect changes to upwardable placeholders</p></li>
+<li><p><strong>DOM Node creation Routines</strong> such as <code>UpElement</code> and <code>UpText</code> which are based on upwardables, and thus auto-update themselves</p></li>
+<li><p>A broad selection of upward-aware <strong>data manipulation functions</strong> such as <code>map</code>.</p></li>
+<li><p>An API for defining <strong>CSS</strong>, which is also upward-aware and thus dynamically changeable</p></li>
+<li><p>A minimalistic, upward-aware <strong>MVC framework</strong>.</p></li>
+<li><p><strong>Utilities</strong> such as timers.</p></li>
+<li><p>An upward-aware <strong>test runner</strong>.</p></li>
+</ol>
+
+
+<div class="pilwrap" id="project%20status">
+  <h3>
+    <a href="#project%20status" name="project%20status" class="pilcrow">&#182;</a>
+    Project status
+  </h3>
+</div>
+
+
+<p>In progress, bleeding edge, changing frenetically, unusable.</p>
+
+
+<div class="pilwrap" id="environment">
+  <h3>
+    <a href="#environment" name="environment" class="pilcrow">&#182;</a>
+    Environment
+  </h3>
+</div>
+
+
+<p><strong>Upward</strong> is written completely in ES6 and targeted for compilation by Traceur.
+The environment it runs in needs to support ES6 features such as <code>Map</code> and 'Object.observe'.
+It has been tested only in Chrome.
+It will not run in other browsers due to their lack of support for <code>Object.observe</code>.</p>
+
+<p>At present, we recommend including the traceur compiler and runtime in your web page:</p>
+
+
+<div class="highlight"><pre><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://google.github.io/traceur-compiler/bin/traceur.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://google.github.io/traceur-compiler/src/bootstrap.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script&gt;</span><span class="nx">traceur</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">experimental</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span><span class="nt">&lt;/script&gt;</span>
+</code></pre></div>
+
+
+
+
+<div class="pilwrap" id="installation">
+  <h3>
+    <a href="#installation" name="installation" class="pilcrow">&#182;</a>
+    Installation
+  </h3>
+</div>
+
+
+
+<div class="highlight"><pre><code><span class="nx">npm</span> <span class="nx">install</span> <span class="nx">upward</span>
+</code></pre></div>
+
+
+
+<p>Upward has no dependencies, although you should install docker globally to create documentation.</p>
+
+
+<div class="pilwrap" id="license">
+  <h3>
+    <a href="#license" name="license" class="pilcrow">&#182;</a>
+    License
+  </h3>
+</div>
+
+
+<p>Copyright (c) 2014 Bob Myers.</p>
+
+<p>Licensed under the MIT license.</p>
+
+
+<div class="pilwrap" id="acronym">
+  <h3>
+    <a href="#acronym" name="acronym" class="pilcrow">&#182;</a>
+    Acronym
+  </h3>
+</div>
+
+
+<p>"Upward" is an acronym for "Upward Propagation With ARgument Detection", if you insist.</p></div>
+  </div>
+</body>
+</html>

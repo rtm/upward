@@ -16,4 +16,5 @@ import              './Upw/Arr';
 
 export {U, T, E, F, C, UpCount, UpStyle};
 
-export {P, H1, H2, H3, H4, H5, H6, B, I, LI, LABEL, A, BUTTON} from './Upw/Tag';
+//export {P, H1, H2, H3, H4, H5, H6, B, I, LI, LABEL, A, BUTTON} from './Upw/Tag';
+export * from './Upw/Tag';

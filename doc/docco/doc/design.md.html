@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>design.md</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "doc\\design.md", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#upward%20design">Upward Design</a>
+      </div>
+      <div class="heading h2">
+        <a href="#upwardable%20values">Upwardable values</a>
+      </div>
+      <div class="heading h2">
+        <a href="#upwardable%20functions">Upwardable functions</a>
+      </div>
+      <div class="heading h2">
+        <a href="#upwardable%20objects">Upwardable objects</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="docs markdown">
+<div class="pilwrap" id="upward%20design">
+  <h1>
+    <a href="#upward%20design" name="upward%20design" class="pilcrow">&#182;</a>
+    Upward Design
+  </h1>
+</div>
+
+
+<p>The primary design goal for Upward is to allow programmers to succintly describe the behavior and output of web applications.
+We want to keep the API footprint to a minimum.
+The target language environment is ES6.
+Performance is not a major consideration at this point, but we shall avoid design decisions which prevent optimization in the future.</p>
+
+<p>The fundamental idea is a declarative style, where we can say:</p>
+
+<div class='highlight'><pre><code language=''>country = "USA";
+display(country);
+country = "Japan";
+</code></pre></div>
+
+<p><code>display</code> here is intended to be a declaration that we want to display a map of whatever the current value of <code>country</code> happens to be. In other words, <code>country = "Japan"</code> should act as a trigger to change the map. We often see the following approach to accomplish this:</p>
+
+<div class='highlight'><pre><code language=''>set('country', "USA");
+
+display(get('country')).observes('country');
+set('country', "Japan");
+</code></pre></div>
+
+<p>which in an ES5 world is the only way to capture a variable being set, and specify the dependencies of <code>displayMap</code>. Essentially, we have replaced the good old assignment statement with the unwieldy <code>set('var', value)</code> in order to be able to watch it, and are forced to adorn our function calls with explicit dependencies using <code>observes</code> or some equivalent.</p>
+
+<p>We propose to write the above as:</p>
+
+<div class='highlight'><pre><code language=''>data = U({ country: "Japan" });
+display = C(_display);
+
+display(data.country);
+data.country = "Japan";
+</code></pre></div>
+
+<p>Here, <code>U</code> transforms the object so as to make its properties watchable, and <code>C</code> transforms the function so as to make it observe its parameters. ES6 and features such as <code>Object.observe</code> give us the tools to accoplish this streamlining. We call <code>country</code> and other properties in <code>data</code> "upwardables"; the <code>data</code> object itself an "upwardable object"; and the <code>display</code> function an "upwardable function".</p>
+
+
+<div class="pilwrap" id="upwardable%20values">
+  <h2>
+    <a href="#upwardable%20values" name="upwardable%20values" class="pilcrow">&#182;</a>
+    Upwardable values
+  </h2>
+</div>
+
+
+<p>Upwardable values are values which are capable of updating themselves and being watched. They are called "upwardable" since they can pass their values, and changes to their values, "upward" to a function using them. The most common way of creating an upwardable value is to apply <code>U</code> to an object to make its properties into upwardable values.</p>
+
+<p>We could implement upwardable values as some kind of wrapper around the underlying value, but this would prevent us from using them directly as regular values, and force us to access their values as <code>object.prop.valueOf()</code> or something similar. We want upwardable values to both be watchable, but also to function as themselves to the maximum extent possible. In Upward, upwardable values have this characteristic, so we can say</p>
+
+<div class='highlight'><pre><code language=''>data = U({ country: "USA });
+console.log(data.country.toLowerCase());
+</code></pre></div>
+
+<p>and all works as expected. </p>
+
+<p>Implementation-wise, object-valued upwardable values are themselves, with minimal additional features allowing them to be identified as such, and allowing them to watch and change their values. Primitive-valued upwardable values are the primitives in an object wrapper, such as <code>Object("USA")</code>. This allows them to be used as themselves in nearly all contexts, the main exception being boolean values, where instead of saying <code>!data.bool</code> we need to say <code>!Boolean(data.bool)</code>, or any other construct which forces coercion (for example, <code>!+data.bool</code>, or <code>data.bool == false</code>). Null and undefined upwardable values are held in special object wrappers.</p>
+
+<p>For debugging purposes, upwardable values are adorned with a unique ID, and are also identifiable by virtue of being kept in a global WeakMap.</p>
+
+<p>A stand-alone upwardable value can be created with the <code>makeUpwardable</code> API, but this will rarely be necessary for the end-developer.</p>
+
+
+<div class="pilwrap" id="upwardable%20functions">
+  <h2>
+    <a href="#upwardable%20functions" name="upwardable%20functions" class="pilcrow">&#182;</a>
+    Upwardable functions
+  </h2>
+</div>
+
+
+<p>Upwardable functions are functions which are capable of watching their parameters and re-executing themselves when they change. They are most commonly created by the <code>C</code> operator on a normal function. Upwardable functions also return upwardable values, so their results can be handled properly as input to other upwardable functions.</p>
+
+
+<div class="pilwrap" id="upwardable%20objects">
+  <h2>
+    <a href="#upwardable%20objects" name="upwardable%20objects" class="pilcrow">&#182;</a>
+    Upwardable objects
+  </h2>
+</div>
+
+
+<p>Upwardable objects are objects whose properties are upwardable values. They are most commonly created by the <code>U</code> operator. An upwardable object not only makes upwardable values out of the properties it contains when created, but also creates upwardable values of any properties added in the future.</p></div>
+  </div>
+</body>
+</html>

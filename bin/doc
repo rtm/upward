@@ -1,1 +1,1 @@
-docker -u -c emacs -i README.md -i src -o doc/docco
+docker -u -c emacs -o doc/docco README.md src doc/*.md
