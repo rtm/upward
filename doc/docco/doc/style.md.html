@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>style.md</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "doc\\style.md", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#coding%20style">Coding style</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="docs markdown">
+<div class="pilwrap" id="coding%20style">
+  <h1>
+    <a href="#coding%20style" name="coding%20style" class="pilcrow">&#182;</a>
+    Coding style
+  </h1>
+</div>
+
+
+<p>Upward uses the following coding style. Whether or not you adopt this in your Upward application is completely up to you.</p>
+
+<ol>
+<li><p>Two-space indents</p></li>
+<li><p>camelCased variable names</p></li>
+<li><p>Liberal double-slash comments, at least one per routine. Double-slash comments at beginning of every file</p></li>
+<li><p>Short <code>if</code> and <code>else</code> statement bodies may follow on the same line, with no curly brackets</p></li>
+<li><p>Individual <code>var</code> declarations</p></li>
+<li><p>Empty lines between routines, and wherever else makes sense for readability</p></li>
+<li><p>No spaces after left parentheses or before right parentheses</p></li>
+<li><p>Single spaces after left brackets and before right brackets, both for single-line functions and object literals</p></li>
+<li><p>Spaces around operators</p></li>
+<li><p>Short (usually one-statement) function bodies on a single line</p></li>
+<li><p>Spaces before and after dots accessing chained methodsd, such as <code>E('div') . has(....)</code>. When the <code>has</code> is to be placed on a separate line, the preceding period on the first line</p></li>
+<li><p>Use of spacing to align and show the relationship between consecutive lines, as in</p></li>
+</ol>
+
+
+<div class="highlight"><pre><code>    <span class="nx">foo</span>     <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">fooFunc</span><span class="p">);</span>
+    <span class="nx">otherFoo</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">otherFooFunc</span><span class="p">);</span>
+</code></pre></div>
+
+</div>
+  </div>
+</body>
+</html>

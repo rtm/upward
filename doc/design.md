@@ -111,7 +111,7 @@ HTML elements created via `E()` have available to them prototype methods to add 
       is({ class: { list: true } }) . 
       does({ click: handler });
 
-In a minor node to convenience, the `E()` API supports in-line IDs and classes in the form `E('div#id.class')`, which is equivalent to `E('div') . is({ id: 'id' class: { class: true } })`.
+In a minor nod to convenience, the `E()` API supports in-line IDs and classes in the form `E('div#id.class')`, which is equivalent to `E('div') . is({ id: 'id' class: { class: true } })`.
 
 ### Specifying attributes
 
@@ -125,8 +125,55 @@ Input elements maintain their values in properties such as `input.value`, which 
 
 This is the only place in the Upward system where there is anything reminiscent of the "bindings" seen in other systems.
 
+### Convenience routines
+
+Merely for convenience, Upward exports `P`, `Hn`, `B`, `I`, `LI`, `LABEL`, `A`, and `BUTTON` to create the corresponding type of DOM element. Their implementation may be found in `src/Upw/Tag`. Most take string arguments. `A` also takes an `href` argument. `BUTTON` also takes a click handler argument. These routines are offered against our better judgment as sugar to save a few keystrokes. Among other defects, they provide no way to specify ID or class, as would be possible with `E('p#id.class')`.
 
 
+Template strings
+----------------
 
+We often want to create strings which include variable values, for instance for use in text nodes. Of course we can do this using an upwardable function, such as `str =C(count => count + ' items')`, which would be invoked as `str(model.count)`. However, this becomes cumbersome for more complex strings involving more values. We take advantage of the ES6 template string capability to make this dead easy, using the `F` template string tag:
 
+    F`${model.count} items`
 
+We can now create a text node displaying the auto-updated string by simply saying
+
+    T(F`${model.count} items`)
+
+MVC
+---
+
+Upward does not claim to be an application framework. It is an application layer. The organization of application data, application logic, and application display is fundamentally up to the individual developer. However, Upward does offer a minimal MVC framework which is mainly a set of concepts and principles and bits of sugar. For details, see `Mvc.md`.
+
+In the Upward MVC model, a "view" has no special meaning. It is not a special class with a special `render` method invoked at special times by some special superstructure. Any function which returns a DOM element can be considered a view. A "model" has no special meaning. Any upwardable object can be considered a model. A "controller" has no special meaning. Any object providing methods can be considered a controller.
+
+However, to make it easier to implement MVC, and to promote MVC practices, Upward offers a minimal set of APIs to make MVC more convenient. The primary interface is `makeView`, which can be imported from `'src/Upw/Mvc'`, and takes a view function and a controller function (a function which creates a controller), and returns a function which can be invoked with a model to create a view.
+
+CSS
+---
+
+Upward has a religious aversion to non-JS pseudo-languages which pollute the stack, require special preprocessing, and separate logically connected parts of the application. Prime examples include templating languages and CSS languages with underpowered logical constructs and odd syntaxes. For CSS, Upward offers JS-based ways to specify application styles, with the `UpStyle` API which is the default export from `'src/Upw/Css'`. This interface simply takes an array of CSS rules, such as
+
+```
+UpStyle([
+  ["body", { 
+		fontFamily : 'sans-serif',
+		backgroundColor: theme.bodyBackgroundColor
+	}]
+]);
+```
+
+which are fully upward-aware, so that `theme.bodyBackgroundColor = 'gray';` will automatically rewrite the corresponding rule. Of course, doing this is less common than simply applying classes and styles directly to elements via `E(tagname) . is({ })`.
+
+The `UpStyle` API also accepts a second argument, specifying a DOM element to which the rules are scoped, even if the browser does not support scoped styles.
+
+Convenience routines
+--------------------
+
+The Upward design philosophy frowns on excessive convenience routines. They result in an obese API footprint. But although not an integral part of the library, Upward does provide implementations of commonly used constructs, including the following:
+
+ * in `'src/Upw/Cnt'`: `UpCount`, a function which automaticaly counts up every so many milliseconds
+ * in `'src/Upw/Fns'`:
+    - `equals`, to compare two (upwardable) values
+    - `not`, to invert an (upwardable) value

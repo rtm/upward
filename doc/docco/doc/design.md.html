@@ -27,8 +27,41 @@
       <div class="heading h2">
         <a href="#upwardable%20functions">Upwardable functions</a>
       </div>
+      <div class="heading h3">
+        <a href="#upwardable%20functions%20are%20based%20on%20generators">Upwardable functions are based on generators</a>
+      </div>
+      <div class="heading h3">
+        <a href="#upwardable%20functions%20watch%20non-parameter%20upwardable%20values">Upwardable functions watch non-parameter upwardable values</a>
+      </div>
       <div class="heading h2">
         <a href="#upwardable%20objects">Upwardable objects</a>
+      </div>
+      <div class="heading h3">
+        <a href="#merging%20upwardable%20objects">Merging upwardable objects</a>
+      </div>
+      <div class="heading h2">
+        <a href="#dom">DOM</a>
+      </div>
+      <div class="heading h3">
+        <a href="#specifying%20attributes">Specifying attributes</a>
+      </div>
+      <div class="heading h3">
+        <a href="#binding%20to%20dom%20element%20values">Binding to DOM element values</a>
+      </div>
+      <div class="heading h3">
+        <a href="#convenience%20routines">Convenience routines</a>
+      </div>
+      <div class="heading h2">
+        <a href="#template%20strings">Template strings</a>
+      </div>
+      <div class="heading h2">
+        <a href="#mvc">MVC</a>
+      </div>
+      <div class="heading h2">
+        <a href="#css">CSS</a>
+      </div>
+      <div class="heading h2">
+        <a href="#convenience%20routines">Convenience routines</a>
       </div>
     </div>
   </div>
@@ -89,7 +122,7 @@ data.country = "Japan";
 <p>We could implement upwardable values as some kind of wrapper around the underlying value, but this would prevent us from using them directly as regular values, and force us to access their values as <code>object.prop.valueOf()</code> or something similar. We want upwardable values to both be watchable, but also to function as themselves to the maximum extent possible. In Upward, upwardable values have this characteristic, so we can say</p>
 
 <div class='highlight'><pre><code language=''>data = U({ country: "USA });
-console.log(data.country.toLowerCase());
+console.log("I live in " + data.country);
 </code></pre></div>
 
 <p>and all works as expected. </p>
@@ -112,6 +145,38 @@ console.log(data.country.toLowerCase());
 <p>Upwardable functions are functions which are capable of watching their parameters and re-executing themselves when they change. They are most commonly created by the <code>C</code> operator on a normal function. Upwardable functions also return upwardable values, so their results can be handled properly as input to other upwardable functions.</p>
 
 
+<div class="pilwrap" id="upwardable%20functions%20are%20based%20on%20generators">
+  <h3>
+    <a href="#upwardable%20functions%20are%20based%20on%20generators" name="upwardable%20functions%20are%20based%20on%20generators" class="pilcrow">&#182;</a>
+    Upwardable functions are based on generators
+  </h3>
+</div>
+
+
+<p>In this simplest case, <code>C(fn)</code> simply recomputes the function whenever things change. However, we also would like the the following abilities: </p>
+
+<ul>
+<li><p>maintain internal state between recomputations</p></li>
+<li><p>return a promised result</p></li>
+<li><p>initiate its own recalculation, such as in the case of a timer</p></li>
+</ul>
+
+<p>To accomplish this, the design is therefore that the function actually underlying upwardable functions are <strong>generators</strong>, which <code>yield</code> each successive value. The <code>C(fn)</code> notation is actually sugar for wrapping a generator around <code>fn</code> and building an upwardable function based on that. If you wish to provide your own generator on which to base an upwardable function, call <code>makeUpwardableFunction(generator, run)</code> (an export from <code>'src/Upw/Fun'</code>). Here <code>run</code> is a function which the generator may call to signal a request for its own recalculation. An mentioned above, the generator may also yield a promise, in which case the new value of the function is then eventual value of the yielded promise when resolved.</p>
+
+<p>It may be the case that the initial call to the underlying function is at a point when the function is not yet ready to deliver a result. In that case, the function may return a default or placeholder value as the first <code>yield</code>, or specified as the second argument to <code>C()</code>.</p>
+
+
+<div class="pilwrap" id="upwardable%20functions%20watch%20non-parameter%20upwardable%20values">
+  <h3>
+    <a href="#upwardable%20functions%20watch%20non-parameter%20upwardable%20values" name="upwardable%20functions%20watch%20non-parameter%20upwardable%20values" class="pilcrow">&#182;</a>
+    Upwardable functions watch non-parameter upwardable values
+  </h3>
+</div>
+
+
+<p>It is also desirable that upwardable functions recompute not only when their parameters change, but also when other values affecting the calculation change. In other words, we want <code>C(x =&gt; x+1)</code> to work properly, but in addition <code>C(() =&gt; model.count + 1)</code> needs to recompute when <code>model.count</code> changes. To accomplish this, upwardable values accessed during the computation of an upwardable function are monitored, and then cause a recalculation when changed.</p>
+
+
 <div class="pilwrap" id="upwardable%20objects">
   <h2>
     <a href="#upwardable%20objects" name="upwardable%20objects" class="pilcrow">&#182;</a>
@@ -120,7 +185,178 @@ console.log(data.country.toLowerCase());
 </div>
 
 
-<p>Upwardable objects are objects whose properties are upwardable values. They are most commonly created by the <code>U</code> operator. An upwardable object not only makes upwardable values out of the properties it contains when created, but also creates upwardable values of any properties added in the future.</p></div>
+<p>Upwardable objects are objects whose properties are upwardable values. They are most commonly created by the <code>U</code> operator. An upwardable object not only makes upwardable values out of the properties it contains when created, but also creates upwardable values of any properties added in the future.</p>
+
+
+<div class="pilwrap" id="merging%20upwardable%20objects">
+  <h3>
+    <a href="#merging%20upwardable%20objects" name="merging%20upwardable%20objects" class="pilcrow">&#182;</a>
+    Merging upwardable objects
+  </h3>
+</div>
+
+
+<p>Upwardable objects have access to the methods <code>and</code> and <code>or</code>, which create deep-merged, upwardable objects. <code>and</code> takes the earlier value, <code>or</code> takes a later value. So</p>
+
+
+<div class="highlight"><pre><code><span class="nx">U</span><span class="p">({</span><span class="nx">a</span><span class="o">:</span> <span class="p">{</span><span class="nx">b</span><span class="o">:</span> <span class="mi">1</span><span class="p">}}).</span><span class="nx">and</span><span class="p">({</span><span class="nx">a</span><span class="o">:</span> <span class="p">{</span><span class="nx">b</span><span class="o">:</span> <span class="mi">2</span><span class="p">}})</span>
+</code></pre></div>
+
+
+
+<p>returns a value fo <code>a.b</code> of 2. This feature is especially useful for objects used as DOM attributes, which contain nexted objects for style and class (see below).</p>
+
+
+<div class="pilwrap" id="dom">
+  <h2>
+    <a href="#dom" name="dom" class="pilcrow">&#182;</a>
+    DOM
+  </h2>
+</div>
+
+
+<p>In line with the design objective of "all-JavaScript", we want to avoid yet another language in our stack to define HTML templates, with its own syntax and control structures. Accordingly, in Upward DOM elements are created in JavaScript, using the <code>E(tagname)</code> API. This creates a real DOM node, not a shadow or proxy. This API is not upwardable; after all, an element cannot change its tagname once created.</p>
+
+<p>Text nodes are created using <code>T(text)</code>. This <strong>is</strong> upwardable, so when <code>text</code> changes, the <code>nodeValue</code> will change in parallel:</p>
+
+
+<div class="highlight"><pre><code><span class="nx">app</span> <span class="o">=</span> <span class="nx">U</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;Upward&quot;</span> <span class="p">});</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">T</span><span class="p">(</span><span class="nx">app</span><span class="p">.</span><span class="nx">name</span><span class="p">));</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="s2">&quot;Newname&quot;</span><span class="p">;</span>
+</code></pre></div>
+
+
+
+<p>HTML elements created via <code>E()</code> have available to them prototype methods to add attributes, children, event handlers, and value bindings, called <code>is</code>, <code>has</code>, <code>does</code>, and <code>sets</code>. This structure allows the setters to be upward-aware, so that changes to attributes, children etc. result in automatic updating of the DOM element. A common pattern in Upward is </p>
+
+
+<div class="highlight"><pre><code><span class="nx">dom</span> <span class="o">=</span> <span class="nx">E</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)</span> <span class="p">.</span> 
+  <span class="nx">has</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">.</span> 
+  <span class="nx">is</span><span class="p">({</span> <span class="kr">class</span><span class="o">:</span> <span class="p">{</span> <span class="nx">list</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">})</span> <span class="p">.</span> 
+  <span class="nx">does</span><span class="p">({</span> <span class="nx">click</span><span class="o">:</span> <span class="nx">handler</span> <span class="p">});</span>
+</code></pre></div>
+
+
+
+<p>In a minor nod to convenience, the <code>E()</code> API supports in-line IDs and classes in the form <code>E('div#id.class')</code>, which is equivalent to <code>E('div') . is({ id: 'id' class: { class: true } })</code>.</p>
+
+
+<div class="pilwrap" id="specifying%20attributes">
+  <h3>
+    <a href="#specifying%20attributes" name="specifying%20attributes" class="pilcrow">&#182;</a>
+    Specifying attributes
+  </h3>
+</div>
+
+
+<p>Attributes, including classes, styles, and data attributes, are set using the <code>.is()</code> method on the <code>HTMLElement</code> prototype, also made available as the default export from `src/Upw/Att'. The attributes are specified as a hash of attribute name/value pairs.</p>
+
+<p>Styles, classes, and dataset attributes are specified as sub-hashes. The style sub-hash uses camelCased style property keys specifying the property values, fully upward-aware. The class sub-hash uses camelCased class names with boolean values. The dataset sub-hash uses camelCased data attribute names specifying the attribute value.</p>
+
+
+<div class="pilwrap" id="binding%20to%20dom%20element%20values">
+  <h3>
+    <a href="#binding%20to%20dom%20element%20values" name="binding%20to%20dom%20element%20values" class="pilcrow">&#182;</a>
+    Binding to DOM element values
+  </h3>
+</div>
+
+
+<p>Input elements maintain their values in properties such as <code>input.value</code>, which are not upwardable and cannot be. Changes to such values are reported via DOM events such as <code>change</code>. To allow these values to interact with the upwardable system, we provide the <code>sets()</code> method on the <code>HTMLElement</code> prototype which specifies the name of an upwardable value to keep in sync with the element's value. The bindings are two-way. In other words, setting the upwardable value will set the element's value, and changes in the element's alue will be reflected in the upwardable value. This behavior applies to text inputs, text areas, checkboxes, ranges, radio buttons, etc.</p>
+
+<p>This is the only place in the Upward system where there is anything reminiscent of the "bindings" seen in other systems.</p>
+
+
+<div class="pilwrap" id="convenience%20routines">
+  <h3>
+    <a href="#convenience%20routines" name="convenience%20routines" class="pilcrow">&#182;</a>
+    Convenience routines
+  </h3>
+</div>
+
+
+<p>Merely for convenience, Upward exports <code>P</code>, <code>Hn</code>, <code>B</code>, <code>I</code>, <code>LI</code>, <code>LABEL</code>, <code>A</code>, and <code>BUTTON</code> to create the corresponding type of DOM element. Their implementation may be found in <code>src/Upw/Tag</code>. Most take string arguments. <code>A</code> also takes an <code>href</code> argument. <code>BUTTON</code> also takes a click handler argument. These routines are offered against our better judgment as sugar to save a few keystrokes. Among other defects, they provide no way to specify ID or class, as would be possible with <code>E('p#id.class')</code>.</p>
+
+
+<div class="pilwrap" id="template%20strings">
+  <h2>
+    <a href="#template%20strings" name="template%20strings" class="pilcrow">&#182;</a>
+    Template strings
+  </h2>
+</div>
+
+
+<p>We often want to create strings which include variable values, for instance for use in text nodes. Of course we can do this using an upwardable function, such as <code>str =C(count =&gt; count + ' items')</code>, which would be invoked as <code>str(model.count)</code>. However, this becomes cumbersome for more complex strings involving more values. We take advantage of the ES6 template string capability to make this dead easy, using the <code>F</code> template string tag:</p>
+
+
+<div class="highlight"><pre><code><span class="nx">F</span><span class="err">`</span><span class="nx">$</span><span class="p">{</span><span class="nx">model</span><span class="p">.</span><span class="nx">count</span><span class="p">}</span> <span class="nx">items</span><span class="err">`</span>
+</code></pre></div>
+
+
+
+<p>We can now create a text node displaying the auto-updated string by simply saying</p>
+
+
+<div class="highlight"><pre><code><span class="nx">T</span><span class="p">(</span><span class="nx">F</span><span class="err">`</span><span class="nx">$</span><span class="p">{</span><span class="nx">model</span><span class="p">.</span><span class="nx">count</span><span class="p">}</span> <span class="nx">items</span><span class="err">`</span><span class="p">)</span>
+</code></pre></div>
+
+
+
+
+<div class="pilwrap" id="mvc">
+  <h2>
+    <a href="#mvc" name="mvc" class="pilcrow">&#182;</a>
+    MVC
+  </h2>
+</div>
+
+
+<p>Upward does not claim to be an application framework. It is an application layer. The organization of application data, application logic, and application display is fundamentally up to the individual developer. However, Upward does offer a minimal MVC framework which is mainly a set of concepts and principles and bits of sugar. For details, see <code>Mvc.md</code>.</p>
+
+<p>In the Upward MVC model, a "view" has no special meaning. It is not a special class with a special <code>render</code> method invoked at special times by some special superstructure. Any function which returns a DOM element can be considered a view. A "model" has no special meaning. Any upwardable object can be considered a model. A "controller" has no special meaning. Any object providing methods can be considered a controller.</p>
+
+<p>However, to make it easier to implement MVC, and to promote MVC practices, Upward offers a minimal set of APIs to make MVC more convenient. The primary interface is <code>makeView</code>, which can be imported from <code>'src/Upw/Mvc'</code>, and takes a view function and a controller function (a function which creates a controller), and returns a function which can be invoked with a model to create a view.</p>
+
+
+<div class="pilwrap" id="css">
+  <h2>
+    <a href="#css" name="css" class="pilcrow">&#182;</a>
+    CSS
+  </h2>
+</div>
+
+
+<p>Upward has a religious aversion to non-JS pseudo-languages which pollute the stack, require special preprocessing, and separate logically connected parts of the application. Prime examples include templating languages and CSS languages with underpowered logical constructs and odd syntaxes. For CSS, Upward offers JS-based ways to specify application styles, with the <code>UpStyle</code> API which is the default export from <code>'src/Upw/Css'</code>. This interface simply takes an array of CSS rules, such as</p>
+
+<div class='highlight'><pre><code language=''>UpStyle([
+  ["body", { 
+        fontFamily : 'sans-serif',
+        backgroundColor: theme.bodyBackgroundColor
+    }]
+]);
+</code></pre></div>
+
+<p>which are fully upward-aware, so that <code>theme.bodyBackgroundColor = 'gray';</code> will automatically rewrite the corresponding rule. Of course, doing this is less common than simply applying classes and styles directly to elements via <code>E(tagname) . is({ })</code>.</p>
+
+<p>The <code>UpStyle</code> API also accepts a second argument, specifying a DOM element to which the rules are scoped, even if the browser does not support scoped styles.</p>
+
+
+<div class="pilwrap" id="convenience%20routines_1">
+  <h2>
+    <a href="#convenience%20routines_1" name="convenience%20routines_1" class="pilcrow">&#182;</a>
+    Convenience routines
+  </h2>
+</div>
+
+
+<p>The Upward design philosophy frowns on excessive convenience routines. They result in an obese API footprint. But although not an integral part of the library, Upward does provide implementations of commonly used constructs, including the following:</p>
+
+<ul>
+<li>in <code>'src/Upw/Cnt'</code>: <code>UpCount</code>, a function which automaticaly counts up every so many milliseconds</li>
+<li>in <code>'src/Upw/Fns'</code>:
+<ul><li><code>equals</code>, to compare two (upwardable) values</li>
+<li><code>not</code>, to invert an (upwardable) value</li></ul></li>
+</ul></div>
   </div>
 </body>
 </html>
