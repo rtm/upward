@@ -111,7 +111,19 @@ HTML elements created via `E()` have available to them prototype methods to add 
       is({ class: { list: true } }) . 
       does({ click: handler });
 
+In a minor node to convenience, the `E()` API supports in-line IDs and classes in the form `E('div#id.class')`, which is equivalent to `E('div') . is({ id: 'id' class: { class: true } })`.
+
+### Specifying attributes
+
+Attributes, including classes, styles, and data attributes, are set using the `.is()` method on the `HTMLElement` prototype, also made available as the default export from `src/Upw/Att'. The attributes are specified as a hash of attribute name/value pairs.
+
+Styles, classes, and dataset attributes are specified as sub-hashes. The style sub-hash uses camelCased style property keys specifying the property values, fully upward-aware. The class sub-hash uses camelCased class names with boolean values. The dataset sub-hash uses camelCased data attribute names specifying the attribute value.
+
 ### Binding to DOM element values
+
+Input elements maintain their values in properties such as `input.value`, which are not upwardable and cannot be. Changes to such values are reported via DOM events such as `change`. To allow these values to interact with the upwardable system, we provide the `sets()` method on the `HTMLElement` prototype which specifies the name of an upwardable value to keep in sync with the element's value. The bindings are two-way. In other words, setting the upwardable value will set the element's value, and changes in the element's alue will be reflected in the upwardable value. This behavior applies to text inputs, text areas, checkboxes, ranges, radio buttons, etc.
+
+This is the only place in the Upward system where there is anything reminiscent of the "bindings" seen in other systems.
 
 
 
