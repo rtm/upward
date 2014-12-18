@@ -24,6 +24,9 @@
       <div class="heading h2">
         <a href="#upwardable%20values">Upwardable values</a>
       </div>
+      <div class="heading h3">
+        <a href="#implementation">Implementation</a>
+      </div>
       <div class="heading h2">
         <a href="#upwardable%20functions">Upwardable functions</a>
       </div>
@@ -38,6 +41,9 @@
       </div>
       <div class="heading h3">
         <a href="#merging%20upwardable%20objects">Merging upwardable objects</a>
+      </div>
+      <div class="heading h3">
+        <a href="#upwardable%20properties%20as%20promises">Upwardable properties as promises</a>
       </div>
       <div class="heading h2">
         <a href="#dom">DOM</a>
@@ -63,6 +69,9 @@
       <div class="heading h2">
         <a href="#convenience%20routines">Convenience routines</a>
       </div>
+      <div class="heading h2">
+        <a href="#testing">Testing</a>
+      </div>
     </div>
   </div>
   <div id="sidebar-toggle"></div>
@@ -84,29 +93,32 @@ Performance is not a major consideration at this point, but we shall avoid desig
 
 <div class='highlight'><pre><code language=''>country = "USA";
 display(country);
+// then later...
 country = "Japan";
 </code></pre></div>
 
-<p><code>display</code> here is intended to be a declaration that we want to display a map of whatever the current value of <code>country</code> happens to be. In other words, <code>country = "Japan"</code> should act as a trigger to change the map. We often see the following approach to accomplish this:</p>
+<p><code>display</code> here is intended to be a declaration that we want to display a map of whatever the current value of <code>country</code> happens to be. In other words, <code>country = "Japan"</code> should act as a trigger to change the map. In other frameworks, We see the following kind of approach to accomplish this:</p>
 
 <div class='highlight'><pre><code language=''>set('country', "USA");
-
 display(get('country')).observes('country');
+
+// then later...
 set('country', "Japan");
 </code></pre></div>
 
-<p>which in an ES5 world is the only way to capture a variable being set, and specify the dependencies of <code>displayMap</code>. Essentially, we have replaced the good old assignment statement with the unwieldy <code>set('var', value)</code> in order to be able to watch it, and are forced to adorn our function calls with explicit dependencies using <code>observes</code> or some equivalent.</p>
+<p>because in an ES5 world this is the only way to capture a variable being set, and specify the dependencies of <code>display</code>. Essentially, we have replaced the good old assignment statement with the unwieldy <code>set('var', value)</code> in order to be able to watch it, and are forced to adorn our function calls with explicit dependencies using <code>observes</code> or some equivalent.</p>
 
 <p>We propose to write the above as:</p>
 
-<div class='highlight'><pre><code language=''>data = U({ country: "Japan" });
+<div class='highlight'><pre><code language=''>data =    U({ country: "USA" });
 display = C(_display);
-
 display(data.country);
+
+// then later...
 data.country = "Japan";
 </code></pre></div>
 
-<p>Here, <code>U</code> transforms the object so as to make its properties watchable, and <code>C</code> transforms the function so as to make it observe its parameters. ES6 and features such as <code>Object.observe</code> give us the tools to accoplish this streamlining. We call <code>country</code> and other properties in <code>data</code> "upwardables"; the <code>data</code> object itself an "upwardable object"; and the <code>display</code> function an "upwardable function".</p>
+<p>Here, <code>U</code> transforms the object so as to make its properties watchable, and <code>C</code> transforms the function so as to make it watch its parameters. ES6 and features such as <code>Object.observe</code> give us the tools to accoplish this streamlining. We call <code>country</code> and other properties in <code>data</code> "upwardables"; the <code>data</code> object itself an "upwardable object"; and the <code>display</code> function an "upwardable function".</p>
 
 
 <div class="pilwrap" id="upwardable%20values">
@@ -119,19 +131,28 @@ data.country = "Japan";
 
 <p>Upwardable values are values which are capable of updating themselves and being watched. They are called "upwardable" since they can pass their values, and changes to their values, "upward" to a function using them. The most common way of creating an upwardable value is to apply <code>U</code> to an object to make its properties into upwardable values.</p>
 
-<p>We could implement upwardable values as some kind of wrapper around the underlying value, but this would prevent us from using them directly as regular values, and force us to access their values as <code>object.prop.valueOf()</code> or something similar. We want upwardable values to both be watchable, but also to function as themselves to the maximum extent possible. In Upward, upwardable values have this characteristic, so we can say</p>
+<p>We could implement upwardable values as some kind of wrapper around the underlying value, but this would prevent us from using them directly as regular values, forcing us to access their values as <code>object.prop.valueOf()</code> or something similar. We want upwardable values to both be watchable, but also to function as themselves to the maximum extent possible. In Upward, upwardable values have this characteristic, so we can say</p>
 
-<div class='highlight'><pre><code language=''>data = U({ country: "USA });
+<div class='highlight'><pre><code language=''>data = U({ country: "USA" });
 console.log("I live in " + data.country);
 </code></pre></div>
 
 <p>and all works as expected. </p>
 
-<p>Implementation-wise, object-valued upwardable values are themselves, with minimal additional features allowing them to be identified as such, and allowing them to watch and change their values. Primitive-valued upwardable values are the primitives in an object wrapper, such as <code>Object("USA")</code>. This allows them to be used as themselves in nearly all contexts, the main exception being boolean values, where instead of saying <code>!data.bool</code> we need to say <code>!Boolean(data.bool)</code>, or any other construct which forces coercion (for example, <code>!+data.bool</code>, or <code>data.bool == false</code>). Null and undefined upwardable values are held in special object wrappers.</p>
 
-<p>For debugging purposes, upwardable values are adorned with a unique ID, and are also identifiable by virtue of being kept in a global WeakMap.</p>
+<div class="pilwrap" id="implementation">
+  <h3>
+    <a href="#implementation" name="implementation" class="pilcrow">&#182;</a>
+    Implementation
+  </h3>
+</div>
 
-<p>A stand-alone upwardable value can be created with the <code>makeUpwardable</code> API, but this will rarely be necessary for the end-developer.</p>
+
+<p>Object-valued upwardable values are themselves, with minimal additional features allowing them to be identified as such, and allowing them to watch and report changes to their values. Primitive-valued upwardable values are the primitives in an object wrapper, such as <code>Object("USA")</code>. This allows them to be used as themselves in nearly all contexts, the main exception being boolean values, where instead of saying <code>!data.bool</code> we need to say <code>!Boolean(data.bool)</code> or <code>!data.bool.valueOf()</code>, or any other construct which forces coercion (for example, <code>!+data.bool</code>, or <code>data.bool == false</code>). Null and undefined upwardable values are held in special object wrappers.</p>
+
+<p>Upwardable values are identifiable by virtue of being kept in a global WeakMap. For debugging purposes, they are adorned with a unique ID.</p>
+
+<p>A stand-alone upwardable value can be created with the <code>makeUpwardable</code> API exported from <code>'src/Upw/Upw'</code>, but this will rarely be necessary for the end-developer.</p>
 
 
 <div class="pilwrap" id="upwardable%20functions">
@@ -205,6 +226,19 @@ console.log("I live in " + data.country);
 
 
 <p>returns a value fo <code>a.b</code> of 2. This feature is especially useful for objects used as DOM attributes, which contain nexted objects for style and class (see below).</p>
+
+
+<div class="pilwrap" id="upwardable%20properties%20as%20promises">
+  <h3>
+    <a href="#upwardable%20properties%20as%20promises" name="upwardable%20properties%20as%20promises" class="pilcrow">&#182;</a>
+    Upwardable properties as promises
+  </h3>
+</div>
+
+
+<p>Upwardable properties are promise-aware. In other words, setting an upwardable property to a promise will rsult in that property's value eventually being set to the resolved value of the promise. For instance, we can set <code>app.model = asynchTask();</code>, and <code>app.model</code> will be set to the resulting value when ready. If the promise fails, then <code>app.model</code> will be set to an <code>Error</code> object. Until the promise resolves, accessing the property will retrieve its value prior to being set to a promise.</p>
+
+<p>Note that this means that promises themselves cannot be held in upwardable properties on upwardable objects. If you assign a promise to an upwardable property in hopes of keeping it there,, sooner or later, when the promise resolves, the property will take on the resolved value.</p>
 
 
 <div class="pilwrap" id="dom">
@@ -356,7 +390,18 @@ console.log("I live in " + data.country);
 <li>in <code>'src/Upw/Fns'</code>:
 <ul><li><code>equals</code>, to compare two (upwardable) values</li>
 <li><code>not</code>, to invert an (upwardable) value</li></ul></li>
-</ul></div>
+</ul>
+
+
+<div class="pilwrap" id="testing">
+  <h2>
+    <a href="#testing" name="testing" class="pilcrow">&#182;</a>
+    Testing
+  </h2>
+</div>
+
+
+<p>Existing test runners such as Jasmine are not well-suited for writing tests for Upward itself or applications which use Upward. For one thing, they don't necessarily play well with Traceur/ES6, at least not without special black-box adapters. More importantly, Upward is so aynchronous in nature, and most test runners require special gyrations to deal with this. Therefore, Upward has its own test runner. The <code>'Tst'</code> module exports two functions for this purpose, <code>test</code> and <code>testGroup</code>. <code>test</code> runs one test specified as a function. <code>testGroup</code> runs a group of tests. The results may be displayed in the console using <code>consoleReporter</code>, or on the HTML page using <code>htmlReporter</code>, which uses Upward itself in dog-food fashion. Although any assertion library may be used, we prefer <code>assert</code>, and that is what is used for Upward's own tests. </p></div>
   </div>
 </body>
 </html>

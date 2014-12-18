@@ -11,51 +11,56 @@ The fundamental idea is a declarative style, where we can say:
 ```
 country = "USA";
 display(country);
+// then later...
 country = "Japan";
 ```
 
-`display` here is intended to be a declaration that we want to display a map of whatever the current value of `country` happens to be. In other words, `country = "Japan"` should act as a trigger to change the map. We often see the following approach to accomplish this:
+`display` here is intended to be a declaration that we want to display a map of whatever the current value of `country` happens to be. In other words, `country = "Japan"` should act as a trigger to change the map. In other frameworks, We see the following kind of approach to accomplish this:
 
 ````
 set('country', "USA");
-
 display(get('country')).observes('country');
+
+// then later...
 set('country', "Japan");
 ```
 
-which in an ES5 world is the only way to capture a variable being set, and specify the dependencies of `displayMap`. Essentially, we have replaced the good old assignment statement with the unwieldy `set('var', value)` in order to be able to watch it, and are forced to adorn our function calls with explicit dependencies using `observes` or some equivalent.
+because in an ES5 world this is the only way to capture a variable being set, and specify the dependencies of `display`. Essentially, we have replaced the good old assignment statement with the unwieldy `set('var', value)` in order to be able to watch it, and are forced to adorn our function calls with explicit dependencies using `observes` or some equivalent.
 
 We propose to write the above as:
 
 ```
-data = U({ country: "Japan" });
+data =    U({ country: "USA" });
 display = C(_display);
-
 display(data.country);
+
+// then later...
 data.country = "Japan";
 ```
 
-Here, `U` transforms the object so as to make its properties watchable, and `C` transforms the function so as to make it observe its parameters. ES6 and features such as `Object.observe` give us the tools to accoplish this streamlining. We call `country` and other properties in `data` "upwardables"; the `data` object itself an "upwardable object"; and the `display` function an "upwardable function".
+Here, `U` transforms the object so as to make its properties watchable, and `C` transforms the function so as to make it watch its parameters. ES6 and features such as `Object.observe` give us the tools to accoplish this streamlining. We call `country` and other properties in `data` "upwardables"; the `data` object itself an "upwardable object"; and the `display` function an "upwardable function".
 
 Upwardable values
 -----------------
 
 Upwardable values are values which are capable of updating themselves and being watched. They are called "upwardable" since they can pass their values, and changes to their values, "upward" to a function using them. The most common way of creating an upwardable value is to apply `U` to an object to make its properties into upwardable values.
 
-We could implement upwardable values as some kind of wrapper around the underlying value, but this would prevent us from using them directly as regular values, and force us to access their values as `object.prop.valueOf()` or something similar. We want upwardable values to both be watchable, but also to function as themselves to the maximum extent possible. In Upward, upwardable values have this characteristic, so we can say
+We could implement upwardable values as some kind of wrapper around the underlying value, but this would prevent us from using them directly as regular values, forcing us to access their values as `object.prop.valueOf()` or something similar. We want upwardable values to both be watchable, but also to function as themselves to the maximum extent possible. In Upward, upwardable values have this characteristic, so we can say
 
 ```
-data = U({ country: "USA });
+data = U({ country: "USA" });
 console.log("I live in " + data.country);
 ```
 
 and all works as expected. 
 
-Implementation-wise, object-valued upwardable values are themselves, with minimal additional features allowing them to be identified as such, and allowing them to watch and change their values. Primitive-valued upwardable values are the primitives in an object wrapper, such as `Object("USA")`. This allows them to be used as themselves in nearly all contexts, the main exception being boolean values, where instead of saying `!data.bool` we need to say `!Boolean(data.bool)`, or any other construct which forces coercion (for example, `!+data.bool`, or `data.bool == false`). Null and undefined upwardable values are held in special object wrappers.
+### Implementation
 
-For debugging purposes, upwardable values are adorned with a unique ID, and are also identifiable by virtue of being kept in a global WeakMap.
+Object-valued upwardable values are themselves, with minimal additional features allowing them to be identified as such, and allowing them to watch and report changes to their values. Primitive-valued upwardable values are the primitives in an object wrapper, such as `Object("USA")`. This allows them to be used as themselves in nearly all contexts, the main exception being boolean values, where instead of saying `!data.bool` we need to say `!Boolean(data.bool)` or `!data.bool.valueOf()`, or any other construct which forces coercion (for example, `!+data.bool`, or `data.bool == false`). Null and undefined upwardable values are held in special object wrappers.
 
-A stand-alone upwardable value can be created with the `makeUpwardable` API, but this will rarely be necessary for the end-developer.
+Upwardable values are identifiable by virtue of being kept in a global WeakMap. For debugging purposes, they are adorned with a unique ID.
+
+A stand-alone upwardable value can be created with the `makeUpwardable` API exported from `'src/Upw/Upw'`, but this will rarely be necessary for the end-developer.
 
 Upwardable functions
 --------------------
@@ -92,6 +97,12 @@ Upwardable objects have access to the methods `and` and `or`, which create deep-
     U({a: {b: 1}}).and({a: {b: 2}})
 
 returns a value fo `a.b` of 2. This feature is especially useful for objects used as DOM attributes, which contain nexted objects for style and class (see below).
+
+### Upwardable properties as promises
+
+Upwardable properties are promise-aware. In other words, setting an upwardable property to a promise will rsult in that property's value eventually being set to the resolved value of the promise. For instance, we can set `app.model = asynchTask();`, and `app.model` will be set to the resulting value when ready. If the promise fails, then `app.model` will be set to an `Error` object. Until the promise resolves, accessing the property will retrieve its value prior to being set to a promise.
+
+Note that this means that promises themselves cannot be held in upwardable properties on upwardable objects. If you assign a promise to an upwardable property in hopes of keeping it there,, sooner or later, when the promise resolves, the property will take on the resolved value.
 
 DOM
 ---
@@ -177,3 +188,8 @@ The Upward design philosophy frowns on excessive convenience routines. They resu
  * in `'src/Upw/Fns'`:
     - `equals`, to compare two (upwardable) values
     - `not`, to invert an (upwardable) value
+
+Testing
+-------
+
+Existing test runners such as Jasmine are not well-suited for writing tests for Upward itself or applications which use Upward. For one thing, they don't necessarily play well with Traceur/ES6, at least not without special black-box adapters. More importantly, Upward is so aynchronous in nature, and most test runners require special gyrations to deal with this. Therefore, Upward has its own test runner. The `'Tst'` module exports two functions for this purpose, `test` and `testGroup`. `test` runs one test specified as a function. `testGroup` runs a group of tests. The results may be displayed in the console using `consoleReporter`, or on the HTML page using `htmlReporter`, which uses Upward itself in dog-food fashion. Although any assertion library may be used, we prefer `assert`, and that is what is used for Upward's own tests. 
