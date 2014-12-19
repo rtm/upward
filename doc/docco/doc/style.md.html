@@ -36,26 +36,33 @@
 <p>Upward uses the following coding style. Whether or not you adopt this in your Upward application is completely up to you.</p>
 
 <ol>
-<li><p>Two-space indents</p></li>
-<li><p>camelCased variable names</p></li>
-<li><p>Liberal double-slash comments, at least one per routine. Double-slash comments at beginning of every file</p></li>
-<li><p>Short <code>if</code> and <code>else</code> statement bodies may follow on the same line, with no curly brackets</p></li>
-<li><p>Individual <code>var</code> declarations</p></li>
-<li><p>Empty lines between routines, and wherever else makes sense for readability</p></li>
-<li><p>No spaces after left parentheses or before right parentheses</p></li>
-<li><p>Single spaces after left brackets and before right brackets, both for single-line functions and object literals</p></li>
-<li><p>Spaces around operators</p></li>
-<li><p>Short (usually one-statement) function bodies on a single line</p></li>
-<li><p>Spaces before and after dots accessing chained methodsd, such as <code>E('div') . has(....)</code>. When the <code>has</code> is to be placed on a separate line, the preceding period on the first line</p></li>
-<li><p>Use of spacing to align and show the relationship between consecutive lines, as in</p></li>
-</ol>
-
-
-<div class="highlight"><pre><code>    <span class="nx">foo</span>     <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">fooFunc</span><span class="p">);</span>
-    <span class="nx">otherFoo</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">otherFooFunc</span><span class="p">);</span>
-</code></pre></div>
-
-</div>
+<li>Indentation
+<ul><li>Two spaces</li>
+<li>Spaces, not tabs</li></ul></li>
+<li>Variables and names
+<ul><li>camelCased</li>
+<li>Individual <code>var</code> declarations</li>
+<li><code>var</code> declarations after nested functions</li></ul></li>
+<li>Comments
+<ul><li>Liberal double-slash comments, at least one per routine</li>
+<li>Double-slash comments at beginning of every file</li>
+<li>Use of YUIDoc-style comments for important APIs whose parameters/return value need explicit documentation</li></ul></li>
+<li>Line breaking
+<ul><li>Short <code>if</code>, <code>else</code>, <code>for</code> and <code>while</code> statement bodies may follow on the same line, with no curly brackets</li>
+<li>Short function bodies may also follow on the same line</li></ul></li>
+<li>Vertical spacing
+<ul><li>Empty lines between routines, unless closely paired</li>
+<li>Wherever else makes sense for readability</li></ul></li>
+<li>Horizontal spacing
+<ul><li>No spaces after left parentheses or before right parentheses</li>
+<li>Spaces around operators</li>
+<li>Spaces after left brackets and before right brackets, both for single-line functions and object literals</li>
+<li>Spaces before and after dots accessing chained methods, such as <code>E('div') . has(....)</code>; when the <code>has</code> is to be placed on a separate line, the preceding period on the first line</li>
+<li>Spacing to align and show the relationship between consecutive lines, as in</li></ul></li>
+<li>Exports
+<ul><li>At bottom</li>
+<li>Preference for default exports</li></ul></li>
+</ol></div>
   </div>
 </body>
 </html>

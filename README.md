@@ -1,8 +1,8 @@
 Upward
 ======
 
-Upward is a JavaScript framework where you declare how things should be,
-and it makes sure things are like that and stay that way.
+Upward is a JavaScript library which lets you declare how things should be,
+and makes sure things are and stay that way.
 With Upward, JavaScript becomes a "declarative" rather than an "imperative" language.
 In Upward, all your CSS and HTML is written in JavaScript as well,
 so there's a single language to write, preprocess, and run.
@@ -24,8 +24,8 @@ In Upward, in contrast, everything is logic.
 Mark-up and styling is all described by logic.
 It is a purely JS, declarative world.
 
-Upward is not an MVC framework, nor a library.
-It is a context for declaring the relationships among objects
+Upward is not a framework.
+It is a library, a layer, a context for declaring the relationships among objects
 and dynamically keeping them up to date.
 Upward does not make any assumptions about what you want to do.
 It is ultimately unopinionated.

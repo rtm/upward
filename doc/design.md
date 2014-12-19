@@ -11,6 +11,7 @@ The fundamental idea is a declarative style, where we can say:
 ```
 country = "USA";
 display(country);
+
 // then later...
 country = "Japan";
 ```
@@ -38,7 +39,7 @@ display(data.country);
 data.country = "Japan";
 ```
 
-Here, `U` transforms the object so as to make its properties watchable, and `C` transforms the function so as to make it watch its parameters. ES6 and features such as `Object.observe` give us the tools to accoplish this streamlining. We call `country` and other properties in `data` "upwardables"; the `data` object itself an "upwardable object"; and the `display` function an "upwardable function".
+Here, `U` transforms the object so as to make its properties watchable, and `C` transforms the function so as to make it watch its parameters. ES6 and features such as `Object.observe` give us the tools to accomplish this streamlining. We call `country` and other properties in `data` "upwardables" or "upwardable values"; the `data` object itself an "upwardable object"; and the `display` function an "upwardable function".
 
 Upwardable values
 -----------------
@@ -72,18 +73,16 @@ Upwardable functions are functions which are capable of watching their parameter
  In this simplest case, `C(fn)` simply recomputes the function whenever things change. However, we also would like the the following abilities: 
 
  * maintain internal state between recomputations
-
  * return a promised result
-
  * initiate its own recalculation, such as in the case of a timer
 
-To accomplish this, the design is therefore that the function actually underlying upwardable functions are **generators**, which `yield` each successive value. The `C(fn)` notation is actually sugar for wrapping a generator around `fn` and building an upwardable function based on that. If you wish to provide your own generator on which to base an upwardable function, call `makeUpwardableFunction(generator, run)` (an export from `'src/Upw/Fun'`). Here `run` is a function which the generator may call to signal a request for its own recalculation. An mentioned above, the generator may also yield a promise, in which case the new value of the function is then eventual value of the yielded promise when resolved.
+To accomplish this, the design is that the functions actually underlying upwardable functions are **generators**, which `yield` each successive value. The `C(fn)` notation is actually sugar for wrapping a generator around `fn` and building an upwardable function based on that. If you wish to provide your own generator on which to base an upwardable function, call `makeUpwardableFunction(generator, run)` (an export from `'src/Upw/Fun'`). Here `run` is a function which the generator may call to signal a request for its own recalculation. Your generator should yield an initial value, then yield additional values based on the array of revised arguments passed with each call to `next()`. As mentioned above, the generator may also yield a promise, in which case the new value of the function is then eventual value of the yielded promise when resolved.
 
 It may be the case that the initial call to the underlying function is at a point when the function is not yet ready to deliver a result. In that case, the function may return a default or placeholder value as the first `yield`, or specified as the second argument to `C()`.
 
-### Upwardable functions watch non-parameter upwardable values
+### Upwardable functions watch non-parameter upwardable dependencies
 
-It is also desirable that upwardable functions recompute not only when their parameters change, but also when other values affecting the calculation change. In other words, we want `C(x => x+1)` to work properly, but in addition `C(() => model.count + 1)` needs to recompute when `model.count` changes. To accomplish this, upwardable values accessed during the computation of an upwardable function are monitored, and then cause a recalculation when changed.
+It is also desirable that upwardable functions recompute not only when their parameters change, but also when other values affecting the calculation change. In other words, we want `C(x => x+1)` to work properly, of course, but in addition `C(() => model.count + 1)` needs to recompute when `model.count` changes. To accomplish this, upwardable values accessed during the computation of an upwardable function are monitored, and trigger a recalculation when changed.
 
 Upwardable objects
 ------------------
@@ -94,20 +93,20 @@ Upwardable objects are objects whose properties are upwardable values. They are 
 
 Upwardable objects have access to the methods `and` and `or`, which create deep-merged, upwardable objects. `and` takes the earlier value, `or` takes a later value. So
 
-    U({a: {b: 1}}).and({a: {b: 2}})
+    U({ a: { b: 1 } }) . and({ a: { b: 2 } })
 
-returns a value fo `a.b` of 2. This feature is especially useful for objects used as DOM attributes, which contain nexted objects for style and class (see below).
+returns a value for `a.b` of 2. This feature is especially useful for objects used as DOM attributes, which contain nested objects for style and class (see below).
 
 ### Upwardable properties as promises
 
-Upwardable properties are promise-aware. In other words, setting an upwardable property to a promise will rsult in that property's value eventually being set to the resolved value of the promise. For instance, we can set `app.model = asynchTask();`, and `app.model` will be set to the resulting value when ready. If the promise fails, then `app.model` will be set to an `Error` object. Until the promise resolves, accessing the property will retrieve its value prior to being set to a promise.
+Upwardable properties are promise-aware. In other words, setting an upwardable property to a promise will result in that property's value eventually being set to the resolved value of the promise. For instance, we can set `app.model = asynchTask();`, and `app.model` will be set to the resulting value when ready. If the promise fails, then `app.model` will be left unchanged. Until the promise resolves, accessing the property will retrieve its value prior to being set to a promise.
 
 Note that this means that promises themselves cannot be held in upwardable properties on upwardable objects. If you assign a promise to an upwardable property in hopes of keeping it there,, sooner or later, when the promise resolves, the property will take on the resolved value.
 
 DOM
 ---
 
-In line with the design objective of "all-JavaScript", we want to avoid yet another language in our stack to define HTML templates, with its own syntax and control structures. Accordingly, in Upward DOM elements are created in JavaScript, using the `E(tagname)` API. This creates a real DOM node, not a shadow or proxy. This API is not upwardable; after all, an element cannot change its tagname once created.
+In line with the Upward design objective of "all-JavaScript", we want to avoid yet another language in our stack to define HTML templates, with its own odd-ball syntax and control structures. Accordingly, in Upward DOM elements are created in JavaScript, using the `E(tagname)` API. This creates a real DOM node, not a shadow or proxy. This API is not upwardable; after all, an element cannot change its tagname once created.
 
 Text nodes are created using `T(text)`. This **is** upwardable, so when `text` changes, the `nodeValue` will change in parallel:
 
@@ -115,20 +114,31 @@ Text nodes are created using `T(text)`. This **is** upwardable, so when `text` c
     document.body.appendChild(T(app.name));
     app.name = "Newname";
 
-HTML elements created via `E()` have available to them prototype methods to add attributes, children, event handlers, and value bindings, called `is`, `has`, `does`, and `sets`. This structure allows the setters to be upward-aware, so that changes to attributes, children etc. result in automatic updating of the DOM element. A common pattern in Upward is 
+HTML elements created via `E()` have available to them prototype methods for basic operations:
+
+* `is`, to set attributes, classes and styles
+* `has`, to set children
+* `does`, to set event handlers
+* `sets`, to bind element values
+
+All these setters are upward-aware, so that changes to attributes, children etc. result in automatic updating of the DOM element. A common pattern in Upward is 
 
     dom = E('div') . 
       has(children) . 
       is({ class: { list: true } }) . 
       does({ click: handler });
 
-In a minor nod to convenience, the `E()` API supports in-line IDs and classes in the form `E('div#id.class')`, which is equivalent to `E('div') . is({ id: 'id' class: { class: true } })`.
+In a gratuitous nod to convenience, the `E()` API supports in-line IDs and classes in the form `E('div#id.class')`, which is equivalent to `E('div') . is({ id: 'id' class: { class: true } })`.
 
 ### Specifying attributes
 
-Attributes, including classes, styles, and data attributes, are set using the `.is()` method on the `HTMLElement` prototype, also made available as the default export from `src/Upw/Att'. The attributes are specified as a hash of attribute name/value pairs.
+Attributes, including classes, styles, and data attributes, are set using the `.is()` method on the `HTMLElement` prototype, also made available as the default export from `'src/Upw/Att'`. The attributes are specified as a hash of attribute name/value pairs.
 
-Styles, classes, and dataset attributes are specified as sub-hashes. The style sub-hash uses camelCased style property keys specifying the property values, fully upward-aware. The class sub-hash uses camelCased class names with boolean values. The dataset sub-hash uses camelCased data attribute names specifying the attribute value.
+Styles, classes, and data attributes are specified as sub-hashes:
+
+* The `style` sub-hash uses camelCased style property keys specifying the property values, fully upward-aware.
+* The `class` sub-hash uses camelCased class names with boolean values (`true` to turn on that class). This design facilitates easily adding and removing classes by simply specifying and modifying boolean-valued properties.
+* The `dataset` sub-hash uses camelCased data attribute names specifying the attribute value.
 
 ### Binding to DOM element values
 
@@ -138,28 +148,38 @@ This is the only place in the Upward system where there is anything reminiscent 
 
 ### Convenience routines
 
-Merely for convenience, Upward exports `P`, `Hn`, `B`, `I`, `LI`, `LABEL`, `A`, and `BUTTON` to create the corresponding type of DOM element. Their implementation may be found in `src/Upw/Tag`. Most take string arguments. `A` also takes an `href` argument. `BUTTON` also takes a click handler argument. These routines are offered against our better judgment as sugar to save a few keystrokes. Among other defects, they provide no way to specify ID or class, as would be possible with `E('p#id.class')`.
-
+Merely for convenience, Upward exports `P`, `H[1-6]`, `B`, `I`, `LI`, `LABEL`, `A`, and `BUTTON` to create the corresponding type of DOM element. Their implementation may be found in `'src/Upw/Tag'`. Most take string arguments. `A` takes a second argument for `href`. `BUTTON` takes a second argument for click handler. These routines are offered against our better judgment as sugar to save a few keystrokes. Among other defects, they provide no way to specify ID or class, as would be possible with `E('p#id.class')`.
 
 Template strings
 ----------------
 
-We often want to create strings which include variable values, for instance for use in text nodes. Of course we can do this using an upwardable function, such as `str =C(count => count + ' items')`, which would be invoked as `str(model.count)`. However, this becomes cumbersome for more complex strings involving more values. We take advantage of the ES6 template string capability to make this dead easy, using the `F` template string tag:
+We often want to create strings which include variable values, for instance for use in text nodes. Of course we can do this using an upwardable function, such as `str =C(count => count + ' items')` and then invoke it as `str(model.count)`. However, this becomes cumbersome for more complex strings involving more values. We take advantage of the ES6 template string capability to make this dead easy, using the `F` template string tag:
 
-    F`${model.count} items`
+```
+F`${model.count} items`
+```
 
-We can now create a text node displaying the auto-updated string by simply saying
+We can now create a DOM text node displaying the auto-updated string by simply saying
 
-    T(F`${model.count} items`)
+```
+T(F`${model.count} items`)
+```
 
 MVC
 ---
 
 Upward does not claim to be an application framework. It is an application layer. The organization of application data, application logic, and application display is fundamentally up to the individual developer. However, Upward does offer a minimal MVC framework which is mainly a set of concepts and principles and bits of sugar. For details, see `Mvc.md`.
 
-In the Upward MVC model, a "view" has no special meaning. It is not a special class with a special `render` method invoked at special times by some special superstructure. Any function which returns a DOM element can be considered a view. A "model" has no special meaning. Any upwardable object can be considered a model. A "controller" has no special meaning. Any object providing methods can be considered a controller.
+In the Upward MVC model, a "view" has no special meaning. It is not a special class with a special `render` method invoked at special times by some special superstructure. Any function which returns a DOM element can be considered a view. Nor does "model" have any special meaning. Any upwardable object can be considered a model. "Controller" also has no special meaning. Any object providing methods can be considered a controller.
 
-However, to make it easier to implement MVC, and to promote MVC practices, Upward offers a minimal set of APIs to make MVC more convenient. The primary interface is `makeView`, which can be imported from `'src/Upw/Mvc'`, and takes a view function and a controller function (a function which creates a controller), and returns a function which can be invoked with a model to create a view.
+However, to make it easier to follow an MVC approach, and to promote MVC practices, Upward offers a minimal set of APIs to make MVC more convenient. The primary interface is `makeView`, which can be imported from `'src/Upw/Mvc'`, and takes a view function and a controller function (a function which creates a controller), returning a function which can be invoked with a model to create a view.
+
+Because upwardable properties are promise-aware, the models used in Upward's mini-MVC implementation can also be promises, and everything will work as expected:
+
+    makeMyAppView = makeView(myAppView, myAppController);
+    app           = U({ model: getRemoteData() });
+    view          = makeMyAppView(app.model);
+    document.body.appendChild(view);
 
 CSS
 ---
