@@ -1,31 +1,29 @@
 // UpAttributes/.is
 // ================
 
-//import U from './Upw';
-
-import {dasherize}                   from '../Utl//Str';
-
-import {mapObject, valueize, valueizeObject}   from '../Utl/Obj';
+import {dasherize}     from '../Utl//Str';
 import {observeObject, makeObserver, observeObjectNow} from '../Utl//Obs';
-import keepAssigned                  from './Ass';
+import keepAssigned    from './Ass';
+import {invertify}     from '../Utl/Fun';
+import C               from './Fun';
 
 var {push} = Array.prototype;
-var {defineProperty} = Object;
+var {keys, defineProperty} = Object;
 
 var subAttrs = ['style', 'class', 'dataset'];
-function isSubattr(a) { return subAttrs.contains(a); }
+function isSubattr(a) { return subAttrs.indexOf(a) !== -1; }
 
-// Make observers for attributes, and subattributes.
-// -----------------------------------------------------------
+// Make observers for attributes, and subattributes
+// ------------------------------------------------
 function makeAttrsObserver(e) {
   function add(v, k)     { e.setAttribute(k, valueize(v)); }
   function _delete(v, k) { e.removeAttribute(k); }
   return makeObserver({add, update: add, delete: _delete});
 }
 
-function makeStyleObserver(s) {
-  function add(v, k)     { elt.style[k] = v; }
-  function _delete(v, k) { result.style[name] = ""; }
+function makeStyleObserver(e) {
+  function add(v, k)     { e.style[k] = v; }
+  function _delete(v, k) { e.style[name] = ""; }
   return makeObserver({add, update: add, delete: _delete});
 }
 
@@ -43,50 +41,31 @@ function makeClassObserver(e) {
 
 function UpAttributes(elt, attrs) {
 
-  // Handle changes to parameters.
-  // -----------------------------
-  function makeParamsObserver() {
-    
-    function _observeAttrs(v) {
-      observeObjectNow(v, attrsObserver);
-      subAttrs.forEach(a => observeObjectNow(v[a], subAttrObservers[a]));
-    }
-    function _unobserveAttrs(v) {
-      unobserveObject(v, AttributesObserver);
-      subAttr.forEach(a => unobserveObject(v[a], subAttrObservers[a]));
-    }
+  // Function to repopulate classes on the element when they change.
+  var upClasses = C(function(classes) {
+    classes = classes || {};
+    keys(classes).forEach(cls => elt.classList.toggle(dasherize(cls), classes[cls]));
+  });
 
-    // When we get a new parameter, set up observers.
-    function add(v, i) {
-      switch (i) {
-      case 'attrs':    _observeAttrs   (v); break;
-      }
-    }
-    
-    // When parameters change, tear down and resetup observers.
-    function update(v, i, params, {oldValue}) {
-      switch (i) {
-      case 'children': _unobserveChildren(oldValue); _observeChildren(v); break;
-      case 'attrs':    _unobserveAttrs   (oldValue); _observeAttrs   (v); break;
-      }
-    }
-    
-    return makeObserver({add, update});
-  }
+  // Function to repopulate styles on the element when they change.
+  var upStyles = C(function(styles) {
+    styles = styles || {};
+    keys(styles).forEach(prop => elt.style[prop] = styles[prop]);
+  });
 
-  var subAttrObservers = {
-    class:   makeClassObserver(result),
-    dataset: makeDatasetObserver(result),
-    style:   makeStyleObserver(result)
-  };
-  var attrsObserver = makeAttrsObserver(result);
-  var paramsObserver = makeParamsObserver();  
+  // TODO: do datasets
 
-  //mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
-  params = valueizeObject(params);
-  params.attrs = keepAssigned(params.attrs, {style: {}, class: {}, dataset: {}}, push);
-  observeObjectNow(params, paramsObserver);
-
+  // Function to repopulate attributes on the element when they change.
+  var upAttrs = C(function(attrs) {
+    attrs = attrs || {};
+    keys(attrs)
+      .filter(invertify(isSubattr))
+      .forEach(attr => elt.setAttribute(attr, attrs[attr]));
+  });
+  
+  upAttrs  (attrs);
+  upClasses(attrs.class);
+  upStyles (attrs.style);
   return elt;
 }
 

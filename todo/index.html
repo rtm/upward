@@ -17,8 +17,15 @@
 
   <body>
     <script type="module">
-      import appView from './js/views/app';
-      document.getElementById('app').appendChild(appView());
+      debugger;
+      import app from './app';
+      import {U} from '../src/Up';
+
+      var model      = U({name: 'todos'});
+      var view       = app(model);
+      var appElement = document.getElementById('app');
+
+      appElement.appendChild(view);
     </script>
 
     <div id="app"></div>

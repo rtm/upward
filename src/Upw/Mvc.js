@@ -41,5 +41,5 @@ function makeElementViews(model, view, controller, parent) {
 }
 
 // Exports
-export (makeView, makeElementViews};
+export { makeView, makeElementViews };
 

@@ -2,6 +2,7 @@
 // ==========
 
 import C from './Fun';
+import T from './Txt';
 
 var {appendChild, removeChild} = Node.prototype;
 var {filter}                   = Array.prototype;
@@ -25,6 +26,7 @@ function UpChildren(elt, children) {
 
     children
       .filter(Boolean)
+      .map(c => typeof c.valueOf() === 'string' ? T(c) : c)
       .forEach(appendChild, elt);
   });
 

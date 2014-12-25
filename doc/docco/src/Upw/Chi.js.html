@@ -41,6 +41,7 @@
 
         </td>
         <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">C</span> <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">T</span> <span class="nx">from</span> <span class="s1">&#39;./Txt&#39;</span><span class="p">;</span>
 
 <span class="kd">var</span> <span class="p">{</span><span class="nx">appendChild</span><span class="p">,</span> <span class="nx">removeChild</span><span class="p">}</span> <span class="o">=</span> <span class="nx">Node</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
 <span class="kd">var</span> <span class="p">{</span><span class="nx">filter</span><span class="p">}</span>                   <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
@@ -89,6 +90,7 @@ As the input array changes, the element's children are added and removed.</p>
 
     <span class="nx">children</span>
       <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nb">Boolean</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">c</span> <span class="o">=&gt;</span> <span class="k">typeof</span> <span class="nx">c</span><span class="p">.</span><span class="nx">valueOf</span><span class="p">()</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span> <span class="o">?</span> <span class="nx">T</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="o">:</span> <span class="nx">c</span><span class="p">)</span>
       <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">appendChild</span><span class="p">,</span> <span class="nx">elt</span><span class="p">);</span>
   <span class="p">});</span>
 

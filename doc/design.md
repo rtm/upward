@@ -1,10 +1,11 @@
 Upward Design
 =============
 
-The primary design goal for Upward is to allow programmers to succintly describe the behavior and output of web applications.
-We want to keep the API footprint to a minimum.
-The target language environment is ES6.
-Performance is not a major consideration at this point, but we shall avoid design decisions which prevent optimization in the future.
+The primary design goal for Upward is to succintly describe the behavior of front-end web applications.
+
+Other goals/parameters::
+* Minimize the API footprint.
+* Leverage modern technologies, including ES6.
 
 The fundamental idea is a declarative style, where we can say:
 
@@ -106,7 +107,7 @@ Note that this means that promises themselves cannot be held in upwardable prope
 DOM
 ---
 
-In line with the Upward design objective of "all-JavaScript", we want to avoid yet another language in our stack to define HTML templates, with its own odd-ball syntax and control structures. Accordingly, in Upward DOM elements are created in JavaScript, using the `E(tagname)` API. This creates a real DOM node, not a shadow or proxy. This API is not upwardable; after all, an element cannot change its tagname once created.
+In line with the Upward design objective of "all-JavaScript", we want to avoid yet another language in our stack to define HTML templates, with its own odd-ball syntax and control structures. Accordingly, in Upward DOM elements are created in JavaScript, using the `E(tagname)` API. This creates a real DOM node, not a shadow or proxy. Some call this "sugared DOM". For more information, see [here](http://blog.fastmail.com/2012/02/20/building-the-new-ajax-mail-ui-part-2-better-than-templates-building-highly-dynamic-web-pages/). This API is not upwardable; after all, an element cannot change its tagname once created.
 
 Text nodes are created using `T(text)`. This **is** upwardable, so when `text` changes, the `nodeValue` will change in parallel:
 
@@ -134,11 +135,13 @@ In a gratuitous nod to convenience, the `E()` API supports in-line IDs and class
 
 Attributes, including classes, styles, and data attributes, are set using the `.is()` method on the `HTMLElement` prototype, also made available as the default export from `'src/Upw/Att'`. The attributes are specified as a hash of attribute name/value pairs.
 
-Styles, classes, and data attributes are specified as sub-hashes:
+Styles, classes, and data attributes are specified as sub-hashes, with full upward treatment.
 
-* The `style` sub-hash uses camelCased style property keys specifying the property values, fully upward-aware.
-* The `class` sub-hash uses camelCased class names with boolean values (`true` to turn on that class). This design facilitates easily adding and removing classes by simply specifying and modifying boolean-valued properties.
+* The `style` sub-hash uses camelCased style property keys specifying the property values.
+* The `class` sub-hash uses camelCased class names with boolean values (`true` to turn on that class). 
 * The `dataset` sub-hash uses camelCased data attribute names specifying the attribute value.
+
+The design for specifying classes facilitates easily adding and removing classes by simply specifying and modifying boolean-valued properties.
 
 ### Binding to DOM element values
 
@@ -170,7 +173,7 @@ MVC
 
 Upward does not claim to be an application framework. It is an application layer. The organization of application data, application logic, and application display is fundamentally up to the individual developer. However, Upward does offer a minimal MVC framework which is mainly a set of concepts and principles and bits of sugar. For details, see `Mvc.md`.
 
-In the Upward MVC model, a "view" has no special meaning. It is not a special class with a special `render` method invoked at special times by some special superstructure. Any function which returns a DOM element can be considered a view. Nor does "model" have any special meaning. Any upwardable object can be considered a model. "Controller" also has no special meaning. Any object providing methods can be considered a controller.
+In the Upward MVC model, a "view" has no special meaning. It is not a special class with a special `render` method invoked at special times by some special superstructure. Any function which returns a DOM element can be considered a view. A "model" also does not have any special meaning. Any upwardable object can be considered a model. A "controller" also has no special meaning. Any object providing methods can be considered a controller.
 
 However, to make it easier to follow an MVC approach, and to promote MVC practices, Upward offers a minimal set of APIs to make MVC more convenient. The primary interface is `makeView`, which can be imported from `'src/Upw/Mvc'`, and takes a view function and a controller function (a function which creates a controller), returning a function which can be invoked with a model to create a view.
 
@@ -195,21 +198,32 @@ UpStyle([
 ]);
 ```
 
-which are fully upward-aware, so that `theme.bodyBackgroundColor = 'gray';` will automatically rewrite the corresponding rule. Of course, doing this is less common than simply applying classes and styles directly to elements via `E(tagname) . is({ })`.
+which are fully upward-aware, so that `theme.bodyBackgroundColor = 'gray';` will automatically rewrite the corresponding rule. Of course, this is normal approach to styling, which to simply apply classes and styles directly to elements via `E(tagname) . is({ })`.
 
 The `UpStyle` API also accepts a second argument, specifying a DOM element to which the rules are scoped, even if the browser does not support scoped styles.
 
 Convenience routines
 --------------------
 
-The Upward design philosophy frowns on excessive convenience routines. They result in an obese API footprint. But although not an integral part of the library, Upward does provide implementations of commonly used constructs, including the following:
+The Upward design philosophy frowns on excessive convenience routines. They result in an obese API footprint. But although not an integral part of the library, Upward does provide upwardable implementations of commonly used constructs, including the following:
 
  * in `'src/Upw/Cnt'`: `UpCount`, a function which automaticaly counts up every so many milliseconds
  * in `'src/Upw/Fns'`:
-    - `equals`, to compare two (upwardable) values
-    - `not`, to invert an (upwardable) value
+    - `equals`, to compare two values
+    - `not`, to invert an value
+    - `log`, to log a value
 
 Testing
 -------
 
-Existing test runners such as Jasmine are not well-suited for writing tests for Upward itself or applications which use Upward. For one thing, they don't necessarily play well with Traceur/ES6, at least not without special black-box adapters. More importantly, Upward is so aynchronous in nature, and most test runners require special gyrations to deal with this. Therefore, Upward has its own test runner. The `'Tst'` module exports two functions for this purpose, `test` and `testGroup`. `test` runs one test specified as a function. `testGroup` runs a group of tests. The results may be displayed in the console using `consoleReporter`, or on the HTML page using `htmlReporter`, which uses Upward itself in dog-food fashion. Although any assertion library may be used, we prefer `assert`, and that is what is used for Upward's own tests. 
+Existing test runners such as Jasmine are not well-suited for writing tests for Upward itself or applications which use Upward. For one thing, they don't necessarily play well with Traceur/ES6, at least not without special black-box adapters. More importantly, Upward is so aynchronous in nature, and most test runners require special gyrations to deal with this. Therefore, Upward has its own test runner. The `'Tst'` module exports two functions for this purpose, `test` and `testGroup`.
+
+ * `test` runs one test specified as a function
+ * `testGroup` runs a group of tests.
+
+The results may be displayed in the console using "reporters", either
+
+ * `consoleReporter`, displaying the results on the console, or
+ * `htmlReporter`, which uses Upward itself in dog-food fashion to display results on the HTML page
+
+Although any assertion library may be used, we prefer `assert`, and that is what is used for Upward's own tests. 
