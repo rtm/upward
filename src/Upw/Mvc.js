@@ -19,10 +19,7 @@ var createElement = document.createElement.bind(document);
  */
 
 function makeView(view, controller) {
-  return C(
-    (model, parent) => view(model, controller(model, parent)),
-    createElement('div')
-  );
+  return (model, parent) => view(model, controller(model, parent));
 }
 
 /**
