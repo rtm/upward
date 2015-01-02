@@ -1,5 +1,0 @@
-A model is a promise.
-If a model is passed to a view, the view returns a promise.
-What about `has`?
-
-So this means that the view-creator should be a c() function,with a default of <div/>
