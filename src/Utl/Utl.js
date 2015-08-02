@@ -3,7 +3,7 @@
 
 // Setup.
 var {create} = Object;
-    
+
 // Create an array of a sequence of integers.
 function seq(to, from = 0, step = 1) {
   var dir = to > from ? +1 : -1;
@@ -128,20 +128,20 @@ function interleaveElement(a1, elt) {
 }
 
 // Create an array of running totals, etc.
-function runningMap(a, fn, init) { 
-  return a.map(v => init = fn(v, init)); 
+function runningMap(a, fn, init) {
+  return a.map(v => init = fn(v, init));
 }
 
 // Create an array of running totals.
-function runningTotal(a) { 
-  return runningMap(a, Math.sum); 
+function runningTotal(a) {
+  return runningMap(a, Math.sum);
 }
 
 // Filter an array in place, based on predicate with same signature as `Array#filter`.
 function filterInPlace(a, fn, ctxt) {
   for (var i = 0; i < a.length; i++) {
     if (!fn.call(ctxt, a[i], i, a)) {
-      a.splice(i--, 1); 
+      a.splice(i--, 1);
     }
   }
   return a;
@@ -206,7 +206,7 @@ function interleave(...arrays) {
   }
   return result;
 }
-    
+
 // Generator for interleaved values from multiple iteratables.
 function *interleaveIterables(...iterables) {
   var more = true;
@@ -260,7 +260,6 @@ export {
   runningTotal,
   filterInPlace,
   chainPromises,
-  makeSortFunc,
   makeStopwatch,
   makeCounterMap,
   interleave,

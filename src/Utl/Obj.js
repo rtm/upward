@@ -11,7 +11,7 @@ function isObject(o) {
 // Generic version of `valueOf` which works for anything.
 function valueize(v) { return isObject(v) ? v.valueOf() : v; }
 
-// User-friendly representation of an objectd.
+// User-friendly representation of an object.
 function objectToString(o) {
   return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
 }
@@ -182,4 +182,3 @@ export {
   makeAssigner,
   assignAdd
 };
-

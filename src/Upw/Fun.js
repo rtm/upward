@@ -52,12 +52,12 @@ function make(g) {
 function _make(g) {
 
   function f(...args) {
-    
+
     // Resolve the promise which will trigger recomputation.
     function run()         { runner(); }
     function accessStart() { accessController.start(); }
     function accessStop()  { accessController.stop(); }
-    
+
     function iterate() {
       var change = new Promise(resolve => runner = resolve);
       function reiterate() { change.then(iterate); }
@@ -75,7 +75,7 @@ function _make(g) {
         )
         .then(reiterate);
     }
-    
+
     var iterator = g(run);
     var result = makeUpwardable(iterator.next().value);
     var accessController = makeAccessController(run);
@@ -137,6 +137,5 @@ export default C;
 
 export {
   makeUpwardableFunction,
-  getUpwardableProperty,
-  isUpwardableFunction
+  getUpwardableProperty
 };

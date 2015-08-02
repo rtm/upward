@@ -6,10 +6,10 @@
 // Also handles subobjects.
 
 // Convenience.
-import {isObject, valueize, mapObject, objectFromPairs, propGetter} from '../Utl/Obj';
 import {upwardConfig, upwardableId}   from '../Cfg';
-import {argify}                       from '../Utl//Fun';
 import U                              from './Upw';
+import {isObject, valueize, mapObject, objectFromPairs, propGetter} from '../Utl/Obj';
+import {argify}                       from '../Utl/Fun';
 import {makeObserver, observeObject}  from '../Utl/Obs';
 import {replace}                      from '../Utl/Utl';
 
@@ -30,7 +30,7 @@ function findFirstProp(objs, p) {
     if (obj && obj.hasOwnProperty(p)) { return valueize(obj[p]); }
   }
 }
-  
+
 // Calculate value for a property, recursively.
 function calcProp(ka, p) {
   var val = ka[p];
@@ -52,7 +52,7 @@ function placeKey(ka, v, k, pusher) {
   } else {
     if (k in ka) {
       ka[k].val = calcProp(ka, k);
-    } else { 
+    } else {
       defineProperty(ka, k, {
         get() { return U(findFirstProp(ka.objs, k)); },
         enumerable: true
@@ -91,26 +91,26 @@ function _keepAssigned(ka, o, pusher = unshift) {
 
   // @TODO: figure out how to handle this.
   //  upward(o, objectChanged);
-  
+
   function key(v, k) {
     placeKey(ka, v, k);
   }
-  
+
   function update(k, v) {
     processKey(k, v);
   }
-  
+
   function _delete(k) {
     recalc(ka);
   }
-  
+
   var handlers = {
     add: argify(placeKey, ka),
     update: argify(placeKey, ka),
     delete: _delete
   };
   observeObject(o, makeObserver(handlers));
-  
+
   pusher.call(ka.objs, o);
   mapObject(o, (v, k) => placeKey(ka, v, k, pusher));
   return ka;
@@ -121,7 +121,7 @@ var keepAssignedPrototype = {
   and(o) { return _keepAssigned(this, o, unshift); },
   or (o) { return _keepAssigned(this, o, push   ); }
 };
-  
+
 // Is something a `keepAssigned` object?
 function isKeepAssigned(o) {
   return keepAssignedPrototype.isPrototypeOf(o);

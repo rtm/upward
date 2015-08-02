@@ -8,52 +8,51 @@ var setTheme = t => assign(theme, themes[t]);
 var getThemeNames = _ => keys(themes);
 
 var themes = {
-	sunset: {
-		bodyBackgroundColor: "wheat"
-	}
+  sunset: {
+    bodyBackgroundColor: "wheat"
+  }
 };
 
 setTheme("sunset");
 
 UpStyle([
 
-  ["body", { 
-		fontFamily : 'sans-serif',
-		backgroundColor: theme.bodyBackgroundColor
-	}],
+  ["body", {
+    fontFamily : 'sans-serif',
+    backgroundColor: theme.bodyBackgroundColor
+  }],
 
-  ["h3", { 
-		backgroundColor: 'brown', 
-		color: 'white', 
-		padding: '6px'
-	}],
+  ["h3", {
+    backgroundColor: 'brown',
+    color: 'white',
+    padding: '6px'
+  }],
 
-  [".code", { 
-		whiteSpace: 'pre', 
-		fontFamily: 'monospace', 
-		backgroundColor: 'pink', 
-		margin: '12px 40px', 
-		padding: '12px',
+  [".code", {
+    whiteSpace: 'pre',
+    fontFamily: 'monospace',
+    backgroundColor: 'pink',
+    margin: '12px 40px',
+    padding: '12px',
     fontSize: 'larger'
-	}],
+  }],
 
-  [".result", { 
-		backgroundColor: 'beige', 
-		margin: '12px 40px', 
-		padding: '12px'
-	}],
+  [".result", {
+    backgroundColor: 'beige',
+    margin: '12px 40px',
+    padding: '12px'
+  }],
 
-  [".hide", { 
-		display: 'none'
-	}],
+  [".hide", {
+    display: 'none'
+  }],
 
   ["code", {
     fontSize: 'larger',
     backgroundColor: 'lightgray',
     border: "1px solid gray",
     paddingLeft: "0.2em",
-    paddingRight: "0.2em",
-    
+    paddingRight: "0.2em"
   }]
 
 ]);

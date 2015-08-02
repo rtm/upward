@@ -1,5 +1,5 @@
 import {U, T, C} from '../src/Up';
-import XHR from '../src/Utl/XHR';
+import XHR from '../src/Utl/Xhr';
 
 var dom, data;
 

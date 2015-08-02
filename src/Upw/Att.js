@@ -1,8 +1,8 @@
 // UpAttributes/.is
 // ================
 
-import {dasherize}     from '../Utl//Str';
-import {observeObject, makeObserver, observeObjectNow} from '../Utl//Obs';
+import {dasherize}     from '../Utl/Str';
+import {observeObject, makeObserver, observeObjectNow} from '../Utl/Obs';
 import keepAssigned    from './Ass';
 import {invertify}     from '../Utl/Fun';
 import C               from './Fun';
@@ -62,7 +62,7 @@ function UpAttributes(elt, attrs) {
       .filter(invertify(isSubattr))
       .forEach(attr => elt.setAttribute(attr, attrs[attr]));
   });
-  
+
   upAttrs  (attrs);
   upClasses(attrs.class);
   upStyles (attrs.style);

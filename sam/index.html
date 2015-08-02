@@ -2,25 +2,35 @@
 <html>
 
   <head>
-    <script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
-    <script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
 
-    <!-- Bring in css using `System.import`. Otherwise Traceur gets confused. -->
-    <script type="module">System.import('./css');</script>
+    <!-- Babel transpiler -->
+    <script src="../node_modules/babel-core/browser.js"></script>
+
+    <!-- Module loader -->
+    <script src="../node_modules/es6-module-loader/dist/es6-module-loader-dev.js"></script>
+
+    <!-- Babel polyfill, needed for generators. -->
+    <script src="../node_modules/babel-core/browser-polyfill.js"></script>
+
+    <!-- Configure es6-module loader. -->
+    <script src="../es6-module-loader-config.js"></script>
+
+    <!-- Load CSS. -->
+    <script> System.import('./css'); </script>
+
   </head>
-  
+
   <body>
     <h1 id="message">Upward Samples</h1>
 
     <script src="helper.js"></script>
-    <script>traceur.options.experimental = true;</script>
 
   <div id="app"></div>
 
   <section id="count">
     <h3>Counting</h3>
     <p class="desc">
-      We display an auto-updating counter <code>UpCount()</code> as a DOM text node (<code>T</code>)..
+      We display an auto-updating counter <code>UpCount()</code> as a DOM text node (<code>T</code>).
     </p>
   </section>
 
@@ -173,12 +183,12 @@
     'function',
     'button-label',
     'input',
-    'css-example',
+//    'css-example',
     'api',
-    'map',
-    'sort',
-    'style',
-    'model-promise'
+//    'map',
+//    'sort',
+//    'style',
+//    'model-promise'
     ]
   	.forEach(sample);
     });
