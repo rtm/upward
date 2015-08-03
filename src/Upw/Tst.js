@@ -7,14 +7,14 @@
 // HTML and console reporters are provided.
 
 // Setup.
-import {spawn, timeout}      from '../Utl/Asy';
-import {makeStopwatch, sum}  from '../Utl/Utl';
+import {spawn, wait}          from '../Utl/Asy';
+import {makeStopwatch, sum}   from '../Utl/Utl';
 import {assignAdd, mapObject} from '..Utl/Obj';
-import {parseBody}           from '../Utl/Fun';
+import {parseBody}            from '../Utl/Fun';
 import {TEXT, DIV, DETAILS, SUMMARY} from './Dom';
-import R                     from './Ren';
-import M                     from './Map';
-import U                     from './Upw';
+import R                      from './Ren';
+import M                      from './Map';
+import U                      from './Upw';
 
 const INSTALL_SHOULD = false;
 
@@ -116,10 +116,10 @@ function unskip(test, s = true) { test._unskip = s; return test; }
 
 // Return a function to run a group of tests.
 function testGroup(desc, tests, options = {}) {
-  
+
   function _testGroup(reporter, skipping) {
     return spawn(
-      
+
       function *() {
         var counts = {fail: 0, pass: 0, skip: 0};
         var children = [];
@@ -129,7 +129,7 @@ function testGroup(desc, tests, options = {}) {
         // Run each test in the group.
         for (var t of tests) {
           yield t(children, !t._unskip && (t._skip || skipping));
-          if (options.pause) { yield timeout(options.pause); }
+          if (options.pause) { yield wait(options.pause); }
         }
 
         children.forEach(g => assignAdd(counts, g.counts));
@@ -138,7 +138,7 @@ function testGroup(desc, tests, options = {}) {
         group.time = sum(children.map(c => c.time));
         reporter.push(group);
       }
-      
+
     );
   }
 

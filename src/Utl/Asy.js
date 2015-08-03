@@ -10,7 +10,7 @@ import {upwardConfig} from '../Cfg';
 // Return a promise for when everything is done.
 function spawn(generator) {
   var iterator = generator();
-  
+
   return new Promise(
     resolve =>
       (function iterate(val) {
@@ -19,15 +19,15 @@ function spawn(generator) {
         else { Promise.resolve(value).then(iterate); }
       }())
   );
-  
+
 }
 
 // Return a promise for some time in the future,
 // passing through the invoking promise's value:
 // ```
-// Promise.resolve(99).then(timeout(250)) // promise value is 99
+// Promise.resolve(99).then(wait(250)) // promise value is 99
 // ```
-function timeout(ms = 0) {
+function wait(ms = 0) {
   return function(val) {
     return new Promise(resolve => setTimeout(_ => resolve(val), ms));
   };
@@ -71,22 +71,6 @@ if (upwardConfig.MODIFY_BUILTIN_PROTOTYPE && !Promise.defer) {
   });
 }
 
-// Promise queues.
-// See https://github.com/kriskowal/gtor.
-function PromiseQueue() {
-  var ends = Promise.defer();    // not in spec, but in Chrome
-  this.put = function (value) {
-    var next = Promise.defer();
-    ends.resolve({head: value, tail: next.promise});
-    ends.resolve = next.resolve;
-  };
-  this.get = function () {
-    var result = ends.promise.get('head');
-    ends.promise = ends.promise.get('tail');
-    return result;
-  };
-}
-
 // Promise from one-time Object.observe.
 // Usage: ```promiseChanges(obj, ['update']).then(function(changes) {...`
 function promiseChanges(object, types) {
@@ -99,9 +83,6 @@ function promiseChanges(object, types) {
   });
 }
 
-function castPromise(p) {
-  return p && typeof p === 'object' && p.then ? p : Promise.resolve(p);
-}
 
 // Make a generator which calls a function over and over.
 // Each iteration's arguments are the parameters passed to `iterate.next()`.
@@ -127,10 +108,8 @@ function promisify(f) {                              // given an underlying func
 
 export {
   spawn,
-  timeout,
-  PromiseQueue,
+  wait,
   promiseChanges,
-  castPromise,
   Deferred,
   generateForever,
   promisify

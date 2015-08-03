@@ -56,7 +56,7 @@ function getTypesFromHandlers(handlers) {
 }
 
 // Make an observer from a hash of handlers for observation types.
-// This observer can be passed to `observeObject`.  
+// This observer can be passed to `observeObject`.
 function makeObserver(handlers) {
   console.assert(handlers && typeof handlers === 'object', "Argument to makeObserver must be hash.");
   var handler = assign(create(observerPrototype), handlers);
@@ -77,8 +77,8 @@ function observeObjectNow(o, observer) {
 }
 
 // Unobserve something obseved with `observeObject`.
-function unobserveObject(o, observer) { 
-  return o && typeof o === 'object' && unobserve(o, observer); 
+function unobserveObject(o, observer) {
+  return o && typeof o === 'object' && unobserve(o, observer);
 }
 
 // Retroactively notify 'add' to all properties in an object.
@@ -104,9 +104,9 @@ function observeOnce(object, observer, types) {
 function mirrorProperties(src, dest = {}) {
   function set(name) { dest[name] = src[name]; }
   function _delete(name) { delete dest[name]; }
-  
+
   var handlers = { add: set, update: set, delete: _delete};
-  
+
   assign(dest, src);
   observe(src, makeObserver(handlers));
   return dest;

@@ -1,25 +1,17 @@
-import {U, T, C} from '../src/Up';
-import XHR from '../src/Utl/Xhr';
+import {U, T, C, F} from '../src/Up';
+import {fetchJson} from '../src/Utl/Fet';
 
 var get, dom, data;
 
 //===START
 data = U({repo: 'rtm/upward'});
 
-function getGithubEvents(repo) {
-  return XHR(
-    `https://api.github.com/repos/${repo}/events`,
-    { responseType: 'json' });
-}
+function url(repo)  { return `https://api.github.com/repos/${repo}/events`; }
+function type(json) { return json[0].type; }
 
-get = C(function(repo) {
-  return getGithubEvents(repo)
-    .then(json => console.log(json[0]))
-    .then(json => json[0].payload.commits[0].message)
-    .catch(_    => Error("There was a problem with the request" + _));
-});
+get = C(function(repo) { return fetchJson(url(repo)) . then(type); });
 
-dom = T(get(data.repo));
+dom = T(F`Most recent event was ${get(data.repo)}`);
 //===END
 
 export default dom;

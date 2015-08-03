@@ -5,6 +5,11 @@
 
 System.transpiler = 'babel';
 
+// Choose Babel options to enable decorators
+System.babelOptions = {
+  stage: 1
+};
+
 // Patch locate hook to Append '.js' filetype.
 var systemLocate = System.locate;
 System.locate = function(load) {
