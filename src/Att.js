@@ -1,11 +1,11 @@
 // UpAttributes/.is
 // ================
 
-import {dasherize}     from '../Utl/Str';
-import {observeObject, makeObserver, observeObjectNow} from '../Utl/Obs';
 import keepAssigned    from './Ass';
-import {invertify}     from '../Utl/Fun';
 import C               from './Fun';
+import {invertify}     from './Ify';
+import {observeObject, makeObserver, observeObjectNow} from './Obs';
+import {dasherize}     from './Str';
 
 var {push} = Array.prototype;
 var {keys, defineProperty} = Object;

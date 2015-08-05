@@ -12,16 +12,16 @@
 var {getNotifier, observe, unobserve, defineProperty} = Object;
 
 import {makeAccessController} from './Acc';
-import {Observer}             from '../Utl/Obs';
-import {copyOnto, isObject}   from '../Utl/Obj';
-import {generateForever}      from '../Utl/Asy';
+import {generateForever}      from './Asy';
+import {Observer}             from './Obs';
+import {copyOnto, isObject}   from './Out';
 import makeUpwardable         from './Upw';
 
 // Keep track of computables, computeds, and computifieds.
 var set = new WeakSet();
 var generators = new WeakMap();
 
-function is (f)    { return f && typeof f === 'object' && set.has(f); }
+function is (f)    { return set.has(f); }
 function get(g)    { return g && typeof g === 'object' && generators.get(g); }
 function add(f, g) { set.add(f); generators.set(g, f); }
 
@@ -133,6 +133,7 @@ var getUpwardableProperty = C(
 
 var makeUpwardableFunction = make;
 
+C.is = is;
 export default C;
 
 export {

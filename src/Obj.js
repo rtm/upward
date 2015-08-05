@@ -15,10 +15,10 @@
 // Newly added properties are also immediately observable.
 
 // Convenience.
+import {accessNotifier}        from './Acc';
+import {Observer}              from './Obs';
 import makeUpwardable          from './Upw';
 import {isUpwardable}          from './Upw';
-import {accessNotifier}        from './Acc';
-import {Observer}              from '../Utl/Obs';
 
 var {create, keys, getNotifier, observe, unobserve, defineProperty} = Object;
 
@@ -69,7 +69,7 @@ function _make(o) {
   var shadow = {};
   var observers = {};
   var actions = {add, update, delete: _delete};
-  
+
   // Delete a property. Unobserve it, delete shadow and proxy entries.
   function _delete(name) {
     observers[name].unobserve();
@@ -77,12 +77,12 @@ function _make(o) {
     delete u        [name];
     delete shadow   [name];
   }
-  
+
   // Update a property by reobserving.
   function update(name) {
     observers[name].reobserve(shadow[name]);
   }
-  
+
   // Add a property. Set up getter and setter, Observe. Populate shadow.
   function add(name) {
 
@@ -104,12 +104,12 @@ function _make(o) {
 //      changes.forEach(change => shadow[name] = shadow[name].change(change.newValue));
 //      observers[name].reobserve(shadow[name]);
     }
-    
+
     shadow[name] = makeUpwardable(o[name]);
     observers[name] = Observer(shadow[name], observe, ['upward']).observe();
     defineProperty(u, name, {set: set, get: get, enumerable: true});
   }
-  
+
   // Observer to handle new or deleted properties on the object.
   // Pass through to underlying object, which will cause the right things to happen.
   function objectObserver(changes) {
@@ -126,7 +126,7 @@ function _make(o) {
     changes.forEach(({type, name}) => actions[type](name));
     //notifier.notify(change); // TODO: figure out what this line was suppsoed to do
   }
-    
+
   var u = create({}); // null?
   var notifier = getNotifier(u);
   keys(o).forEach(add);

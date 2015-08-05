@@ -3,7 +3,7 @@
 
 // Setup.
 var {keys, create, assign, observe, unobserve} = Object;
-import {isObject} from './Obj';
+import {isObject} from './Out';
 
 // Make an observation handler, given a target and an object of handlers
 // with function-valued keys such as "add", "delete", and "update".

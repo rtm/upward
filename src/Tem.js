@@ -2,7 +2,7 @@
 // ----------------
 
 import C from './Fun';
-import {interleave} from '../Utl/Utl';
+import {interleave} from './Utl';
 
 // Utility routine to compose a string by interspersing literals and values.
 function compose(strings, ...values) {

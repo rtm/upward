@@ -6,12 +6,12 @@
 // Also handles subobjects.
 
 // Convenience.
-import {upwardConfig, upwardableId}   from '../Cfg';
+import {upwardConfig, upwardableId}   from './Cfg';
+import {argify}                       from './Ify';
+import {makeObserver, observeObject}  from './Obs';
+import {isObject, valueize, mapObject, objectFromPairs, propGetter} from './Out';
 import U                              from './Upw';
-import {isObject, valueize, mapObject, objectFromPairs, propGetter} from '../Utl/Obj';
-import {argify}                       from '../Utl/Fun';
-import {makeObserver, observeObject}  from '../Utl/Obs';
-import {replace}                      from '../Utl/Utl';
+import {replace}                      from './Utl';
 
 var {create, assign, defineProperty} = Object;
 var {push, unshift} = Array.prototype;

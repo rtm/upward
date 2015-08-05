@@ -1,5 +1,5 @@
 import {U, T, C, F} from '../src/Up';
-import {fetchJson} from '../src/Utl/Fet';
+import {fetchJson} from '../src/Fet';
 
 var get, dom, data;
 

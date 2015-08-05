@@ -2,8 +2,8 @@
 
 import {test, testGroup, assert} from '../src/Tst';
 import U from '../src/Upw';
-import {invert, identity, debugify} from '../src/Fun';
-import {propGetter, propValueGetter, valueize} from '../src/Obj';
+import {invert, identity, debugify} from '../src/Ify';
+import {propGetter, propValueGetter, valueize} from '../src/Out';
 import {observeObject} from '../src/Obs';
 
 var {observe} = Object;

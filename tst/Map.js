@@ -3,8 +3,8 @@
 import keepMapped from '../src/Map';
 import {test, testGroup, assert} from '../src/Tst';
 import {U} from '../src/Upw';
-import {invert, identity, debugify} from '../src/Fun';
-import {propGetter, propValueGetter} from '../src/Obj';
+import {invert, identity, debugify} from '../src/Ify';
+import {propGetter, propValueGetter} from '../src/Out';
 
 export default testGroup(
   "module Map (keepMapped, Array#as)",
@@ -16,10 +16,10 @@ export default testGroup(
         [
           test("mapping array",             _ => b = keepMapped(a)),
           test("should leave it the same",  _ => assert.deepEqual(b, [1, 2, 3])),
-          
+
           test("element changed",           _ => a[0] = 99),
           test("should change in mapped result", _ => assert.deepEqual(b, [99, 2, 3])),
-          
+
           test("element added at end",      _ => a.push(1.5)),
           test("should appear at end",      _ => assert.deepEqual(b, [99, 2, 3, 1.5]))
         ]
@@ -66,7 +66,7 @@ export default testGroup(
         ]
       );
     }(),
-    
+
     function() {
       var a = [U({v:1}), U({v:2}), U({v:3})];
       var fn = propGetter('v');

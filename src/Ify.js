@@ -2,7 +2,7 @@
 // --------------------
 
 // Housekeeping.
-import {upwardConfig} from '../Cfg';
+import {upwardConfig} from './Cfg';
 
 var {prototype}                        = Function;
 var {call, bind, apply}                = prototype;
@@ -27,7 +27,7 @@ function tickify(fn, {delay} = {}) {
 // Transform a function so that it always returns `this`.
 function chainify(fn) {
   return function(...args) {
-    fn.call(this, ...args); 
+    fn.call(this, ...args);
     return this;
   };
 }
@@ -50,7 +50,7 @@ function swapify(fn) {
 // Make a function which drops some leading arguments.
 function dropify(fn, n = 1) {
   return function(...args) {
-    return fn.call(this, [...args].slice(n));
+    return fn.apply(this, [...args].slice(n));
   };
 }
 

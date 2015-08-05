@@ -1,8 +1,8 @@
-// UpMap: upward-aware version of Array#map
-// ========================================
+// Map.js
+// Upward-aware version of Array#map
 
 import {makeUpwardableFunction} from './Fun';
-import {copyOntoArray} from '../Utl/Obj';
+import {copyOntoArray} from './Out';
 
 export default makeUpwardableFunction(function *UpMap(run) {
   var r = [];
@@ -19,7 +19,7 @@ export default makeUpwardableFunction(function *UpMap(run) {
     }
     return ret;
   }
-            
+
   while (true) {
     [newa, newf, newctxt] = yield r;
     if (newf !== f) map.clear();

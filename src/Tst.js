@@ -7,14 +7,16 @@
 // HTML and console reporters are provided.
 
 // Setup.
-import {spawn, wait}          from '../Utl/Asy';
-import {makeStopwatch, sum}   from '../Utl/Utl';
-import {assignAdd, mapObject} from '..Utl/Obj';
-import {parseBody}            from '../Utl/Fun';
-import {TEXT, DIV, DETAILS, SUMMARY} from './Dom';
-import R                      from './Ren';
+import {spawn, wait}          from './Asy';
+import {E}                    from './Elt';
+import {parseBody}            from './Ify';
 import M                      from './Map';
+import {assignAdd, mapObject} from './Out';
+import R                      from './Ren';
+import {T}                    from './Txt';
 import U                      from './Upw';
+import {makeStopwatch, sum}   from './Utl';
+
 
 const INSTALL_SHOULD = false;
 
@@ -63,7 +65,7 @@ function consoleReporter(reports, options = {}) {
   var hide = options.hide || {};
   (function _consoleReporter(reports) {
     reports.forEach(
-      ({children, desc, status, counts, time, code}) => {
+      ({children, desc, status, counts, time, code, error}) => {
         let countStr = makeCounts(counts);
         let color    = statusInfo[status].color;
         let colorStr = `color: ${color}`;
@@ -74,7 +76,8 @@ function consoleReporter(reports, options = {}) {
           _consoleReporter(children);
           console.groupEnd();
         } else {
-          console.log('%c' + desc, colorStr);
+          if (error) console.log('%c %s (%O)', colorStr, desc, error);
+          else console.log('%c %s', colorStr, desc);
         }
       }
     );
@@ -87,19 +90,17 @@ function htmlReporter(reports, options = {}) {
   hide = hide || {};
 
   function htmlReporterOne({children, desc, status, counts, time, code}) {
-    var text = [TEXT(desc)];
+    var text = [T(desc)];
     var attrs = {class: {[status]: true}};
     if (children) {
-      return keepRendered(
-        'details',
-        [
-          R('summary', text, attrs),
-          DIV(htmlReporter(children, options))
-        ],
-        hide.children ? {} : {open: true}
-      );
+      return E('details') .
+        has([
+          E('summary') . has(text) . is(attrs),
+          E('div') . has(htmlReporter(children, options))
+        ]) .
+        is(hide.children ? {} : {open: true});
     } else {
-      return DIV(text, attrs);
+      return E('div') . is(attrs);
     }
   }
 
@@ -177,7 +178,6 @@ function test(desc, fn, options = {}) {
           _ => status = 'pass',
           e => {
             status = 'fail';
-            if (typeof e === 'object' && e.message) { e = e.message; }
             result.error = e;
           }
         )
@@ -199,10 +199,9 @@ function test(desc, fn, options = {}) {
 }
 
 // Run tests, returning a promise with the results.
-function runTests(tests, options, skipping) {
+function runTests(tests, options = {}, skipping = false) {
   var result = [];
-  tests(result, skipping);
-  return result;
+  return tests(result, skipping) . then(() => result);
 }
 
 // Exports

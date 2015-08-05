@@ -2,8 +2,8 @@
 // ===========================
 
 // Setup.
-import {dasherize} from '../Utl/Str';
-import {upwardConfig} from '../Cfg';
+import {dasherize} from './Str';
+import {upwardConfig} from './Cfg';
 
 var {assign, defineProperty} = Object;
 

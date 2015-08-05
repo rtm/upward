@@ -1,12 +1,12 @@
 // Array methods for maintaining maps, filters, etc.
 // Place prototypes on Array and Upwardable objects.
-import {mapObject}  from '../Utl/Obj';
 //import keepReversed from './Rev';
 //import keepUnique   from './Unq';
 //import keepFiltered from './Fil';
-import UpMap from './Map';
-import UpSort from './Srt';
-//import keepSliced   from './Slc';
+import UpMap       from './Map';
+import {mapObject} from './Out';
+import UpSort      from './Srt';
+//import keepSliced from './Slc';
 
 var {defineProperty, defineProperties} = Object;
 var {prototype} = Array;
