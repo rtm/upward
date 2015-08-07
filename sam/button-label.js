@@ -2,16 +2,10 @@ import {U, E, T} from '../src/Up';
 var dom, config;
 
 //===START
-config = U({                                 // create upwardable object
-  label: "Press me"                          // with dynamic property
-});                     
+config = U({ label: "Press me" });
+function change() { config.label = "Pressed!"; }
 
-function change() { config.label = "Pressed!"; } 
-
-dom = E('button') .                         // make HTML element with
-  has(T(config.label)) .                    // child
-  does({ click: change })                   // and event handler
-;
+dom = E('button') . has(T(config.label)) . does({ click: change });
 //===END
 
 export default dom;

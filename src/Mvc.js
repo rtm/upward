@@ -3,7 +3,7 @@
 
 // The Upward MVC system is not a framework,
 // but rather a set of concepts and recommendations and minimal sugar.
-// For more nformation, see doc/Mvc.md.
+// For more information, see doc/Mvc.md.
 
 import C from './Fun';
 var createElement = document.createElement.bind(document);
@@ -39,4 +39,3 @@ function makeElementViews(model, view, controller, parent) {
 
 // Exports
 export { makeView, makeElementViews };
-

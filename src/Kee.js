@@ -2,7 +2,7 @@
 
 var {observe, defineProperties} = Object;
 
-import C                            from './Com';
+import C                            from './Fun';
 import {valueize, copyOnto, copyOf} from './Obj';
 import {upwardablePrototype}        from './Upw';
 

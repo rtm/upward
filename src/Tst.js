@@ -7,14 +7,16 @@
 // HTML and console reporters are provided.
 
 // Setup.
-import {spawn, timeout}      from '../Utl/Asy';
-import {makeStopwatch, sum}  from '../Utl/Utl';
-import {assignAdd, mapObject} from '..Utl/Obj';
-import {parseBody}           from '../Utl/Fun';
-import {TEXT, DIV, DETAILS, SUMMARY} from './Dom';
-import R                     from './Ren';
-import M                     from './Map';
-import U                     from './Upw';
+import {spawn, wait}          from './Asy';
+import {E}                    from './Elt';
+import {parseBody}            from './Ify';
+import M                      from './Map';
+import {assignAdd, mapObject} from './Out';
+import R                      from './Ren';
+import {T}                    from './Txt';
+import U                      from './Upw';
+import {makeStopwatch, sum}   from './Utl';
+
 
 const INSTALL_SHOULD = false;
 
@@ -63,18 +65,20 @@ function consoleReporter(reports, options = {}) {
   var hide = options.hide || {};
   (function _consoleReporter(reports) {
     reports.forEach(
-      ({children, desc, status, counts, time, code}) => {
+      ({children, desc, status, counts, time, code, error}) => {
         let countStr = makeCounts(counts);
         let color    = statusInfo[status].color;
         let colorStr = `color: ${color}`;
         if (children) {
           let msg = desc;
+          let collapse = hide.children || hide.passed && status === 'pass';
           if (!hide.counts) { msg = `${msg} (${countStr})`; }
-          console[hide.children ? 'groupCollapsed' : 'group']('%c' + msg, colorStr);
+          console[collapse ? 'groupCollapsed' : 'group']('%c' + msg, colorStr);
           _consoleReporter(children);
           console.groupEnd();
         } else {
-          console.log('%c' + desc, colorStr);
+          if (error) console.log('%c %s (%O)', colorStr, desc, error);
+          else console.log('%c %s', colorStr, desc);
         }
       }
     );
@@ -87,19 +91,17 @@ function htmlReporter(reports, options = {}) {
   hide = hide || {};
 
   function htmlReporterOne({children, desc, status, counts, time, code}) {
-    var text = [TEXT(desc)];
+    var text = [T(desc)];
     var attrs = {class: {[status]: true}};
     if (children) {
-      return keepRendered(
-        'details',
-        [
-          R('summary', text, attrs),
-          DIV(htmlReporter(children, options))
-        ],
-        hide.children ? {} : {open: true}
-      );
+      return E('details') .
+        has([
+          E('summary') . has(text) . is(attrs),
+          E('div') . has(htmlReporter(children, options))
+        ]) .
+        is(hide.children ? {} : {open: true});
     } else {
-      return DIV(text, attrs);
+      return E('div') . is(attrs);
     }
   }
 
@@ -115,11 +117,11 @@ function skip  (test, s = true) { test._skip   = s; return test; }
 function unskip(test, s = true) { test._unskip = s; return test; }
 
 // Return a function to run a group of tests.
-function testGroup(desc, tests, options = {}) {
-  
+function testGroup(desc, tests = [], options = {}) {
+
   function _testGroup(reporter, skipping) {
     return spawn(
-      
+
       function *() {
         var counts = {fail: 0, pass: 0, skip: 0};
         var children = [];
@@ -129,7 +131,7 @@ function testGroup(desc, tests, options = {}) {
         // Run each test in the group.
         for (var t of tests) {
           yield t(children, !t._unskip && (t._skip || skipping));
-          if (options.pause) { yield timeout(options.pause); }
+          if (options.pause) { yield wait(options.pause); }
         }
 
         children.forEach(g => assignAdd(counts, g.counts));
@@ -138,13 +140,15 @@ function testGroup(desc, tests, options = {}) {
         group.time = sum(children.map(c => c.time));
         reporter.push(group);
       }
-      
+
     );
   }
 
   // Allow skipping/unskipping by chaining: `testGroup(...).skip()`.
   _testGroup.skip   = function(s) { return skip  (this, s); };
   _testGroup.unskip = function(s) { return unskip(this, s); };
+  _testGroup.push   = function(...t) { tests.push(...t); return this; };
+
   return _testGroup;
 }
 
@@ -177,7 +181,6 @@ function test(desc, fn, options = {}) {
           _ => status = 'pass',
           e => {
             status = 'fail';
-            if (typeof e === 'object' && e.message) { e = e.message; }
             result.error = e;
           }
         )
@@ -199,10 +202,9 @@ function test(desc, fn, options = {}) {
 }
 
 // Run tests, returning a promise with the results.
-function runTests(tests, options, skipping) {
+function runTests(tests, options = {}, skipping = false) {
   var result = [];
-  tests(result, skipping);
-  return result;
+  return tests(result, skipping) . then(() => result);
 }
 
 // Exports

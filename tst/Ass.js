@@ -1,9 +1,9 @@
 // Unit tests for Ass (keepAssigned) module.
 
-import {test, testGroup, assert} from '../src/Tst';
-import keepAssigned from '../src/Ass';
-import {invert, identity, debugify} from '../src/Fun';
-import {propGetter, propValueGetter, valueize} from '../src/Obj';
+import {test, testGroup, assert}    from '../src/Tst';
+import keepAssigned                 from '../src/Ass';
+import {invert, identity, debugify} from '../src/Ify';
+import {propGetter, propValueGetter, valueize} from '../src/Out';
 
 export default testGroup(
   "module Ass (keepAssigned, #and)",
@@ -34,7 +34,7 @@ export default testGroup(
         ]
       );
     }(),
-    
+
     function() {
       var a;
       return testGroup(

@@ -1,37 +1,25 @@
-// Unit tests for src/Fun.js.
+// Unit tests for Fun module (upwardable functions).
 
-import {test, testGroup, skip, expect, should, assert} from '../src/Tst';
-import {noop, compose, swapify, argify, invertify} from '../src/Fun';
+import {test, testGroup, assert} from '../src/Tst';
+import {observeObject} from '../src/Obs';
+import C from '../src/Fun';
+
+var {observe} = Object;
 
 export default testGroup(
-  "Fun module",
+  "module Fun (upwardable functions)",
   [
 
-    test("compose", () => {
-      var addone = x => x + 1;
-      var multiplytwo = x => x * 2;
-      assert.equal(compose(addone, multiplytwo)(1), 3);
-    }),
+    function() {
+      var c;
 
-    test("swapify", _ => {
-      var callback = sinon.spy();
-      var proxy = swapify(callback);
-      proxy(1, 2);
-      assert(callback.calledWith(2, 1));
-    }),
-
-    test("argify", _ => {
-      var callback = sinon.spy();
-      var proxy = argify(callback, 1);
-      proxy(2);
-      assert(callback.calledWith(1, 2));
-    }),
-
-    test("invertify", _ => {
-      var callback = sinon.stub().returns(true);
-      var proxy = invertify(callback);
-      assert(!proxy());
-    })
-
+      return testGroup(
+        "Basic operation",
+        [
+          test("create computable",         _ => c = C(_ => void 0)),
+          test("result is upwardable",      _ => assert.ok(C.is(c)))
+        ]
+      );
+    }()
   ]
 );

@@ -1,0 +1,5 @@
+# tst/bin/watch
+# set up watcher for tst subdirectory
+
+# TODO: make this relative
+watchman -- trigger ~/repos/rtm/upward tst tst/index.html 'tst/*.js' 'src/*.js' -- bash tst/bin/build

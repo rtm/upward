@@ -1,5 +1,4 @@
 import {U, T, C} from '../src/Up';
-import XHR from '../src/Utl/XHR';
 
 var dom, data;
 

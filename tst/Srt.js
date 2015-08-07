@@ -3,8 +3,8 @@
 import keepSorted from '../src/Srt';
 import {test, testGroup, assert} from '../src/Tst';
 import {U} from '../src/Upw';
-import {invert, identity, debugify} from '../src/Fun';
-import {propGetter, propValueGetter} from '../src/Obj';
+import {invert, identity, debugify} from '../src/Ify';
+import {propGetter, propValueGetter} from '../src/Out';
 
 export default testGroup(
   "module Srt (keepSorted, Array#by)",
@@ -16,10 +16,10 @@ export default testGroup(
         [
           test("sorting array",             _ => b = keepSorted(a)),
           test("should reverse it",         _ => assert.deepEqual(b, [1, 2, 3])),
-          
+
           test("element changed",           _ => a[0] = 99),
           test("should change in sorted result", _ => assert.deepEqual(b, [1, 2, 99])),
-          
+
           test("element added at end",      _ => a.push(1.5)),
           test("should come to front",      _ => assert.deepEqual(b, [1, 1.5, 2, 99]))
         ]
@@ -66,7 +66,7 @@ export default testGroup(
         ]
       );
     }(),
-    
+
     function() {
       var a = [U({v:3}), U({v:2}), U({v:1})];
       var fn = propGetter('v');

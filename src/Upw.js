@@ -6,7 +6,7 @@
 // represent values in upwawrdable objects,
 // and have a `change` method to change their values.
 var {create, getNotifier, defineProperty} = Object;
-import {upwardConfig} from '../Cfg';
+import {upwardConfig} from './Cfg';
 
 // Manage upwardables.
 var set = new WeakSet();

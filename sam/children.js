@@ -1,4 +1,4 @@
-import {P, E, BUTTON, TEXT, V, O} from '../src/U';
+import {P, E, BUTTON, TEXT, V, O} from '../src/Up';
 
 var a = [1, 2, 3, 4, 5];
 

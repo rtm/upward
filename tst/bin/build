@@ -1,0 +1,6 @@
+echo Recompiling javascript in tst.
+browserify --transform babelify --debug --outfile tst/dist/bundle.js tst/main.js
+
+#browserify main.js --debug -t babelify | exorcist bundle.js.map > bundle.js
+
+uglifyjs tst/dist/bundle.js --source-map=tst/dist/bundle.min.js.map --output tst/dist/bundle.min.js # --mangle -c --define TEST=false

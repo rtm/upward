@@ -2,8 +2,8 @@
 // ===========================
 
 // Setup.
-import {dasherize} from '../Utl//Str';
-import {upwardConfig} from '../Cfg';
+import {dasherize} from './Str';
+import {upwardConfig} from './Cfg';
 
 var {assign, defineProperty} = Object;
 
@@ -39,9 +39,9 @@ function makeSheet(scope) {
   var style = document.createElement('style');
   document.head.appendChild(style);
   var sheet = style.sheet;
-  
-  if (scope) { 
-    style.setAttribute('scoped', "scoped"); 
+
+  if (scope) {
+    style.setAttribute('scoped', "scoped");
     if (!scopedSupported) {
       scope.dataset[scopedStyleIdsProp] = (scope.dataset[scopedStyleIdsProp] || "") + " " +
         (sheet.scopedStyleId = makeScopedStyleId(scopedStyleId++));
@@ -59,21 +59,21 @@ function insert(sheet, [selectors, styles]) {
   if (sheet.scopedStyleId) {
     selectors = scopifySelectors(selectors, sheet.scopedStyleId);
   }
-  
+
   var idx = sheet.insertRule(`${selectors} { }`, sheet.rules.length);
   var rule = sheet.rules[idx];
 
-  if (typeof styles === 'string') { rule.style = styles; } 
+  if (typeof styles === 'string') { rule.style = styles; }
   else {
     // @TODO Fix this to be upward-friendly, and valueize style object.
-    assign(rule.style, styles);    
+    assign(rule.style, styles);
     //mirrorProperties(rule.style, styles);
   }
 
   return rule;
 }
 
-// `assignStyle` is an Upwardified function which on first invocation 
+// `assignStyle` is an Upwardified function which on first invocation
 // "assigns" hash passed as argument to the `style` attribute of `this`.
 // When properties within the hash change, style attribute are updated.
 function assignStyle() {
@@ -104,9 +104,9 @@ CSSStyleSheet.prototype.rule = function(selector, styles) {
 // Cannot call as `12.px`; instead, try `12..px`, or `12 .px`.
 if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
   [
-    'em', 'ex', 'ch', 'rem', 'px', 'mm', 'cm', 'in', 'pt', 'pc', 'px', 
-    'vh', 'vw', 'vmin', 'vmax', 
-    'pct', 
+    'em', 'ex', 'ch', 'rem', 'px', 'mm', 'cm', 'in', 'pt', 'pc', 'px',
+    'vh', 'vw', 'vmin', 'vmax',
+    'pct',
     'deg', 'grad', 'rad', 'turn',
     'ms', 's',
     'Hz', 'kHz'
@@ -114,7 +114,7 @@ if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
     get() { return this + unit; }
   }));
 }
-    
+
 export default function UpStyle(rules, scope) {
   var sheet = makeSheet(scope);
   rules.forEach(rule => insert(sheet, rule));
