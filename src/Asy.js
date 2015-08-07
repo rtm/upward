@@ -6,22 +6,6 @@ var {apply} = Function.prototype;
 
 import {upwardConfig} from './Cfg';
 
-// Run values from a generator through promises.
-// Return a promise for when everything is done.
-function spawn(generator) {
-  var iterator = generator();
-
-  return new Promise(
-    resolve =>
-      (function iterate(val) {
-        var {value, done} = iterator.next(val);
-        if (done) { resolve(val); }
-        else { Promise.resolve(value).then(iterate); }
-      }())
-  );
-
-}
-
 // Return a promise for some time in the future,
 // passing through the invoking promise's value:
 // ```
@@ -107,7 +91,6 @@ function promisify(f) {                              // given an underlying func
 }
 
 export {
-  spawn,
   wait,
   promiseChanges,
   Deferred,
