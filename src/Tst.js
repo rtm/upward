@@ -7,7 +7,7 @@
 // HTML and console reporters are provided.
 
 // Setup.
-import {spawn, wait}          from './Asy';
+import {wait}                 from './Asy';
 import {E}                    from './Elt';
 import {parseBody}            from './Ify';
 import M                      from './Map';
@@ -119,30 +119,25 @@ function unskip(test, s = true) { test._unskip = s; return test; }
 // Return a function to run a group of tests.
 function testGroup(desc, tests = [], options = {}) {
 
-  function _testGroup(reporter, skipping) {
-    return spawn(
+  async function _testGroup(reporter, skipping) {
+    var counts = {fail: 0, pass: 0, skip: 0};
+    var children = [];
+    const time = 0;
+    var group = {desc, children: U(children), counts, time, status: 'skip'};
 
-      function *() {
-        var counts = {fail: 0, pass: 0, skip: 0};
-        var children = [];
-        const time = 0;
-        var group = {desc, children: U(children), counts, time, status: 'skip'};
+    // Run each test in the group.
+    for (var t of tests) {
+      await t(children, !t._unskip && (t._skip || skipping));
+      if (options.pause) { await wait(options.pause); }
+    }
 
-        // Run each test in the group.
-        for (var t of tests) {
-          yield t(children, !t._unskip && (t._skip || skipping));
-          if (options.pause) { yield wait(options.pause); }
-        }
-
-        children.forEach(g => assignAdd(counts, g.counts));
-        let allSkip = counts.skip && !keys(counts).some(k => k !== 'skip' && counts[k]);
-        group.status = allSkip ? 'skip' : counts.fail ? 'fail' : 'pass';
-        group.time = sum(children.map(c => c.time));
-        reporter.push(group);
-      }
-
-    );
+    children.forEach(g => assignAdd(counts, g.counts));
+    let allSkip = counts.skip && !keys(counts).some(k => k !== 'skip' && counts[k]);
+    group.status = allSkip ? 'skip' : counts.fail ? 'fail' : 'pass';
+    group.time = sum(children.map(c => c.time));
+    reporter.push(group);
   }
+
 
   // Allow skipping/unskipping by chaining: `testGroup(...).skip()`.
   _testGroup.skip   = function(s) { return skip  (this, s); };
