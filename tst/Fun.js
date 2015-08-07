@@ -1,4 +1,4 @@
-// Unit tests for Fun module.
+// Unit tests for Fun module (upwardable functions).
 
 import {test, testGroup, assert} from '../src/Tst';
 import {observeObject} from '../src/Obs';

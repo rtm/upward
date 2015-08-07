@@ -1,18 +1,40 @@
 // Utility functions
 // =================
 
+import {testGroup, test, assert} from './Tst';
+
 // Setup.
 var {create} = Object;
 
+var tests = [];
+var TEST = true;
+
+
 // Create an array of a sequence of integers.
 function seq(to, from = 0, step = 1) {
-  var dir = to > from ? +1 : -1;
   var result = [];
-  for (let i = from, count = 0; i != to; i += dir, count++) {
-    result[count] = i;
-  }
+  var count = 0;
+  if (to > from) for (let i = from; i < to; i += step) result[count++] = i;
+  else           for (let i = from; i > to; i -= step) result[count++] = i;
+
   return result;
 }
+
+if (TEST) {
+  function tstSeq() {
+    return testGroup(
+      "seq",
+      [
+        test("simple sequence",    () => { assert.deepEqual(seq(2),       [0, 1]); }),
+        test("sequence with from", () => { assert.deepEqual(seq(3, 1),    [1, 2]); }),
+        test("stepped sequence",   () => { assert.deepEqual(seq(3, 0, 2), [0, 2]); }),
+        test("reverse sequence",   () => { assert.deepEqual(seq(0, 2),    [2, 1]); })
+      ]
+    );
+  }
+  tests.push(tstSeq);
+}
+
 
 // Return tail of array.
 function tail(a) {
@@ -20,8 +42,29 @@ function tail(a) {
   return t;
 }
 
+if (TEST) {
+  function tstTail() {
+    return testGroup(
+      "tail", [
+        test("normal",         () => assert.deepEqual(tail([1,2]), [2])),
+        test("single element", () => assert.deepEqual(tail([1]),   [])),
+        test("empty array",    () => assert.deepEqual(tail([]),    []))
+      ]
+    );
+  }
+  tests.push(tstTail);
+}
+
+
 function plus(a, b) {
   return a + b;
+}
+
+if (TEST) {
+  function tstPlus() {
+    return test("plus", () => assert.equal(plus(1, 2), 3));
+  }
+  tests.push(tstPlus);
 }
 
 // Sum (or concatenate) elements of array
@@ -236,6 +279,12 @@ var prototypeFns = {
 //   );
 // }
 
+
+// Exported function to Create test group.
+function utlTestGroup() {
+  return testGroup("module Utl (general utilities)", tests.map(test => test()));
+}
+
 export {
   seq,
   tail,
@@ -263,5 +312,7 @@ export {
   makeStopwatch,
   makeCounterMap,
   interleave,
-  interleaveIterables
+  interleaveIterables,
+
+  utlTestGroup as testGroup
 };

@@ -71,8 +71,9 @@ function consoleReporter(reports, options = {}) {
         let colorStr = `color: ${color}`;
         if (children) {
           let msg = desc;
+          let collapse = hide.children || hide.passed && status === 'pass';
           if (!hide.counts) { msg = `${msg} (${countStr})`; }
-          console[hide.children ? 'groupCollapsed' : 'group']('%c' + msg, colorStr);
+          console[collapse ? 'groupCollapsed' : 'group']('%c' + msg, colorStr);
           _consoleReporter(children);
           console.groupEnd();
         } else {
@@ -116,7 +117,7 @@ function skip  (test, s = true) { test._skip   = s; return test; }
 function unskip(test, s = true) { test._unskip = s; return test; }
 
 // Return a function to run a group of tests.
-function testGroup(desc, tests, options = {}) {
+function testGroup(desc, tests = [], options = {}) {
 
   function _testGroup(reporter, skipping) {
     return spawn(
@@ -146,6 +147,8 @@ function testGroup(desc, tests, options = {}) {
   // Allow skipping/unskipping by chaining: `testGroup(...).skip()`.
   _testGroup.skip   = function(s) { return skip  (this, s); };
   _testGroup.unskip = function(s) { return unskip(this, s); };
+  _testGroup.push   = function(...t) { tests.push(...t); return this; };
+
   return _testGroup;
 }
 
