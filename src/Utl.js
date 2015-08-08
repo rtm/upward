@@ -25,10 +25,10 @@ if (TEST) {
     return testGroup(
       "seq",
       [
-        test("simple sequence",    () => { assert.deepEqual(seq(2),       [0, 1]); }),
-        test("sequence with from", () => { assert.deepEqual(seq(3, 1),    [1, 2]); }),
-        test("stepped sequence",   () => { assert.deepEqual(seq(3, 0, 2), [0, 2]); }),
-        test("reverse sequence",   () => { assert.deepEqual(seq(0, 2),    [2, 1]); })
+        test("simple sequence",    ({assert}) => assert.deepEqual(seq(2),       [0, 1])),
+        test("sequence with from", ({assert}) => assert.deepEqual(seq(3, 1),    [1, 2])),
+        test("stepped sequence",   ({assert}) => assert.deepEqual(seq(3, 0, 2), [0, 2])),
+        test("reverse sequence",   ({assert}) => assert.deepEqual(seq(0, 2),    [2, 1]))
       ]
     );
   }
@@ -46,9 +46,9 @@ if (TEST) {
   function tstTail() {
     return testGroup(
       "tail", [
-        test("normal",         () => assert.deepEqual(tail([1,2]), [2])),
-        test("single element", () => assert.deepEqual(tail([1]),   [])),
-        test("empty array",    () => assert.deepEqual(tail([]),    []))
+        test("normal",         ({assert}) => assert.deepEqual(tail([1,2]), [2])),
+        test("single element", ({assert}) => assert.deepEqual(tail([1]),   [])),
+        test("empty array",    ({assert}) => assert.deepEqual(tail([]),    []))
       ]
     );
   }
@@ -62,7 +62,7 @@ function plus(a, b) {
 
 if (TEST) {
   function tstPlus() {
-    return test("plus", () => assert.equal(plus(1, 2), 3));
+    return test("plus", ({assert}) => assert.equal(plus(1, 2), 3));
   }
   tests.push(tstPlus);
 }

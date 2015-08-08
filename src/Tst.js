@@ -18,21 +18,8 @@ import U                      from './Upw';
 import {makeStopwatch, sum}   from './Utl';
 
 
-const INSTALL_SHOULD = false;
-
 var {assign, create, keys} = Object;
 
-// Assertion libraries.
-// --------------------
-var {expect, should, assert} = chai;
-
-assign(chai.config, {
-  includeStack: true,
-  showDiff: true
-});
-
-// `should` requires initialization; it pollutes the Object prototype.
-if (INSTALL_SHOULD) { should = should(); }
 
 // Reporters
 // ---------
@@ -171,7 +158,7 @@ function test(desc, fn, options = {}) {
       return Promise
         .resolve()
         .then  (stopwatch.start)
-        .then  (_ => fn(reporter))
+        .then  (_ => fn(chai))
         .then  (
           _ => status = 'pass',
           e => {
@@ -214,11 +201,6 @@ export {
   testGroup,
   skip,
   unskip,
-
-  // Assertion libraries.
-  assert,
-  should,
-  expect,
 
   // CSS rules
   testCssRules,
