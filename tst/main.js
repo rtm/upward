@@ -10,7 +10,7 @@ import ifyTests from './Ify';
 //import srtTests from './Srt';
 //import tstTests from './Tst';
 //import upwTests from './Upw';
-import {testGroup as utlTests} from '../src//Utl';
+import {testGroup as utlTests} from '../src/Utl';
 
 import {runTests, testGroup, skip, consoleReporter, htmlReporter, testCssRules} from '../src/Tst';
 import UpStyle from '../src/Css';

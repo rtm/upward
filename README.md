@@ -13,7 +13,7 @@ In our struggles to integrate the front-end technologies that have emerged
 for mark-up, styling, and program logic, we have created a witches&rsquo; brew.
 We have styles inside logic, logic inside styles,
 logic inside mark-up, and mark-up inside logic.
-We have build a tangled web of templating languages, libraries, frameworks, 
+We have build a tangled web of templating languages, libraries, frameworks,
 and CSS preprocessors.
 We have complex build systems to preprocess, precompile, and transpile this steaming mess.
 We have monstrous config objects with mysterious properties fed to black box add-ons to control magic behaviors.
@@ -37,7 +37,7 @@ The Upward framework is based around
  1. **Upwardables**, values which observe themselves
 
  1. **Upwardable functions**, both built-in and user-defined, which take and return upwardables
- 
+
  1. **Upwardable objects**, whose properties are upwardables
 
 Other features include:
@@ -62,17 +62,14 @@ In progress, bleeding edge, changing frenetically, unusable.
 
 ### Environment
 
-**Upward** is written completely in ES6 and targeted for compilation by Traceur.
-The environment it runs in needs to support ES6 features such as `Map` and 'Object.observe'.
+**Upward** is written completely in ES6 and targeted for compilation by babel.
+The environment it runs in needs to support ES6 features such as `Map` and `Object.observe`.
 It has been tested only in Chrome.
 It will not run in other browsers due to their lack of support for `Object.observe`.
-
-At present, we recommend including the traceur compiler and runtime in your web page:
+Include the babel browser polyfill in your HTML page:
 
 ```html
-<script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
-<script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
-<script>traceur.options.experimental = true;</script>
+<script src="../node_modules/babel-core/browser-polyfill.js"></script>
 ```
 
 ### Installation
@@ -83,7 +80,7 @@ Upward has no dependencies, although you should install docker globally to creat
 
 ### License
 
-Copyright (c) 2014 Bob Myers.
+Copyright (c) 2014-2015 Bob Myers.
 
 Licensed under the MIT license.
 

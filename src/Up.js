@@ -1,6 +1,10 @@
 // Basic exports
 // =============
 
+// Filled in via browserify-versionify.
+var version = '__VERSION__';
+
+
 // Re-export interfaces so clients can import from this single module.
 
 import              './Arr';

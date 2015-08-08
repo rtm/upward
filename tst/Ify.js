@@ -1,6 +1,7 @@
 // Unit tests for src/Ify.js.
 
-import {test, testGroup, skip, expect, should, assert} from '../src/Tst';
+import {test, testGroup, skip} from '../src/Tst';
+import {assert} from '../src/Cha';
 import {noop, compose, swapify, argify, invertify, dropify} from '../src/Ify';
 
 export default testGroup(

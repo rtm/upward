@@ -1,8 +1,8 @@
 // Unit tests for Fun module (upwardable functions).
 
-import {test, testGroup, assert} from '../src/Tst';
-import {observeObject} from '../src/Obs';
-import C from '../src/Fun';
+import {test, testGroup} from '../src/Tst';
+import {observeObject}   from '../src/Obs';
+import C                 from '../src/Fun';
 
 var {observe} = Object;
 
@@ -16,8 +16,8 @@ export default testGroup(
       return testGroup(
         "Basic operation",
         [
-          test("create computable",         _ => c = C(_ => void 0)),
-          test("result is upwardable",      _ => assert.ok(C.is(c)))
+          test("create computable",         ()         => c = C(_ => void 0)),
+          test("result is upwardable",      ({assert}) => assert.ok(C.is(c)))
         ]
       );
     }()

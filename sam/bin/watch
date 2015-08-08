@@ -1,0 +1,5 @@
+# sam/bin/watch
+# set up watcher for sam (samples) subdirectory
+
+# TODO: make this relative
+watchman -- trigger ~/repos/rtm/upward sam sam/index.html 'sam/*.js' 'src/*.js' -- bash sam/bin/build

@@ -3,196 +3,23 @@
 
   <head>
 
-    <!-- Babel transpiler -->
-    <script src="../node_modules/babel-core/browser.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Upward Samples</title>
 
-    <!-- Module loader -->
-    <script src="../node_modules/es6-module-loader/dist/es6-module-loader-dev.js"></script>
+    <link rel="icon" type="image/png" href="../ass/img/upward.png"/>
 
     <!-- Babel polyfill, needed for generators. -->
     <script src="../node_modules/babel-core/browser-polyfill.js"></script>
 
-    <!-- Configure es6-module loader. -->
-    <script src="../es6-module-loader-config.js"></script>
-
-    <!-- Load CSS. -->
-    <script> System.import('./css'); </script>
-
   </head>
 
   <body>
+
     <h1 id="message">Upward Samples</h1>
 
-    <script src="helper.js"></script>
-
-  <div id="app"></div>
-
-  <section id="count">
-    <h3>Counting</h3>
-    <p class="desc">
-      We display an auto-updating counter <code>UpCount()</code> as a DOM text node (<code>T</code>).
-    </p>
-  </section>
-
-  <section id="template">
-    <h3>Templating</h3>
-    <p class="desc">
-      ES6 format strings with the <code>F</code> (for <u>f</u>ormat) tag are auto-updated.
-    </p>
-  </section>
-
-  <section id="function">
-    <h3>Functions</h3>
-    <p class="desc">
-      It's easy to define upwardable functions. Let's display the square of the timer, using <code>C</code> to wrap the function.
-    </p>
-  </section>
-
-  <section id="button-label">
-    <h3>Buttons and labels</h3>
-    <p class="desc">
-      Let's move on from timers and work with real data.
-      To create an object which upwards its properties, we use <code>U</code>.
-      To create an HTML element, we use <code>E</code>,
-      and provide the tag, children, and event handlers.
-      We then use the property as the label of a button.
-      When the button is clicked, changing the label property automatically updates the button label.
-    </p>
-    <p class="desc">
-      Why is there no function to create a button directly,
-      such as <code>UpButton(labelText, clickHandler)</code>?
-      Upward maintains a compact surface area.
-      If you want a convenience function, write one yourself.
-    </p>
-  </section>
-
-  <section id="input">
-    <h3>Inputs</h3>
-    <p class="desc">
-      Input elements are also created using <code>E</code>.
-      Input values are available via the `input` property on the input element.
-      A `change` property is also available, which is updated when input finishes.
-    </p>
-  </section>
-
-  <section id="api">
-    <h3>API calls</h3>
-    <p class="desc">
-      Upwardable functions can return asynchronous data, such as the result of API calls.
-      Here we display the most recent event from a Github repository.
-    </p>
-  </section>
-
-  <section id="map">
-    <h3>Mapping</h3>
-    <p class="desc">
-      To map one array to another in upward-aware fashion, we use <code>UpMap</code>.
-      This is also available on the array prototype as <code>as</code>.
-      A common use is to map an array into DOM elements to use as child elements.
-      Here we map an array of numbers onto text nodes inside divs.
-    </p>
-  </section>
-
-  <section id="sort">
-    <h3>Sorting</h3>
-    <p class="desc">
-      This example is nearly identical to the previous, just adding the <code>by</code>
-      preposition to ensure the array is sorted.
-    </p>
-  </section>
-
-  <section id="style">
-    <h3>Styles (.is)</h3>
-    <p class="desc">
-      DOM elements are assigned dynamically updated styles using the <code>.is</code> method.
-      Here we change a background color by merely assigning a new value to a property.
-    </p>
-  </section>
-
-  <section id="css-example">
-    <h3>CSS</h3>
-    <p class="desc">
-      All app logic in Upward is written in JavaScript.
-      We don't need no stinkin&rsquo; CSS preprocessors with weird syntax.
-      The <code>UpStyle</code> API is used to insert rulesheets.
-      Here is a styled div for your enjoyment.
-      By the way, Upward suppports scoped CSS rules.
-    </p>
-    <p class="desc">
-      This is the approach to emulating <code>STYLE</code> elements, or external CSS.
-      Of Course, classes and styles can be placed on elements, as shown in a later example.
-    </p>
-  </section>
-
-  <section id="model-promise">
-    <h3>Promise as model</h3>
-    <p class="desc">
-      By writing our view as a `C` function, the model can be asynchronous.
-    </p>
-  </section>
-
-  <section id="button">
-    <h3>Buttons and controls</h3>
-    <p class="desc">
-      We will parameterize the counter with a upwardable variable, controlled by a button to make it go slower or faster.
-    </p>
-  </section>
-
-  <section id="children">
-    <h3>Manipulating DOM children</h3>
-    <p class="desc">
-      We automatically mainpulate DOM elements.
-    </p>
-  </section>
-
-  <section id="upwarded-properties">
-    <h3>Upwarded properties</h3>
-    <p class="desc">
-      Here we construct a DOM text node whose value is upwardable.
-      We increment the value every second, and the DOM is automatically updated.
-    </p>
-  </section>
-
-  <section id="computed">
-    <h3>Computed values</h3>
-    <p class="desc">
-      The <code>C</code> function can be used to transform dynamic values.
-    </p>
-  </section>
-
-  <section id="class">
-    <h3>Managing classes on elements</h3>
-    <p class="desc">
-      Classes are specified by hashes, with camelized names as keys and boolean values.
-      This makes it easy to turn classes on and off.
-    </p>
-  </section>
-
-  <section id="html-helper">
-    <h3>The <code>HTML</code> template helper</h3>
-    <p class="desc">
-      The <code>HTML</code> helper allows you to construct HTML strings.
-    </p>
-  </section>
-
-  <script>
-		window.addEventListener("DOMContentLoaded", function() {
-    [
-    'count',
-    'template',
-    'function',
-    'button-label',
-    'input',
-//    'css-example',
-    'api',
-    'map',
-//    'sort',
-//    'style',
-//    'model-promise'
-    ]
-  	.forEach(sample);
-    });
-  </script>
+    <div id="samples"></div>
+    <script src="dist/bundle.js"></script>
 
   </body>
+
 </html>
