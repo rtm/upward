@@ -314,5 +314,5 @@ export {
   interleave,
   interleaveIterables,
 
-  utlTestGroup as testGroup
+  utlTestGroup as tests
 };
