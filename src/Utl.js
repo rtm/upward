@@ -21,18 +21,15 @@ function seq(to, from = 0, step = 1) {
 }
 
 if (TEST) {
-  function tstSeq() {
-    return testGroup(
-      "seq",
-      [
-        test("simple sequence",    () => { assert.deepEqual(seq(2),       [0, 1]); }),
-        test("sequence with from", () => { assert.deepEqual(seq(3, 1),    [1, 2]); }),
-        test("stepped sequence",   () => { assert.deepEqual(seq(3, 0, 2), [0, 2]); }),
-        test("reverse sequence",   () => { assert.deepEqual(seq(0, 2),    [2, 1]); })
-      ]
-    );
-  }
-  tests.push(tstSeq);
+  tests.push(() => testGroup(
+    "seq",
+    [
+      test("simple sequence",    () => { assert.deepEqual(seq(2),       [0, 1]); }),
+      test("sequence with from", () => { assert.deepEqual(seq(3, 1),    [1, 2]); }),
+      test("stepped sequence",   () => { assert.deepEqual(seq(3, 0, 2), [0, 2]); }),
+      test("reverse sequence",   () => { assert.deepEqual(seq(0, 2),    [2, 1]); })
+    ]
+  ));
 }
 
 
@@ -43,16 +40,13 @@ function tail(a) {
 }
 
 if (TEST) {
-  function tstTail() {
-    return testGroup(
-      "tail", [
-        test("normal",         () => assert.deepEqual(tail([1,2]), [2])),
-        test("single element", () => assert.deepEqual(tail([1]),   [])),
-        test("empty array",    () => assert.deepEqual(tail([]),    []))
-      ]
-    );
-  }
-  tests.push(tstTail);
+  tests.push(() => testGroup(
+    "tail", [
+      test("normal",         () => assert.deepEqual(tail([1,2]), [2])),
+      test("single element", () => assert.deepEqual(tail([1]),   [])),
+      test("empty array",    () => assert.deepEqual(tail([]),    []))
+    ]
+  ));
 }
 
 
@@ -61,39 +55,72 @@ function plus(a, b) {
 }
 
 if (TEST) {
-  function tstPlus() {
-    return test("plus", () => assert.equal(plus(1, 2), 3));
-  }
-  tests.push(tstPlus);
+  tests.push(() => test("plus", () => assert.equal(plus(1, 2), 3)));
 }
+
 
 // Sum (or concatenate) elements of array
 function sum(a) {
   return a.reduce(plus);
 }
 
+if (TEST) {
+  tests.push(() => test("sum", () => assert.equal(sum([1, 2, 3]), 6)));
+}
+
+
+// Maximum element of array.
 function arrayMax(a) {
   return Math.max(...a);
 }
 
+if (TEST) {
+  tests.push(() => test("arrayMax", () => assert.equal(arrayMax([1, 2, 3]), 3)));
+}
+
+
+// Minimum element of array.
 function arrayMin(a) {
   return Math.min(...a);
 }
 
+if (TEST) {
+  tests.push(() => test("arrayMin", () => assert.equal(arrayMin([1, 2, 3]), 1)));
+}
+
+
+// Mean (average) of array.
 function arrayMean(a) {
   return sum(a) / a.length;
 }
 
-// Swap the elements of a tuple in place.
-function swap(a) {
-  [a[1], a[2]] = a;
+if (TEST) {
+  tests.push(() => test("arrayMean", () => assert.equal(arrayMean([1, 2, 3]), 2)));
 }
+
+
+// Swap the elements of a tuple in place.
+// Actually, this is a rotate-left.
+function swap(a) {
+  a.push(a.shift());
+  return a;
+}
+
+if (TEST) {
+  tests.push(() => test("swap", () => assert.deepEqual(swap([1, 2]), [2, 1])));
+}
+
 
 // Append to an array, returning the array.
 function append(a, ...elts) {
   a.push(...elts);
   return a;
 }
+
+if (TEST) {
+  tests.push(() => test("append", () => assert.deepEqual(append([1], 2), [1, 2])));
+}
+
 
 // Omit elements from array destructively.
 function omit(a, elt) {
@@ -104,12 +131,28 @@ function omit(a, elt) {
   return a;
 }
 
+if (TEST) {
+  tests.push(() => testGroup("omit", [
+    test("element present", () => assert.deepEqual(omit([1, 2], 1), [2])),
+    test("element absent",  () => assert.deepEqual(omit([1, 2], 3), [1, 2]))
+  ]));
+}
+
+
 // Replace one element in an array with another.
 function replace(a, elt1, elt2) {
   var idx = a.indexOf(elt1);
   if (idx !== -1) { a[idx] = elt2; }
   return a;
 }
+
+if (TEST) {
+  tests.push(() => testGroup("replace", [
+    test("element present", () => assert.deepEqual(replace([1, 2], 1, 42), [42, 2])),
+    test("element absent",  () => assert.deepEqual(replace([1, 2], 3, 42), [1, 2]))
+  ]));
+}
+
 
 // reverse an array in place
 function reverse(a) {
@@ -120,6 +163,15 @@ function reverse(a) {
   return a;
 }
 
+if (TEST) {
+  tests.push(() => testGroup("reverse", [
+    test("odd # elts",  () => assert.deepEqual(reverse([1, 2, 3]), [3, 2, 1])),
+    test("even # elts", () => assert.deepEqual(reverse([1, 2, 3, 4]), [4, 3, 2, 1])),
+    test("empty case",  () => assert.deepEqual(reverse([]), []))
+  ]));
+}
+
+
 function mapInPlace(a, fn, ctxt) {
   for (var i = 0, len = a.length; i < len; i++) {
     a[i] = fn.call(ctxt, a[i]);
@@ -127,9 +179,19 @@ function mapInPlace(a, fn, ctxt) {
   return a;
 }
 
+if (TEST) {
+  tests.push(() => test("mapInPlace", () => {
+    let a = [1, 2, 3];
+    mapInPlace(a, x => x + x);
+    assert.deepEqual(a, [2, 4, 6]);
+  }));
+}
+
+
 function repeat(n, v) {
   return seq(n).fill(v);
 }
+
 
 // Create a sort function suitable for passing to `Array#sort`.
 function makeSortfunc(key, desc) {
