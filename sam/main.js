@@ -2,23 +2,32 @@
 //
 // Main file for upward samples.
 
+import markdown from '../node_modules/markdown/lib/markdown';
+
+
 import './style';
 
 import cntSample from './Cnt';
 import tmpSample from './Tem';
 import funSample from './Fun';
 import butSample from './But';
+import apiSample from './Api';
+import mapSample from './Map';
+import srtSample from './Srt';
 
-import markdown from '../node_modules/markdown/lib/markdown';
 
 var samples = [
   { sample: cntSample, js: 'Cnt' },
-//  { sample: tmpSample, js: 'Tmp' },
-//  { sample: funSample, js: 'Fun' },
-//  { sample: butSample, js: 'But' }
+  { sample: tmpSample, js: 'Tem' },
+  { sample: funSample, js: 'Fun' },
+  { sample: butSample, js: 'But' },
+  { sample: apiSample, js: 'Api' },
+  { sample: mapSample, js: 'Map' },
+  { sample: srtSample, js: 'Srt' }
 ];
 
 var div = document.getElementById('samples');
+
 
 // Retrieve the section of code between ===START and ===END.
 function getCode(js) {
@@ -29,8 +38,9 @@ function getCode(js) {
 
 function getDescription(js) {
   return js .
-    match(/^\/\/\/(.*)$/m) .
-    join();
+    match(/^\/\/\/(.*)$/gm) .
+    map(line => line.replace(/^\/\/\/\s*/, '')) .
+    join('\n');
 }
 
 
@@ -41,24 +51,25 @@ function oneSample(sample) {
   function append(text)   { code.appendChild(document.createTextNode(getCode(text))); }
 
   var section = document.createElement('section');
+  var js = fetch(sample.js + '.js') . then(text);
+
+  // description block
+  var description = document.createElement('div');
+  description.className = 'desc';
+  section.appendChild(description);
+  js.then(text => description.innerHTML = markdown.toHTML(getDescription(text)));
 
   // code block
   var code = document.createElement('div');
   code.className = 'code';
   section.appendChild(code);
-  fetch(sample.js + '.js') . then(text) . then(append);
+  js.then(append);
 
   // result block
   var result = document.createElement('div');
   result.className = 'result';
   section.appendChild(result);
   result.appendChild(sample.sample);
-
-  // description block
-  var description = document.createElement('div');
-  description.className = 'desc';
-  section.appendChild(description);
-  description.innerHTML = markdown.toHTML(getDescription(code);
 
   // Put this sample in the HTML.
   div.appendChild(section);

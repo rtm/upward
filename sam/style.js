@@ -19,7 +19,9 @@ UpStyle([
 
   ["body", {
     fontFamily : 'sans-serif',
-    backgroundColor: theme.bodyBackgroundColor
+    backgroundColor: theme.bodyBackgroundColor,
+    paddingLeft: '12px',
+    paddingRight: '12px'
   }],
 
   ["h3", {

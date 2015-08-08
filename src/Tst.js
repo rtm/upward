@@ -158,7 +158,7 @@ function test(desc, fn, options = {}) {
       return Promise
         .resolve()
         .then  (stopwatch.start)
-        .then  (_ => fn(reporter))
+        .then  (_ => fn(chai))
         .then  (
           _ => status = 'pass',
           e => {

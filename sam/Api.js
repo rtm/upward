@@ -3,6 +3,11 @@ import {fetchJson} from '../src/Fet';
 
 var get, dom, data;
 
+/// ### API calls
+///
+/// Upwardable functions can return asynchronous data, such as the result of API calls.
+/// Here we display the most recent event from a Github repository.
+
 //===START
 data = U({repo: 'rtm/upward'});
 
