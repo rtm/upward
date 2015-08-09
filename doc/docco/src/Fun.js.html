@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fun.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Fun.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#upwardable%20functions">Upwardable Functions</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="upwardable%20functions">
+  <h1>
+    <a href="#upwardable%20functions" name="upwardable%20functions" class="pilcrow">&#182;</a>
+    Upwardable Functions
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>The <strong>upwardable function</strong> is one of the two key components of the upward library,
+along with the <strong>upwardable object</strong>.
+An <strong>upwardable function</strong> is an enhanced function which recomputes itself
+when its inputs or dependencies change.
+Inovking an upwardable function results in a <strong>upwardable</strong>, which holds the value.
+An upwardable is always an object; if primitive, it is wrapped.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Convenience.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">getNotifier</span><span class="p">,</span> <span class="nx">observe</span><span class="p">,</span> <span class="nx">unobserve</span><span class="p">,</span> <span class="nx">defineProperty</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="p">{</span><span class="nx">makeAccessController</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Acc&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">generateForever</span><span class="p">}</span>      <span class="nx">from</span> <span class="s1">&#39;./Asy&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Observer</span><span class="p">}</span>             <span class="nx">from</span> <span class="s1">&#39;./Obs&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">copyOnto</span><span class="p">,</span> <span class="nx">isObject</span><span class="p">}</span>   <span class="nx">from</span> <span class="s1">&#39;./Out&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">makeUpwardable</span>         <span class="nx">from</span> <span class="s1">&#39;./Upw&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Keep track of computables, computeds, and computifieds.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">set</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WeakSet</span><span class="p">();</span>
+<span class="kd">var</span> <span class="nx">generators</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WeakMap</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">is</span> <span class="p">(</span><span class="nx">f</span><span class="p">)</span>    <span class="p">{</span> <span class="k">return</span> <span class="nx">set</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">f</span><span class="p">);</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">get</span><span class="p">(</span><span class="nx">g</span><span class="p">)</span>    <span class="p">{</span> <span class="k">return</span> <span class="nx">g</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">g</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">generators</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">g</span><span class="p">);</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">g</span><span class="p">)</span> <span class="p">{</span> <span class="nx">set</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">f</span><span class="p">);</span> <span class="nx">generators</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">g</span><span class="p">,</span> <span class="nx">f</span><span class="p">);</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>Convenience constructor for computable when on simple function.
+To provide your own generator, use <code>constructComputable</code>.
+This is the default export from this module.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">C</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">init</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">make</span><span class="p">(</span><span class="nx">generateForever</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">init</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>Construct upwardable function from generator (if not already constructed).</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">make</span><span class="p">(</span><span class="nx">g</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">f</span> <span class="o">=</span> <span class="nx">get</span><span class="p">(</span><span class="nx">g</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">f</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">f</span>  <span class="o">=</span> <span class="nx">_make</span><span class="p">(</span><span class="nx">g</span><span class="p">);</span>
+    <span class="nx">add</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">g</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">f</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>Create an upwardable function based on a generator.
+The generator must provide the following behavior.
+The first <code>iterator.next()</code> is invoked synchronously, and must yield a neutral, default, safe value.
+Following <code>iterator.next()</code> calls are passed function arguments as an array.
+In other words, <code>yield</code> statements should be written as <code>args = yield x;</code>,
+where <code>args</code> will be/should be/might be used in deriving the next value to yield.
+The yielded value may be (but not need be) be a promise to be waited for.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">_make</span><span class="p">(</span><span class="nx">g</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kd">function</span> <span class="nx">f</span><span class="p">(...</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>Resolve the promise which will trigger recomputation.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">run</span><span class="p">()</span>         <span class="p">{</span> <span class="nx">runner</span><span class="p">();</span> <span class="p">}</span>
+    <span class="kd">function</span> <span class="nx">accessStart</span><span class="p">()</span> <span class="p">{</span> <span class="nx">accessController</span><span class="p">.</span><span class="nx">start</span><span class="p">();</span> <span class="p">}</span>
+    <span class="kd">function</span> <span class="nx">accessStop</span><span class="p">()</span>  <span class="p">{</span> <span class="nx">accessController</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span> <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">iterate</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">change</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="nx">runner</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">);</span>
+      <span class="kd">function</span> <span class="nx">reiterate</span><span class="p">()</span> <span class="p">{</span> <span class="nx">change</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">iterate</span><span class="p">);</span> <span class="p">}</span>
+
+      <span class="nx">accessStart</span><span class="p">();</span>
+      <span class="kd">var</span> <span class="p">{</span><span class="nx">done</span><span class="p">,</span> <span class="nx">value</span><span class="p">}</span> <span class="o">=</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">(</span><span class="nx">args</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="o">!</span><span class="nx">done</span><span class="p">,</span> <span class="s2">&quot;Iterator underlying computable ran out of gas.&quot;</span><span class="p">);</span>
+
+      <span class="kd">var</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nx">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+      <span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">accessStop</span><span class="p">,</span> <span class="nx">accessStop</span><span class="p">);</span> <span class="c1">// should this be synchronous?</span>
+      <span class="nx">promise</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span>
+          <span class="nx">newValue</span> <span class="o">=&gt;</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">change</span><span class="p">(</span><span class="nx">newValue</span><span class="p">),</span>
+          <span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span> <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">reiterate</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="nx">g</span><span class="p">(</span><span class="nx">run</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">makeUpwardable</span><span class="p">(</span><span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">value</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">accessController</span> <span class="o">=</span> <span class="nx">makeAccessController</span><span class="p">(</span><span class="nx">run</span><span class="p">);</span>
+    <span class="kd">var</span> <span class="nx">runner</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>if (computed) {
+     accessNotifier.notify({type: 'update',  object: computed});
+   }</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+    <span class="nx">observeArgs</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">run</span><span class="p">);</span>
+    <span class="nx">iterate</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">f</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+</div>
+<p>Observe changes to arguments.
+This will handle 'compute' changes, and trigger recomputation of function.
+When args changes, the new value is reobserved.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">observeArgs</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="nx">run</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="kd">function</span> <span class="nx">observeArg</span><span class="p">(</span><span class="nx">arg</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">observer</span> <span class="o">=</span> <span class="nx">Observer</span><span class="p">(</span>
+      <span class="nx">arg</span><span class="p">,</span>
+      <span class="kd">function</span> <span class="nx">argObserver</span><span class="p">(</span><span class="nx">changes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">changes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(({</span><span class="nx">type</span><span class="p">,</span> <span class="nx">newValue</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;upward&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">args</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">newValue</span><span class="p">;</span>
+            <span class="nx">observer</span><span class="p">.</span><span class="nx">reobserve</span><span class="p">(</span><span class="nx">newValue</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">});</span>
+
+        <span class="nx">run</span><span class="p">();</span>
+      <span class="p">},</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p>@TODO: consider whether to check for D/A/U here, or use 'modify' change type</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="p">[</span><span class="s1">&#39;upward&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;update&#39;</span><span class="p">]</span> <span class="c1">// @TODO: check all these are necessary</span>
+    <span class="p">);</span>
+    <span class="nx">observer</span><span class="p">.</span><span class="nx">observe</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="nx">args</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">observeArg</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
+</div>
+<p>The ur-upwardable function is to get a property from an object.
+This version does not support upwardables as arguments.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">getUpwardableProperty</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span>
+  <span class="kd">function</span> <span class="nx">getProperty</span><span class="p">([</span><span class="nx">object</span><span class="p">,</span> <span class="nx">name</span><span class="p">],</span> <span class="nx">run</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">observe</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">changes</span> <span class="o">=&gt;</span> <span class="nx">changes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">change</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">change</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="nx">name</span><span class="p">)</span> <span class="nx">run</span><span class="p">();</span>
+    <span class="p">}));</span>
+    <span class="k">return</span> <span class="nx">object</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+  <span class="p">}</span>
+<span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">makeUpwardableFunction</span> <span class="o">=</span> <span class="nx">make</span><span class="p">;</span>
+
+<span class="nx">C</span><span class="p">.</span><span class="nx">is</span> <span class="o">=</span> <span class="nx">is</span><span class="p">;</span>
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">C</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="p">{</span>
+  <span class="nx">makeUpwardableFunction</span><span class="p">,</span>
+  <span class="nx">getUpwardableProperty</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

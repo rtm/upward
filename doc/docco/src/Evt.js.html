@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Evt.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Evt.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#event%20handling">Event handling</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="event%20handling">
+  <h1>
+    <a href="#event%20handling" name="event%20handling" class="pilcrow">&#182;</a>
+    Event handling
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Events are handled by calling <code>does</code> on an element, and passing a hash of handlers.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kd">var</span> <span class="p">{</span><span class="nx">create</span><span class="p">,</span> <span class="nx">keys</span><span class="p">,</span> <span class="nx">assign</span><span class="p">,</span> <span class="nx">defineProperty</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">prototype</span><span class="p">}</span> <span class="o">=</span> <span class="nx">HTMLElement</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Prototype for event listeners, defining <code>handleEvent</code>,
+which dispatches events to a method of the same name.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">EventListenerPrototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">handleEvent</span><span class="p">(</span><span class="nx">evt</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">[</span><span class="nx">evt</span><span class="p">.</span><span class="nx">type</span><span class="p">](</span><span class="nx">evt</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Place property on <code>Element</code> prototype.
+Usage:</p>
+
+<div class='highlight'><pre><code language=''>E('button') . does({click: handleButtonClick})
+
+function handleButtonClick(evt) {
+    // this.context is the button
+}
+</code></pre></div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">const</span> <span class="nx">DOESPROP</span> <span class="o">=</span> <span class="s1">&#39;does&#39;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">DOESPROP</span><span class="p">])</span> <span class="p">{</span>
+  <span class="nx">defineProperty</span><span class="p">(</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">DOESPROP</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="p">(</span><span class="nx">handlers</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">listener</span> <span class="o">=</span> <span class="nx">create</span><span class="p">(</span><span class="nx">EventListenerPrototype</span><span class="p">);</span>
+      <span class="nx">assign</span><span class="p">(</span><span class="nx">listener</span><span class="p">,</span> <span class="nx">handlers</span><span class="p">,</span> <span class="p">{</span><span class="nx">context</span><span class="o">:</span> <span class="k">this</span><span class="p">});</span>
+      <span class="nx">keys</span><span class="p">(</span><span class="nx">handlers</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">evt_type</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">evt_type</span><span class="p">,</span> <span class="nx">listener</span><span class="p">));</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

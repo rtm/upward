@@ -2,6 +2,7 @@
 // Sample for counting up.
 
 import {UpCount, T} from '../src/Up';
+
 var dom;
 
 ///### Counting

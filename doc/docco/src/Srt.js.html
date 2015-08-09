@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Srt.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Srt.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#upsort%3A%20upward-aware%20version%20of%20array%23sort">UpSort: upward-aware version of Array#sort</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="upsort%3A%20upward-aware%20version%20of%20array%23sort">
+  <h1>
+    <a href="#upsort%3A%20upward-aware%20version%20of%20array%23sort" name="upsort%3A%20upward-aware%20version%20of%20array%23sort" class="pilcrow">&#182;</a>
+    UpSort: upward-aware version of Array#sort
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="p">{</span><span class="nx">makeUpwardableFunction</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">makeUpwardableObject</span> <span class="nx">from</span> <span class="s1">&#39;./Obj&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">copyOntoArray</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Out&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">makeSortfunc</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Utl&#39;</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">makeUpwardableFunction</span><span class="p">(</span><span class="kd">function</span> <span class="o">*</span><span class="nx">UpSort</span><span class="p">(</span><span class="nx">run</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="p">[];</span>
+
+  <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">desc</span><span class="p">]</span> <span class="o">=</span> <span class="k">yield</span> <span class="nx">r</span><span class="p">;</span>
+    <span class="nx">copyOntoArray</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">slice</span><span class="p">().</span><span class="nx">sort</span><span class="p">(</span><span class="nx">makeSortfunc</span><span class="p">(</span><span class="nx">f</span><span class="p">,</span> <span class="nx">desc</span><span class="p">)))</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

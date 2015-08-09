@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Obs.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Obs.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#observation%20utilities">Observation utilities</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="observation%20utilities">
+  <h1>
+    <a href="#observation%20utilities" name="observation%20utilities" class="pilcrow">&#182;</a>
+    Observation utilities
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Setup.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">create</span><span class="p">,</span> <span class="nx">assign</span><span class="p">,</span> <span class="nx">observe</span><span class="p">,</span> <span class="nx">unobserve</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">isObject</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Out&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Make an observation handler, given a target and an object of handlers
+with function-valued keys such as "add", "delete", and "update".
+Keys of the form <code>type_name</code>, such as <code>update_a</code>, may also be given.
+Map the signature to match <code>Array#forEach</code>, with changerec as 4th arg.
+After all changes are handled, the 'end' hook is called.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">observerPrototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">handle</span><span class="p">(</span><span class="nx">changes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">saveObject</span><span class="p">;</span>
+    <span class="nx">changes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">change</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">let</span> <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">name</span><span class="p">}</span> <span class="o">=</span> <span class="nx">change</span><span class="p">;</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>If handler includes a method named <code>type_name</code>, use that.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="kd">let</span> <span class="nx">fn</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">type</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nx">name</span><span class="p">]</span> <span class="o">||</span> <span class="k">this</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">||</span> <span class="p">(</span><span class="nx">_</span> <span class="o">=&gt;</span> <span class="kc">undefined</span><span class="p">);</span>
+      <span class="nx">saveObject</span> <span class="o">=</span> <span class="nx">object</span><span class="p">;</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+
+<div class="highlight"><pre><code> <span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;update&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">name</span> <span class="o">===</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">type</span> <span class="o">=</span> <span class="s1">&#39;length&#39;</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div>
+
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+      <span class="nx">fn</span><span class="p">(</span><span class="nx">object</span><span class="p">[</span><span class="nx">name</span><span class="p">],</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">change</span><span class="p">);</span>
+    <span class="p">});</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">end</span><span class="p">)</span> <span class="p">{</span> <span class="k">this</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">saveObject</span><span class="p">);</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>This version of observerPrototype handles the change objects asynchronously,
+allowing them to return promises.
+However, it doesn't work right now, at least not in a testing context.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">asyncObserverPrototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">handle</span><span class="p">(</span><span class="nx">changes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">saveObject</span><span class="p">;</span>
+    <span class="nx">spawn</span><span class="p">(</span><span class="kd">function</span> <span class="o">*</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">change</span> <span class="nx">of</span> <span class="nx">changes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="p">{</span><span class="nx">type</span><span class="p">,</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">name</span><span class="p">}</span> <span class="o">=</span> <span class="nx">change</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">fn</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">type</span><span class="p">];</span>
+        <span class="nx">saveObject</span> <span class="o">=</span> <span class="nx">object</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span> <span class="k">yield</span> <span class="nx">fn</span> <span class="p">(</span><span class="nx">object</span><span class="p">[</span><span class="nx">name</span><span class="p">],</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">object</span><span class="p">,</span> <span class="nx">change</span><span class="p">);</span> <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">end</span><span class="p">)</span> <span class="p">{</span> <span class="k">yield</span> <span class="k">this</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="nx">saveObject</span><span class="p">);</span> <span class="p">}</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>Prepare the list of <code>type</code>s to pass to O.o, based on handler methods.
+Even if only <code>end</code> is present, we need to add <code>add</code> etc.
+If handler named <code>type_name</code> is there, register <code>type</code> as handled.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">getTypesFromHandlers</span><span class="p">(</span><span class="nx">handlers</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">types</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">(</span><span class="nx">handlers</span><span class="p">);</span>
+  <span class="nx">types</span> <span class="o">=</span> <span class="nx">types</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">k</span> <span class="o">=&gt;</span> <span class="nx">k</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/_.*/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">));</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">types</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">types</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">types</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>Make an observer from a hash of handlers for observation types.
+This observer can be passed to <code>observeObject</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">makeObserver</span><span class="p">(</span><span class="nx">handlers</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="nx">handlers</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">handlers</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s2">&quot;Argument to makeObserver must be hash.&quot;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">handler</span> <span class="o">=</span> <span class="nx">assign</span><span class="p">(</span><span class="nx">create</span><span class="p">(</span><span class="nx">observerPrototype</span><span class="p">),</span> <span class="nx">handlers</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">observer</span> <span class="o">=</span> <span class="nx">handler</span><span class="p">.</span><span class="nx">handle</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">handler</span><span class="p">);</span>
+  <span class="nx">observer</span><span class="p">.</span><span class="nx">keys</span> <span class="o">=</span> <span class="nx">getTypesFromHandlers</span><span class="p">(</span><span class="nx">handlers</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">observer</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>Invoke Object.observe with only the types available to be handled.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">observeObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">observer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">o</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">observe</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">observer</span><span class="p">,</span> <span class="nx">observer</span><span class="p">.</span><span class="nx">keys</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">observeObjectNow</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">observer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">observeObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">observer</span><span class="p">);</span>
+  <span class="nx">notifyRetroactively</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">o</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+</div>
+<p>Unobserve something obseved with <code>observeObject</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">unobserveObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">observer</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">o</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">unobserve</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">observer</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p>Retroactively notify 'add' to all properties in an object.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">notifyRetroactively</span><span class="p">(</span><span class="nx">object</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">object</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">object</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kr">const</span> <span class="nx">type</span> <span class="o">=</span> <span class="s1">&#39;add&#39;</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">notifier</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">getNotifier</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+    <span class="nx">keys</span><span class="p">(</span><span class="nx">object</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">name</span> <span class="o">=&gt;</span> <span class="nx">notifier</span><span class="p">.</span><span class="nx">notify</span><span class="p">({</span><span class="nx">type</span><span class="p">,</span> <span class="nx">name</span><span class="p">,</span> <span class="nx">object</span><span class="p">}));</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">object</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
+</div>
+<p>Set up an observer and tear it down after the first report</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">observeOnce</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">observer</span><span class="p">,</span> <span class="nx">types</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">_observer</span><span class="p">(</span><span class="nx">changes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">observer</span><span class="p">(</span><span class="nx">changes</span><span class="p">);</span>
+    <span class="nx">unobserve</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">_observer</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">observe</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">_observer</span><span class="p">,</span> <span class="nx">types</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+</div>
+<p>Keep an object in sync with another.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">mirrorProperties</span><span class="p">(</span><span class="nx">src</span><span class="p">,</span> <span class="nx">dest</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">set</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span> <span class="nx">dest</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">src</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span> <span class="k">delete</span> <span class="nx">dest</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span> <span class="p">}</span>
+
+  <span class="kd">var</span> <span class="nx">handlers</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">add</span><span class="o">:</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">update</span><span class="o">:</span> <span class="nx">set</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">};</span>
+
+  <span class="nx">assign</span><span class="p">(</span><span class="nx">dest</span><span class="p">,</span> <span class="nx">src</span><span class="p">);</span>
+  <span class="nx">observe</span><span class="p">(</span><span class="nx">src</span><span class="p">,</span> <span class="nx">makeObserver</span><span class="p">(</span><span class="nx">handlers</span><span class="p">));</span>
+  <span class="k">return</span> <span class="nx">dest</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
+</div>
+<p>Make an Observer object, which allows easy unobserving and resobserving.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">Observer</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">observer</span><span class="p">,</span> <span class="nx">types</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">observe</span><span class="p">(</span><span class="nx">_types</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">types</span> <span class="o">=</span> <span class="nx">_types</span> <span class="o">||</span> <span class="nx">types</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">object</span><span class="p">))</span> <span class="nx">observe</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">observer</span><span class="p">,</span> <span class="nx">types</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">unobserve</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">object</span><span class="p">))</span> <span class="nx">unobserve</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="nx">observer</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    <span class="nx">reobserve</span><span class="p">(</span><span class="nx">_object</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">unobserve</span><span class="p">();</span>
+      <span class="nx">object</span> <span class="o">=</span> <span class="nx">_object</span><span class="p">;</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">observe</span><span class="p">();</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="p">{</span>
+  <span class="nx">makeObserver</span><span class="p">,</span>
+  <span class="nx">observeObject</span><span class="p">,</span>
+  <span class="nx">observeObjectNow</span><span class="p">,</span>
+  <span class="nx">unobserveObject</span><span class="p">,</span>
+  <span class="nx">notifyRetroactively</span><span class="p">,</span>
+  <span class="nx">observeOnce</span><span class="p">,</span>
+  <span class="nx">mirrorProperties</span><span class="p">,</span>
+  <span class="nx">Observer</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

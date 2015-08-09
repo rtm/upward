@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Att.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Att.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#upattributes%2F.is">UpAttributes/.is</a>
+      </div>
+      <div class="heading h2">
+        <a href="#make%20observers%20for%20attributes%2C%20and%20subattributes">Make observers for attributes, and subattributes</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="upattributes%2F.is">
+  <h1>
+    <a href="#upattributes%2F.is" name="upattributes%2F.is" class="pilcrow">&#182;</a>
+    UpAttributes/.is
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">keepAssigned</span>    <span class="nx">from</span> <span class="s1">&#39;./Ass&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">C</span>               <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">invertify</span><span class="p">}</span>     <span class="nx">from</span> <span class="s1">&#39;./Ify&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">observeObject</span><span class="p">,</span> <span class="nx">makeObserver</span><span class="p">,</span> <span class="nx">observeObjectNow</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Obs&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">dasherize</span><span class="p">}</span>     <span class="nx">from</span> <span class="s1">&#39;./Str&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="p">{</span><span class="nx">push</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">defineProperty</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">subAttrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;style&#39;</span><span class="p">,</span> <span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="s1">&#39;dataset&#39;</span><span class="p">];</span>
+<span class="kd">function</span> <span class="nx">isSubattr</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">subAttrs</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="make%20observers%20for%20attributes%2C%20and%20subattributes">
+  <h2>
+    <a href="#make%20observers%20for%20attributes%2C%20and%20subattributes" name="make%20observers%20for%20attributes%2C%20and%20subattributes" class="pilcrow">&#182;</a>
+    Make observers for attributes, and subattributes
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">makeAttrsObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span> <span class="nx">valueize</span><span class="p">(</span><span class="nx">v</span><span class="p">));</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="nx">k</span><span class="p">);</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">update</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeStyleObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">update</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeDatasetObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">dataset</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="k">delete</span> <span class="nx">e</span><span class="p">.</span><span class="nx">dataset</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">change</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeClassObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">toggle</span><span class="p">(</span><span class="nx">dasherize</span><span class="p">(</span><span class="nx">k</span><span class="p">),</span> <span class="nx">v</span><span class="p">);</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">dasherize</span><span class="p">(</span><span class="nx">k</span><span class="p">));</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">change</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">UpAttributes</span><span class="p">(</span><span class="nx">elt</span><span class="p">,</span> <span class="nx">attrs</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Function to repopulate classes on the element when they change.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">var</span> <span class="nx">upClasses</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">classes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">classes</span> <span class="o">=</span> <span class="nx">classes</span> <span class="o">||</span> <span class="p">{};</span>
+    <span class="nx">keys</span><span class="p">(</span><span class="nx">classes</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">cls</span> <span class="o">=&gt;</span> <span class="nx">elt</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">toggle</span><span class="p">(</span><span class="nx">dasherize</span><span class="p">(</span><span class="nx">cls</span><span class="p">),</span> <span class="nx">classes</span><span class="p">[</span><span class="nx">cls</span><span class="p">]));</span>
+  <span class="p">});</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Function to repopulate styles on the element when they change.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">var</span> <span class="nx">upStyles</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">styles</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">styles</span> <span class="o">=</span> <span class="nx">styles</span> <span class="o">||</span> <span class="p">{};</span>
+    <span class="nx">keys</span><span class="p">(</span><span class="nx">styles</span><span class="p">).</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">prop</span> <span class="o">=&gt;</span> <span class="nx">elt</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">prop</span><span class="p">]</span> <span class="o">=</span> <span class="nx">styles</span><span class="p">[</span><span class="nx">prop</span><span class="p">]);</span>
+  <span class="p">});</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>TODO: do datasets</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>Function to repopulate attributes on the element when they change.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">var</span> <span class="nx">upAttrs</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">attrs</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">attrs</span> <span class="o">=</span> <span class="nx">attrs</span> <span class="o">||</span> <span class="p">{};</span>
+    <span class="nx">keys</span><span class="p">(</span><span class="nx">attrs</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">invertify</span><span class="p">(</span><span class="nx">isSubattr</span><span class="p">))</span>
+      <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">attr</span> <span class="o">=&gt;</span> <span class="nx">elt</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">attr</span><span class="p">,</span> <span class="nx">attrs</span><span class="p">[</span><span class="nx">attr</span><span class="p">]));</span>
+  <span class="p">});</span>
+
+  <span class="nx">upAttrs</span>  <span class="p">(</span><span class="nx">attrs</span><span class="p">);</span>
+  <span class="nx">upClasses</span><span class="p">(</span><span class="nx">attrs</span><span class="p">.</span><span class="kr">class</span><span class="p">);</span>
+  <span class="nx">upStyles</span> <span class="p">(</span><span class="nx">attrs</span><span class="p">.</span><span class="nx">style</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">elt</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>Add UpAttributes to Element prototype as <code>.is</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">const</span> <span class="nx">ISPROP</span> <span class="o">=</span> <span class="s1">&#39;is&#39;</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="o">!</span><span class="nx">HTMLElement</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">ISPROP</span><span class="p">],</span> <span class="s2">&quot;Duplicate assignment to HTMLElement.is&quot;</span><span class="p">);</span>
+<span class="nx">defineProperty</span><span class="p">(</span><span class="nx">HTMLElement</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">ISPROP</span><span class="p">,</span> <span class="p">{</span>
+  <span class="nx">value</span><span class="p">(</span><span class="nx">attrs</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">UpAttributes</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">attrs</span><span class="p">);</span> <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">UpAttributes</span><span class="p">;</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

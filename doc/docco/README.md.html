@@ -37,6 +37,9 @@
         <a href="#installation">Installation</a>
       </div>
       <div class="heading h3">
+        <a href="#building">Building</a>
+      </div>
+      <div class="heading h3">
         <a href="#license">License</a>
       </div>
       <div class="heading h3">
@@ -73,7 +76,7 @@ so there's a single language to write, preprocess, and run.</p>
 for mark-up, styling, and program logic, we have created a witches&rsquo; brew.
 We have styles inside logic, logic inside styles,
 logic inside mark-up, and mark-up inside logic.
-We have build a tangled web of templating languages, libraries, frameworks, 
+We have build a tangled web of templating languages, libraries, frameworks,
 and CSS preprocessors.
 We have complex build systems to preprocess, precompile, and transpile this steaming mess.
 We have monstrous config objects with mysterious properties fed to black box add-ons to control magic behaviors.
@@ -139,17 +142,24 @@ It is ultimately unopinionated.</p>
 </div>
 
 
-<p><strong>Upward</strong> is written completely in ES6 and targeted for compilation by Traceur.
-The environment it runs in needs to support ES6 features such as <code>Map</code> and 'Object.observe'.
+<p><strong>Upward</strong> is written completely in ES6 and targeted for compilation by babel.
+The environment it runs in needs to support ES6 features such as <code>Map</code> and <code>Object.observe</code>.
 It has been tested only in Chrome.
 It will not run in other browsers due to their lack of support for <code>Object.observe</code>.</p>
 
-<p>At present, we recommend including the traceur compiler and runtime in your web page:</p>
+<p>The recommended approach to bulding an app is to use browserify:</p>
 
 
-<div class="highlight"><pre><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://google.github.io/traceur-compiler/bin/traceur.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://google.github.io/traceur-compiler/src/bootstrap.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script&gt;</span><span class="nx">traceur</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">experimental</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span><span class="nt">&lt;/script&gt;</span>
+<div class="highlight"><pre><code><span class="nx">browserify</span> <span class="o">-</span><span class="nx">t</span> <span class="nx">babelify</span> <span class="nx">main</span><span class="p">.</span><span class="nx">js</span> <span class="o">-</span><span class="nx">o</span> <span class="nx">bundle</span><span class="p">.</span><span class="nx">js</span>
+</code></pre></div>
+
+
+
+<p>Then include the bundle and the babel browser polyfill in your HTML page:</p>
+
+
+<div class="highlight"><pre><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;bundle.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;node_modules/babel-core/browser-polyfill.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
 </code></pre></div>
 
 
@@ -169,7 +179,32 @@ It will not run in other browsers due to their lack of support for <code>Object.
 
 
 
+<p>You may now refer to upward modules from inside your app via:</p>
+
+
+<div class="highlight"><pre><code><span class="kr">import</span> <span class="p">{</span><span class="nx">U</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;upward/src/Up&#39;</span><span class="p">;</span>
+</code></pre></div>
+
+
+
 <p>Upward has no dependencies, although you should install docker globally to create documentation.</p>
+
+
+<div class="pilwrap" id="building">
+  <h3>
+    <a href="#building" name="building" class="pilcrow">&#182;</a>
+    Building
+  </h3>
+</div>
+
+
+<p>You will need the following npm packages installed globally:</p>
+
+
+<div class="highlight"><pre><code><span class="nx">npm</span> <span class="nx">install</span> <span class="o">-</span><span class="nx">g</span> <span class="nx">docker</span> <span class="nx">browserify</span> <span class="nx">babelify</span> <span class="nx">markdown</span>
+</code></pre></div>
+
+
 
 
 <div class="pilwrap" id="license">
@@ -180,7 +215,7 @@ It will not run in other browsers due to their lack of support for <code>Object.
 </div>
 
 
-<p>Copyright (c) 2014 Bob Myers.</p>
+<p>Copyright (c) 2014-2015 Bob Myers.</p>
 
 <p>Licensed under the MIT license.</p>
 

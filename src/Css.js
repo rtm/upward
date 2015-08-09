@@ -115,6 +115,22 @@ if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
   }));
 }
 
+export var transform =
+  [
+    'translate','translateX','translateY',
+    'scale','scaleX','scaleY','scale3d','scaleZ',
+    'rotate','rotateX','rotateY','rotateZ','rotate3d',
+    'perspective','matrix','matrix3d',
+    'skewX','skewY'
+  ].reduce(
+    (result, key) =>
+      Object.defineProperty(result, key, {
+        value: (...args) => `${key}(${args})`
+      }),
+    {}
+  );
+
+
 export default function UpStyle(rules, scope) {
   var sheet = makeSheet(scope);
   rules.forEach(rule => insert(sheet, rule));

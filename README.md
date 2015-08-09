@@ -66,17 +66,35 @@ In progress, bleeding edge, changing frenetically, unusable.
 The environment it runs in needs to support ES6 features such as `Map` and `Object.observe`.
 It has been tested only in Chrome.
 It will not run in other browsers due to their lack of support for `Object.observe`.
-Include the babel browser polyfill in your HTML page:
+
+The recommended approach to bulding an app is to use browserify:
+
+    browserify -t babelify main.js -o bundle.js
+
+Then include the bundle and the babel browser polyfill in your HTML page:
 
 ```html
-<script src="../node_modules/babel-core/browser-polyfill.js"></script>
+<script src="bundle.js"></script>
+<script src="node_modules/babel-core/browser-polyfill.js"></script>
 ```
 
 ### Installation
 
     npm install upward
 
+You may now refer to upward modules from inside your app via:
+
+    import {U} from 'upward/src/Up';
+
 Upward has no dependencies, although you should install docker globally to create documentation.
+
+
+### Building
+
+You will need the following npm packages installed globally:
+
+    npm install -g docker browserify babelify markdown
+
 
 ### License
 

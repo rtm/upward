@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Txt.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Txt.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#create%20text%20node%20(t)">Create text node (T)</a>
+      </div>
+      <div class="heading h2">
+        <a href="#extend%20string%20prototype">Extend String prototype</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="create%20text%20node%20(t)">
+  <h1>
+    <a href="#create%20text%20node%20(t)" name="create%20text%20node%20(t)" class="pilcrow">&#182;</a>
+    Create text node (T)
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Bookkeeping and initialization.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">makeUpwardableFunction</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">makeUpwardableFunction</span><span class="p">(</span><span class="kd">function</span> <span class="o">*</span><span class="nx">upText</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createTextNode</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">);</span>
+  <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="p">[</span><span class="nx">text</span><span class="p">]</span> <span class="o">=</span> <span class="k">yield</span> <span class="nx">node</span><span class="p">;</span>
+    <span class="nx">node</span><span class="p">.</span><span class="nx">nodeValue</span> <span class="o">=</span> <span class="nx">text</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="extend%20string%20prototype">
+  <h2>
+    <a href="#extend%20string%20prototype" name="extend%20string%20prototype" class="pilcrow">&#182;</a>
+    Extend String prototype
+  </h2>
+</div>
+
+
+<p>Allow the String prototype methods to be applied to Text nodes.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>These are methods that overwrite the node value.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="p">[</span><span class="s1">&#39;concat&#39;</span><span class="p">,</span> <span class="s1">&#39;replace&#39;</span><span class="p">,</span> <span class="s1">&#39;slice&#39;</span><span class="p">,</span> <span class="s1">&#39;substr&#39;</span><span class="p">,</span> <span class="s1">&#39;substring&#39;</span><span class="p">,</span> <span class="s1">&#39;toUpperCase&#39;</span><span class="p">,</span> <span class="s1">&#39;toLowerCase&#39;</span><span class="p">,</span> <span class="s1">&#39;toLocaleUpperCase&#39;</span><span class="p">,</span> <span class="s1">&#39;toLocaleLowerCase&#39;</span><span class="p">,</span> <span class="s1">&#39;trim&#39;</span><span class="p">,</span> <span class="s1">&#39;trimLeft&#39;</span><span class="p">,</span> <span class="s1">&#39;trimRight&#39;</span><span class="p">,</span> <span class="s1">&#39;revese&#39;</span><span class="p">]</span>
+  <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">method</span> <span class="o">=&gt;</span> <span class="nx">Text</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">nodeValue</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">method</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">nodeValue</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">));</span>
+  <span class="p">})</span>
+<span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>These are methods that do not overwrite the node value.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="p">[</span><span class="s1">&#39;charAt&#39;</span><span class="p">,</span> <span class="s1">&#39;charCodeAt&#39;</span><span class="p">,</span> <span class="s1">&#39;indexOf&#39;</span><span class="p">,</span> <span class="s1">&#39;lastIndexOf&#39;</span><span class="p">,</span> <span class="s1">&#39;match&#39;</span><span class="p">,</span> <span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="s1">&#39;split&#39;</span><span class="p">]</span>
+  <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">method</span> <span class="o">=&gt;</span> <span class="nx">Text</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">method</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">nodeValue</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+  <span class="p">})</span>
+<span class="p">;</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

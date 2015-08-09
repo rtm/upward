@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Map.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Map.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>Map.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<p>Map.js
+Upward-aware version of Array#map</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="p">{</span><span class="nx">makeUpwardableFunction</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">copyOntoArray</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Out&#39;</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">makeUpwardableFunction</span><span class="p">(</span><span class="kd">function</span> <span class="o">*</span><span class="nx">UpMap</span><span class="p">(</span><span class="nx">run</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="kd">var</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">newa</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">newf</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">ctxt</span><span class="p">,</span> <span class="nx">newctxt</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Map</span><span class="p">();</span>
+
+  <span class="kd">function</span> <span class="nx">_map</span><span class="p">(</span><span class="nx">elt</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">map</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nb">Object</span><span class="p">(</span><span class="nx">elt</span><span class="p">));</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ret</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">ret</span> <span class="o">=</span> <span class="nx">f</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">ctxt</span><span class="p">,</span> <span class="nx">elt</span><span class="p">);</span>
+      <span class="nx">map</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nb">Object</span><span class="p">(</span><span class="nx">elt</span><span class="p">),</span> <span class="nx">ret</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">[</span><span class="nx">newa</span><span class="p">,</span> <span class="nx">newf</span><span class="p">,</span> <span class="nx">newctxt</span><span class="p">]</span> <span class="o">=</span> <span class="k">yield</span> <span class="nx">r</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">newf</span> <span class="o">!==</span> <span class="nx">f</span><span class="p">)</span> <span class="nx">map</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+    <span class="nx">a</span> <span class="o">=</span> <span class="nx">newa</span><span class="p">;</span>
+    <span class="nx">f</span> <span class="o">=</span> <span class="nx">newf</span><span class="p">;</span>
+    <span class="nx">ctxt</span> <span class="o">=</span> <span class="nx">newctxt</span><span class="p">;</span>
+    <span class="nx">copyOntoArray</span><span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">a</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">_map</span><span class="p">));</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

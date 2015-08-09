@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mvc.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Mvc.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#mvc">MVC</a>
+      </div>
+      <div class="heading h2">
+        <a href="#makeview">makeView</a>
+      </div>
+      <div class="heading h2">
+        <a href="#makeelementviews">makeElementViews</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="mvc">
+  <h1>
+    <a href="#mvc" name="mvc" class="pilcrow">&#182;</a>
+    MVC
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>The Upward MVC system is not a framework,
+but rather a set of concepts and recommendations and minimal sugar.
+For more information, see doc/Mvc.md.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kr">import</span> <span class="nx">C</span> <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">createElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nb">document</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="makeview">
+  <h2>
+    <a href="#makeview" name="makeview" class="pilcrow">&#182;</a>
+    makeView
+  </h2>
+</div>
+
+  </div>
+  <div class="body"><p>Return a view-maker from view and controller functions.</p>
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">view</span>
+      <span class="dox_type">Function</span>
+      <span>function to create view</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">controller</span>
+      <span class="dox_type">Function</span>
+      <span>function to create controller</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">Function</span>
+      <span>function to create view against model</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kd">function</span> <span class="nx">makeView</span><span class="p">(</span><span class="nx">view</span><span class="p">,</span> <span class="nx">controller</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">parent</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">view</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">controller</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">parent</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="makeelementviews">
+  <h2>
+    <a href="#makeelementviews" name="makeelementviews" class="pilcrow">&#182;</a>
+    makeElementViews
+  </h2>
+</div>
+
+  </div>
+  <div class="body"><p>Return an array of views for elements of an array-valued model.</p>
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">model</span>
+      <span class="dox_type">Object</span>
+      <span>model to create element views for</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">view</span>
+      <span class="dox_type">Function</span>
+      <span>view to use for elements</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">controller</span>
+      <span class="dox_type">Function</span>
+      <span>function to create item controller</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">parent</span>
+      <span class="dox_type">Controller</span>
+      <span>parent controller to use for item controllers</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kd">function</span> <span class="nx">makeElementViews</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">view</span><span class="p">,</span> <span class="nx">controller</span><span class="p">,</span> <span class="nx">parent</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">model</span> <span class="p">.</span> <span class="nx">as</span><span class="p">(</span><span class="nx">model</span> <span class="o">=&gt;</span> <span class="nx">makeView</span><span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">view</span><span class="p">,</span> <span class="nx">controller</span><span class="p">,</span> <span class="nx">parent</span><span class="p">));</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>Exports</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">export</span> <span class="p">{</span> <span class="nx">makeView</span><span class="p">,</span> <span class="nx">makeElementViews</span> <span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

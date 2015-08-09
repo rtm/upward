@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Acc.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Acc.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#accesscontroller">AccessController</a>
+      </div>
+      <div class="heading h2">
+        <a href="#accessnotifier">AccessNotifier</a>
+      </div>
+      <div class="heading h2">
+        <a href="#makeaccesscontroller">makeAccessController</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="accesscontroller">
+  <h1>
+    <a href="#accesscontroller" name="accesscontroller" class="pilcrow">&#182;</a>
+    AccessController
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Capture and watch accesses to properties made during computations.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Convenience.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">observe</span><span class="p">,</span> <span class="nx">unobserve</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="p">{</span><span class="nx">Observer</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Obs&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="accessnotifier">
+  <h2>
+    <a href="#accessnotifier" name="accessnotifier" class="pilcrow">&#182;</a>
+    AccessNotifier
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p><code>accessNotifier</code> allows upwardables to report property accesses.
+It is a stack to handle nested invocations of computables.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">_accessNotifier</span> <span class="o">=</span> <span class="p">[];</span>
+
+<span class="kd">var</span> <span class="nx">accessNotifier</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nx">pop</span><span class="o">:</span>  <span class="kd">function</span><span class="p">()</span>               <span class="p">{</span> <span class="nx">_accessNotifier</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span> <span class="p">},</span>
+  <span class="nx">push</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">notifier</span><span class="p">)</span>       <span class="p">{</span> <span class="nx">_accessNotifier</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="nx">notifier</span><span class="p">);</span> <span class="p">},</span>
+  <span class="nx">notify</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">notification</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">_accessNotifier</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="nx">_accessNotifier</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="nx">notification</span><span class="p">)</span> <span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="makeaccesscontroller">
+  <h2>
+    <a href="#makeaccesscontroller" name="makeaccesscontroller" class="pilcrow">&#182;</a>
+    makeAccessController
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>Make an access controller, allowing accesses to be captured and observed.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">makeAccessController</span><span class="p">(</span><span class="nx">rerun</span><span class="p">)</span> <span class="p">{</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p><code>accesses</code> is a map indexed by object,
+containing "access" entries with values of <code>{names: [], observer}</code>.
+<code>names</code> of null means to watch properties of any name.
+It is built by calls to <code>notifyAccess</code>, invoked through <code>accessNotifier</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">var</span> <span class="nx">accesses</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Map</span><span class="p">();</span>
+
+  <span class="kd">function</span> <span class="nx">unobserve</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">accesses</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(({</span><span class="nx">observer</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">observer</span><span class="p">.</span><span class="nx">unobserve</span><span class="p">());</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">observe</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">accesses</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(({</span><span class="nx">observer</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">observer</span><span class="p">.</span><span class="nx">observe</span><span class="p">([</span><span class="s1">&#39;update&#39;</span><span class="p">,</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="s1">&#39;delete&#39;</span><span class="p">]));</span>
+  <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>Start capturing accessed dependencies.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">function</span> <span class="nx">capture</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">accesses</span><span class="p">.</span><span class="nx">clear</span><span class="p">();</span>
+    <span class="nx">accessNotifier</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">notifyAccess</span><span class="p">);</span>
+  <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+</div>
+<p>Stop capturing accessed dependencies.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">function</span> <span class="nx">uncapture</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">accessNotifier</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">start</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">unobserve</span><span class="p">();</span>
+    <span class="nx">capture</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">stop</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">uncapture</span><span class="p">();</span>
+    <span class="nx">observe</span><span class="p">();</span>
+  <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p><code>notifyAccess</code> is the callback invoked by upwardables when a property is accessed.
+It records the access in the <code>accesses</code> map.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">function</span> <span class="nx">notifyAccess</span><span class="p">({</span><span class="nx">object</span><span class="p">,</span> <span class="nx">name</span><span class="p">})</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
+</div>
+<p>Create an observer for changes in properties accessed during execution of this function.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">makeAccessedObserver</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">Observer</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">changes</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">changes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(({</span><span class="nx">type</span><span class="p">,</span> <span class="nx">name</span><span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="p">{</span><span class="nx">names</span><span class="p">}</span> <span class="o">=</span> <span class="nx">accessEntry</span><span class="p">;</span>
+          <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">names</span> <span class="o">||</span> <span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;update&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">names</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="nx">rerun</span><span class="p">();</span>
+        <span class="p">});</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+</div>
+<p>Make a new entry in the access table, containing initial property name if any
+and observer for properties accessed on the object.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">makeAccessEntry</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">accesses</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">object</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">names</span><span class="o">:</span>    <span class="nx">name</span> <span class="o">?</span> <span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+        <span class="nx">observer</span><span class="o">:</span> <span class="nx">makeAccessedObserver</span><span class="p">()</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
+</div>
+<p>If properties on this object are already being watched, there is already an entry
+in the access table for it. Add a new property name to the existing entry.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">setAccessEntry</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">name</span> <span class="o">&amp;&amp;</span> <span class="nx">accessEntry</span><span class="p">.</span><span class="nx">names</span><span class="p">)</span> <span class="nx">accessEntry</span><span class="p">.</span><span class="nx">names</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+      <span class="k">else</span> <span class="nx">accessEntry</span><span class="p">.</span><span class="nx">names</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">var</span> <span class="nx">accessEntry</span> <span class="o">=</span> <span class="nx">accesses</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">object</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">accessEntry</span><span class="p">)</span> <span class="nx">setAccessEntry</span><span class="p">();</span>
+    <span class="k">else</span> <span class="nx">makeAccessEntry</span><span class="p">();</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">{</span><span class="nx">start</span><span class="p">,</span> <span class="nx">stop</span><span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="p">{</span>
+  <span class="nx">makeAccessController</span><span class="p">,</span>
+  <span class="nx">accessNotifier</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

@@ -18,7 +18,7 @@ setTheme("sunset");
 UpStyle([
 
   ["body", {
-    fontFamily : 'sans-serif',
+    fontFamily : 'Lato, sans-serif',
     backgroundColor: theme.bodyBackgroundColor,
     paddingLeft: '12px',
     paddingRight: '12px'

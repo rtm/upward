@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kee.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Kee.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>Kee.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<p>Keepify--make functions which maintain their value.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kd">var</span> <span class="p">{</span><span class="nx">observe</span><span class="p">,</span> <span class="nx">defineProperties</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="nx">C</span>                            <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">valueize</span><span class="p">,</span> <span class="nx">copyOnto</span><span class="p">,</span> <span class="nx">copyOf</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Obj&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">upwardablePrototype</span><span class="p">}</span>        <span class="nx">from</span> <span class="s1">&#39;./Upw&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>var join   = keepify(function(d)        { return this.join(d);      });
+var max    = keepify(function()         { return Math.max(...this); });
+var min    = keepify(function()         { return Math.min(...this); });
+var mean   = keepify(function()         { return sum(...this);      });
+var length = keepify(function()         { return this.length;       });
+var keys   = keepify(function()         { return Object.keys(this); });
+var some   = keepify(function(f)        { return this.some(f);      });
+var every  = keepify(function(f)        { return this.every(f);     });
+var sort   = keepify(function(f)        { return this.sort(f);      });
+var rev    = keepify(function(b)        { return b ? this.reverse() : this; });
+var slice  = keepify(function(from, to) { return this.slice(from, to); });
+var push   = keepify(function(...args)  { this.push(...args); return this; });
+var concat = keepify(function(...args)  { return this.concat(...args); });</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kd">var</span> <span class="nx">log</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="kd">function</span><span class="p">(...</span><span class="nx">args</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;LOG:&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="p">...</span><span class="nx">args</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">defineProperties</span><span class="p">(</span><span class="nx">upwardablePrototype</span><span class="p">,</span> <span class="p">{</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>join: { value: join },</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">log</span><span class="o">:</span>  <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">log</span>  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kr">export</span> <span class="p">{</span><span class="nx">log</span><span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

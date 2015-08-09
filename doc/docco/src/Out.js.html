@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Out.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Out.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#object%20utilities">Object utilities</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="object%20utilities">
+  <h1>
+    <a href="#object%20utilities" name="object%20utilities" class="pilcrow">&#182;</a>
+    Object utilities
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Setup. No dependencies, and keep it that way.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">assign</span><span class="p">,</span> <span class="nx">observe</span><span class="p">,</span> <span class="nx">unobserve</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">isObject</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">o</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">o</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Generic version of <code>valueOf</code> which works for anything.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">valueize</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">isObject</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="o">?</span> <span class="nx">v</span><span class="p">.</span><span class="nx">valueOf</span><span class="p">()</span> <span class="o">:</span> <span class="nx">v</span><span class="p">;</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>User-friendly representation of an object.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">objectToString</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="s1">&#39;{&#39;</span> <span class="o">+</span> <span class="nx">keys</span><span class="p">(</span><span class="nx">o</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">k</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="nx">$</span><span class="p">{</span><span class="nx">k</span><span class="p">}</span><span class="o">:</span> <span class="nx">$</span><span class="p">{</span><span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]}</span><span class="err">`</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>Make functions to return properties, in various flavors.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">propGetter</span>         <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">o</span> <span class="o">=&gt;</span> <span class="nx">o</span><span class="p">[</span><span class="nx">v</span><span class="p">];</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">propValueGetter</span>    <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">o</span> <span class="o">=&gt;</span> <span class="nx">valueize</span><span class="p">(</span><span class="nx">o</span><span class="p">[</span><span class="nx">v</span><span class="p">]);</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">thisPropGetter</span>     <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="k">this</span><span class="p">[</span><span class="nx">v</span><span class="p">];</span> <span class="p">};</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">thisPropValueGetter</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">valueize</span><span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">v</span><span class="p">]);</span> <span class="p">};</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>Analog of <code>Array#map</code> for objects.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">mapObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">ctxt</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">result</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">ctxt</span><span class="p">,</span> <span class="nx">o</span><span class="p">[</span><span class="nx">key</span><span class="p">],</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">o</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>Map an object's values, replacing existing ones.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">mapObjectInPlace</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">ctxt</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">o</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">ctxt</span><span class="p">,</span> <span class="nx">o</span><span class="p">[</span><span class="nx">key</span><span class="p">],</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">o</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">o</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>Make a copy of something.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">copyOf</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="k">return</span> <span class="nx">o</span><span class="p">.</span><span class="nx">slice</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="k">return</span> <span class="nx">assign</span><span class="p">({},</span> <span class="nx">o</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">o</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>Copy a second array onto a first one destructively.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">copyOntoArray</span><span class="p">(</span><span class="nx">a1</span><span class="p">,</span> <span class="nx">a2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">a2</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">a1</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">a2</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="nx">a1</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="nx">a2</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  <span class="k">return</span> <span class="nx">a1</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+</div>
+<p>Overwrite a first object entirely with a second one.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">copyOntoObject</span><span class="p">(</span><span class="nx">o1</span><span class="p">,</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">assign</span><span class="p">(</span><span class="nx">o1</span><span class="p">,</span> <span class="nx">o2</span><span class="p">);</span>
+  <span class="nx">keys</span><span class="p">(</span><span class="nx">o1</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">key</span> <span class="o">=&gt;</span> <span class="o">!</span><span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">o2</span><span class="p">))</span>
+    <span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">key</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="k">delete</span> <span class="nx">o1</span><span class="p">[</span><span class="nx">key</span><span class="p">]));</span>
+  <span class="k">return</span> <span class="nx">o1</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p>Copy a second object or array destructively onto a first one.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">copyOnto</span><span class="p">(</span><span class="nx">a1</span><span class="p">,</span> <span class="nx">a2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">a1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">a2</span><span class="p">))</span> <span class="k">return</span> <span class="nx">copyOntoArray</span> <span class="p">(</span><span class="nx">a1</span><span class="p">,</span> <span class="nx">a2</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">isObject</span>     <span class="p">(</span><span class="nx">a1</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">isObject</span>     <span class="p">(</span><span class="nx">a2</span><span class="p">))</span> <span class="k">return</span> <span class="nx">copyOntoObject</span><span class="p">(</span><span class="nx">a1</span><span class="p">,</span> <span class="nx">a2</span><span class="p">);</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nx">a1</span> <span class="o">=</span> <span class="nx">a2</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
+</div>
+<p>"Invert" an object, swapping keys and values.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">invertObject</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">pair</span> <span class="nx">of</span> <span class="nx">objectPairs</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+    <span class="nx">result</span><span class="p">[</span><span class="nx">val</span><span class="p">]</span> <span class="o">=</span> <span class="nx">key</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-13" id="section-13">&#182;</a>
+</div>
+<p>Analog of <code>Array#reduce</code> for objects.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">reduceObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">init</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">pair</span> <span class="nx">of</span> <span class="nx">objectPairs</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="p">[</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+    <span class="nx">init</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">init</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">o</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">init</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-14" id="section-14">&#182;</a>
+</div>
+<p>Create an object from arrays of keys and values.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">objectFromPairs</span><span class="p">(</span><span class="nx">keys</span><span class="p">,</span> <span class="nx">vals</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">keys</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">result</span><span class="p">[</span><span class="nx">keys</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">vals</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-15" id="section-15">&#182;</a>
+</div>
+<p>Create a value-only property descriptors object from an object.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">makePropertyDescriptors</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">mapObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">v</span> <span class="o">=&gt;</span> <span class="p">({</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">v</span> <span class="p">}));</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-16" id="section-16">&#182;</a>
+</div>
+<p>Return an object all of the values of which are evaluated.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">valueizeObject</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">mapObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">valueize</span><span class="p">);</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-17" id="section-17">&#182;</a>
+</div>
+<p>Get a value down inside an object, based on a "path" (array of property names).</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">valueFromPath</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="nx">path</span> <span class="o">=</span> <span class="p">[])</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">path</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">ret</span><span class="p">,</span> <span class="nx">seg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">isObject</span><span class="p">(</span><span class="nx">ret</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">ret</span><span class="p">[</span><span class="nx">seg</span><span class="p">],</span> <span class="nx">o</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-18" id="section-18">&#182;</a>
+</div>
+<p>Return an aray all of the values of which are evaluated.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">valueArray</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">valueize</span><span class="p">);</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-19" id="section-19">&#182;</a>
+</div>
+<p>Return an array of the object's values.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">objectValues</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">keys</span><span class="p">(</span><span class="nx">o</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">k</span> <span class="o">=&gt;</span> <span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]);</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-20" id="section-20">&#182;</a>
+</div>
+<p>Generator for object's key/value pairs. Usage: <code>for ([key, val] of objectPairs(o))</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="o">*</span><span class="nx">objectPairs</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="k">in</span> <span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">o</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">k</span><span class="p">))</span> <span class="p">{</span> <span class="k">yield</span> <span class="p">[</span><span class="nx">k</span><span class="p">,</span> <span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]];</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-21" id="section-21">&#182;</a>
+</div>
+<p>"Empty" the object, optionally keeping structure of subobjects with <code>{keep: true}</code> option.
+Numbers turn to zero, booleans to false, arrays are emptied, etc.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">emptyObject</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="p">{</span><span class="nx">keep</span><span class="p">})</span> <span class="p">{</span>
+  <span class="nx">keep</span> <span class="o">=</span> <span class="nx">keep</span> <span class="o">||</span> <span class="p">{};</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">pair</span> <span class="nx">of</span> <span class="nx">objectPairs</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="p">[</span><span class="nx">k</span><span class="p">,</span> <span class="nx">v</span><span class="p">]</span> <span class="o">=</span> <span class="nx">pair</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">ctor</span> <span class="o">=</span> <span class="nx">v</span> <span class="o">&amp;&amp;</span> <span class="nx">v</span><span class="p">.</span><span class="nx">constructor</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">keep</span> <span class="o">&amp;&amp;</span> <span class="nx">ctor</span> <span class="o">===</span> <span class="nb">Object</span><span class="p">)</span> <span class="nx">emptyObject</span><span class="p">(</span><span class="nx">v</span><span class="p">);</span>
+    <span class="k">else</span> <span class="nx">o</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">ctor</span> <span class="o">&amp;&amp;</span> <span class="nx">ctor</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-22" id="section-22">&#182;</a>
+</div>
+<p>Create a function which combines properties from two objects using a function.
+If the property doesn't exist in the first object, just copy.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">makeAssigner</span><span class="p">(</span><span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">o1</span><span class="p">,</span> <span class="nx">o2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">assign</span><span class="p">(</span><span class="nx">o1</span><span class="p">,</span> <span class="nx">mapObject</span><span class="p">(</span><span class="nx">o2</span><span class="p">,</span> <span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">o1</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">k</span><span class="p">)</span> <span class="o">?</span> <span class="nx">fn</span><span class="p">(</span><span class="nx">o1</span><span class="p">[</span><span class="nx">k</span><span class="p">],</span> <span class="nx">v</span><span class="p">)</span> <span class="o">:</span> <span class="nx">v</span><span class="p">));</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-23" id="section-23">&#182;</a>
+</div>
+<p>Add the values of properties in one array to the same property in another.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">assignAdd</span> <span class="o">=</span> <span class="nx">makeAssigner</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">);</span>
+
+<span class="kr">export</span> <span class="p">{</span>
+  <span class="nx">isObject</span><span class="p">,</span>
+  <span class="nx">objectToString</span><span class="p">,</span>
+
+  <span class="nx">propGetter</span><span class="p">,</span>
+  <span class="nx">propValueGetter</span><span class="p">,</span>
+  <span class="nx">thisPropGetter</span><span class="p">,</span>
+  <span class="nx">thisPropValueGetter</span><span class="p">,</span>
+
+  <span class="nx">mapObject</span><span class="p">,</span>
+  <span class="nx">mapObjectInPlace</span><span class="p">,</span>
+
+  <span class="nx">copyOf</span><span class="p">,</span>
+  <span class="nx">copyOntoObject</span><span class="p">,</span>
+  <span class="nx">copyOnto</span><span class="p">,</span>
+  <span class="nx">copyOntoArray</span><span class="p">,</span>
+
+  <span class="nx">invertObject</span><span class="p">,</span>
+  <span class="nx">reduceObject</span><span class="p">,</span>
+  <span class="nx">objectFromPairs</span><span class="p">,</span>
+  <span class="nx">makePropertyDescriptors</span><span class="p">,</span>
+  <span class="nx">valueizeObject</span><span class="p">,</span>
+  <span class="nx">valueFromPath</span><span class="p">,</span>
+  <span class="nx">valueArray</span><span class="p">,</span>
+  <span class="nx">objectValues</span><span class="p">,</span>
+  <span class="nx">valueize</span><span class="p">,</span>
+  <span class="nx">emptyObject</span><span class="p">,</span>
+  <span class="nx">makeAssigner</span><span class="p">,</span>
+  <span class="nx">assignAdd</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

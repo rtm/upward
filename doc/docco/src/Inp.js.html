@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inp.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Inp.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#html%20input%20elements">HTML input elements</a>
+      </div>
+      <div class="heading h2">
+        <a href="#upinputs%20(.sets)">UpInputs (.sets)</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="html%20input%20elements">
+  <h1>
+    <a href="#html%20input%20elements" name="html%20input%20elements" class="pilcrow">&#182;</a>
+    HTML input elements
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Bookkeeping and initialization.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">isUpwardable</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Upw&#39;</span><span class="p">;</span>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">defineProperty</span><span class="p">,</span> <span class="nx">observe</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs"><div class="dox">
+  <div class="summary">
+<div class="pilwrap" id="upinputs%20(.sets)">
+  <h2>
+    <a href="#upinputs%20(.sets)" name="upinputs%20(.sets)" class="pilcrow">&#182;</a>
+    UpInputs (.sets)
+  </h2>
+</div>
+
+  </div>
+  <div class="body"><p>Associates an upwardable with the value of an input element.</p>
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">elt</span>
+      <span class="dox_type">HTMLInputElement</span>
+      <span>element to associate</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">upwardable</span>
+      <span class="dox_type">Upwardable</span>
+      <span>upwardable to associate</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name">realtime</span>
+      <span class="dox_type">boolean</span>
+      <span>if true, update upwardable each char</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+
+<span class="kd">function</span> <span class="nx">UpInputs</span><span class="p">(</span><span class="nx">elt</span><span class="p">,</span> <span class="nx">upwardable</span><span class="p">,</span> <span class="nx">realtime</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="nx">elt</span> <span class="k">instanceof</span> <span class="nx">HTMLInputElement</span><span class="p">,</span> <span class="s2">&quot;First argument to UpInputs must be input element&quot;</span><span class="p">);</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">assert</span><span class="p">(</span><span class="nx">isUpwardable</span><span class="p">(</span><span class="nx">upwardable</span><span class="p">),</span> <span class="s2">&quot;Second argument to UpInputs (.inputs) must be upwardable&quot;</span><span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">observeUpwardable</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">observe</span><span class="p">(</span><span class="nx">upwardable</span><span class="p">,</span> <span class="nx">changes</span> <span class="o">=&gt;</span> <span class="nx">changes</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span>
+      <span class="nx">change</span> <span class="o">=&gt;</span> <span class="nx">elt</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">change</span><span class="p">.</span><span class="nx">newValue</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;upward&#39;</span><span class="p">]);</span>
+  <span class="p">}</span>
+
+  <span class="nx">elt</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="nx">realtime</span> <span class="o">?</span> <span class="s1">&#39;input&#39;</span> <span class="o">:</span> <span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">_</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">upwardable</span> <span class="o">=</span> <span class="nx">upwardable</span><span class="p">.</span><span class="nx">change</span><span class="p">(</span><span class="nx">elt</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+    <span class="nx">observeUpwardable</span><span class="p">();</span>
+  <span class="p">});</span>
+
+  <span class="nx">elt</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">upwardable</span><span class="p">;</span>
+  <span class="nx">observeUpwardable</span><span class="p">();</span>
+  <span class="k">return</span> <span class="nx">elt</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Extend HTMLInputElement prototype with <code>sets</code> method.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">prototype</span> <span class="o">=</span> <span class="nx">HTMLInputElement</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">INPUTSPROP</span> <span class="o">=</span> <span class="s1">&#39;sets&#39;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">INPUTSPROP</span><span class="p">])</span> <span class="p">{</span>
+  <span class="nx">defineProperty</span><span class="p">(</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">INPUTSPROP</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">value</span><span class="p">(</span><span class="nx">upwardable</span><span class="p">,</span> <span class="nx">realtime</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">UpInputs</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">upwardable</span><span class="p">,</span> <span class="nx">realtime</span><span class="p">);</span> <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>Normally this module will be imported as <code>import './src/Inp';</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">UpInputs</span><span class="p">;</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

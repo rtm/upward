@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tag.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Tag.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#tag%20shorthands">Tag shorthands</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="tag%20shorthands">
+  <h1>
+    <a href="#tag%20shorthands" name="tag%20shorthands" class="pilcrow">&#182;</a>
+    Tag shorthands
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">E</span> <span class="nx">from</span> <span class="s1">&#39;./Elt&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">T</span> <span class="nx">from</span> <span class="s1">&#39;./Txt&#39;</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">text</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">E</span><span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">.</span> <span class="nx">has</span> <span class="p">([</span><span class="nx">T</span><span class="p">(</span><span class="nx">t</span><span class="p">)]);</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">P</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">H1</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">H2</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;h2&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">H3</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;h3&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">H4</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;h4&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">H5</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;h5&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">H6</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;h6&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">B</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">I</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">LI</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">LABEL</span> <span class="o">=</span> <span class="nx">text</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">A</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">href</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">E</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="p">.</span> <span class="nx">has</span><span class="p">(</span><span class="nx">T</span><span class="p">(</span><span class="nx">t</span><span class="p">))</span> <span class="p">.</span> <span class="nx">is</span> <span class="p">({</span> <span class="nx">href</span> <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">BUTTON</span><span class="p">(</span><span class="nx">t</span><span class="p">,</span> <span class="nx">click</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">E</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">)</span> <span class="p">.</span> <span class="nx">has</span><span class="p">(</span><span class="nx">T</span><span class="p">(</span><span class="nx">t</span><span class="p">))</span> <span class="p">.</span> <span class="nx">does</span><span class="p">({</span> <span class="nx">click</span> <span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="p">{</span><span class="nx">P</span><span class="p">,</span> <span class="nx">H1</span><span class="p">,</span> <span class="nx">H2</span><span class="p">,</span> <span class="nx">H3</span><span class="p">,</span> <span class="nx">H4</span><span class="p">,</span> <span class="nx">H5</span><span class="p">,</span> <span class="nx">H6</span><span class="p">,</span> <span class="nx">B</span><span class="p">,</span> <span class="nx">I</span><span class="p">,</span> <span class="nx">LI</span><span class="p">,</span> <span class="nx">LABEL</span><span class="p">,</span> <span class="nx">A</span><span class="p">,</span> <span class="nx">BUTTON</span><span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

@@ -15,7 +15,7 @@ var dom, arr;
 
   //===START
 arr = [1, 2, 3];
-function add() { arr . push(Math . floor (Math . random() * 10)) }
+function add() { arr.push(Math.floor (Math.random() * 10)) }
 
 dom = E('div') . has(
   [

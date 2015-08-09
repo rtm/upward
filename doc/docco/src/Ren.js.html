@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ren.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Ren.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#keeprendered%3A%20create%20dynamically%20updated%20dom%20node.">keepRendered: create dynamically updated DOM node.</a>
+      </div>
+      <div class="heading h2">
+        <a href="#make%20observers%20for%20children%2C%20attributes%2C%20and%20subattributes.">Make observers for children, attributes, and subattributes.</a>
+      </div>
+      <div class="heading h2">
+        <a href="#handle%20changes%20to%20parameters.">Handle changes to parameters.</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="keeprendered%3A%20create%20dynamically%20updated%20dom%20node.">
+  <h1>
+    <a href="#keeprendered%3A%20create%20dynamically%20updated%20dom%20node." name="keeprendered%3A%20create%20dynamically%20updated%20dom%20node." class="pilcrow">&#182;</a>
+    keepRendered: create dynamically updated DOM node.
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Bookkeeping and initialization.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">import</span> <span class="nx">U</span> <span class="nx">from</span> <span class="s1">&#39;./Upw&#39;</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="p">{</span><span class="nx">dasherize</span><span class="p">}</span>                   <span class="nx">from</span> <span class="s1">&#39;./Str&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">mapObject</span><span class="p">,</span> <span class="nx">valueize</span><span class="p">,</span> <span class="nx">valueizeObject</span><span class="p">}</span>   <span class="nx">from</span> <span class="s1">&#39;./Obj&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">observeObject</span><span class="p">,</span> <span class="nx">makeObserver</span><span class="p">,</span> <span class="nx">observeObjectNow</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Obs&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">keepAssigned</span>                  <span class="nx">from</span> <span class="s1">&#39;./Ass&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="p">{</span><span class="nx">push</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">subAttrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;style&#39;</span><span class="p">,</span> <span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="s1">&#39;dataset&#39;</span><span class="p">];</span>
+<span class="kd">function</span> <span class="nx">isSubattr</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">subAttrs</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">a</span><span class="p">);</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="make%20observers%20for%20children%2C%20attributes%2C%20and%20subattributes.">
+  <h2>
+    <a href="#make%20observers%20for%20children%2C%20attributes%2C%20and%20subattributes." name="make%20observers%20for%20children%2C%20attributes%2C%20and%20subattributes." class="pilcrow">&#182;</a>
+    Make observers for children, attributes, and subattributes.
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">makeChildrenObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span>    <span class="p">(</span><span class="nx">v</span><span class="p">)</span>                   <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">v</span><span class="p">);</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="p">{</span><span class="nx">oldValue</span><span class="p">})</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">oldValue</span><span class="p">);</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">update</span> <span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="p">{</span><span class="nx">oldValue</span><span class="p">})</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">!==</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">replaceChild</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">oldValue</span><span class="p">);</span> <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">update</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeAttrsObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">k</span><span class="p">,</span> <span class="nx">valueize</span><span class="p">(</span><span class="nx">v</span><span class="p">));</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span><span class="nx">k</span><span class="p">);</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">update</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeStyleObserver</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">elt</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="nx">result</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">update</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeDatasetObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">dataset</span><span class="p">[</span><span class="nx">k</span><span class="p">]</span> <span class="o">=</span> <span class="nx">v</span><span class="p">;</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="k">delete</span> <span class="nx">e</span><span class="p">.</span><span class="nx">dataset</span><span class="p">[</span><span class="nx">k</span><span class="p">];</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">change</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">makeClassObserver</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span>     <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">toggle</span><span class="p">(</span><span class="nx">dasherize</span><span class="p">(</span><span class="nx">k</span><span class="p">),</span> <span class="nx">v</span><span class="p">);</span> <span class="p">}</span>
+  <span class="kd">function</span> <span class="nx">_delete</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">k</span><span class="p">)</span> <span class="p">{</span> <span class="nx">e</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">dasherize</span><span class="p">(</span><span class="nx">k</span><span class="p">));</span> <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">change</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span> <span class="k">delete</span><span class="o">:</span> <span class="nx">_delete</span><span class="p">});</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">_keepRendered</span><span class="p">(</span><span class="nx">tagName</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="handle%20changes%20to%20parameters.">
+  <h2>
+    <a href="#handle%20changes%20to%20parameters." name="handle%20changes%20to%20parameters." class="pilcrow">&#182;</a>
+    Handle changes to parameters.
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">function</span> <span class="nx">makeParamsObserver</span><span class="p">()</span> <span class="p">{</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>Observe and unobserve the children.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">_observeChildren</span>  <span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="nx">observeObjectNow</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">childrenObserver</span><span class="p">);</span> <span class="p">}</span>
+    <span class="kd">function</span> <span class="nx">_unobserveChildren</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span> <span class="nx">unobserveObject</span> <span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">childrenObserver</span><span class="p">);</span> <span class="p">}</span>
+    
+    <span class="kd">function</span> <span class="nx">_observeAttrs</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">observeObjectNow</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">attrsObserver</span><span class="p">);</span>
+      <span class="nx">subAttrs</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">a</span> <span class="o">=&gt;</span> <span class="nx">observeObjectNow</span><span class="p">(</span><span class="nx">v</span><span class="p">[</span><span class="nx">a</span><span class="p">],</span> <span class="nx">subAttrObservers</span><span class="p">[</span><span class="nx">a</span><span class="p">]));</span>
+    <span class="p">}</span>
+    <span class="kd">function</span> <span class="nx">_unobserveAttrs</span><span class="p">(</span><span class="nx">v</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">unobserveObject</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">AttributesObserver</span><span class="p">);</span>
+      <span class="nx">subAttr</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">a</span> <span class="o">=&gt;</span> <span class="nx">unobserveObject</span><span class="p">(</span><span class="nx">v</span><span class="p">[</span><span class="nx">a</span><span class="p">],</span> <span class="nx">subAttrObservers</span><span class="p">[</span><span class="nx">a</span><span class="p">]));</span>
+    <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>When we get a new parameter, set up observers.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">switch</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="s1">&#39;children&#39;</span><span class="o">:</span>
+        <span class="nx">_observeChildren</span><span class="p">(</span><span class="nx">v</span><span class="p">);</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s1">&#39;attrs&#39;</span><span class="o">:</span>    <span class="nx">_observeAttrs</span>   <span class="p">(</span><span class="nx">v</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>When parameters change, tear down and resetup observers.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="kd">function</span> <span class="nx">update</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">params</span><span class="p">,</span> <span class="p">{</span><span class="nx">oldValue</span><span class="p">})</span> <span class="p">{</span>
+      <span class="k">switch</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="s1">&#39;children&#39;</span><span class="o">:</span> <span class="nx">_unobserveChildren</span><span class="p">(</span><span class="nx">oldValue</span><span class="p">);</span> <span class="nx">_observeChildren</span><span class="p">(</span><span class="nx">v</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="s1">&#39;attrs&#39;</span><span class="o">:</span>    <span class="nx">_unobserveAttrs</span>   <span class="p">(</span><span class="nx">oldValue</span><span class="p">);</span> <span class="nx">_observeAttrs</span>   <span class="p">(</span><span class="nx">v</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="nx">makeObserver</span><span class="p">({</span><span class="nx">add</span><span class="p">,</span> <span class="nx">update</span><span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">tagName</span><span class="p">);</span>
+
+  <span class="kd">var</span> <span class="nx">subAttrObservers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="kr">class</span><span class="o">:</span>   <span class="nx">makeClassObserver</span><span class="p">(</span><span class="nx">result</span><span class="p">),</span>
+    <span class="nx">dataset</span><span class="o">:</span> <span class="nx">makeDatasetObserver</span><span class="p">(</span><span class="nx">result</span><span class="p">),</span>
+    <span class="nx">style</span><span class="o">:</span>   <span class="nx">makeStyleObserver</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+  <span class="p">};</span>
+  <span class="kd">var</span> <span class="nx">attrsObserver</span> <span class="o">=</span> <span class="nx">makeAttrsObserver</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">childrenObserver</span> <span class="o">=</span> <span class="nx">makeChildrenObserver</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">paramsObserver</span> <span class="o">=</span> <span class="nx">makeParamsObserver</span><span class="p">();</span>  
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>mapObject(params, (v, k) => upward(v, vv => params[k] = vv));</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="nx">params</span> <span class="o">=</span> <span class="nx">valueizeObject</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+  <span class="nx">params</span><span class="p">.</span><span class="nx">attrs</span> <span class="o">=</span> <span class="nx">keepAssigned</span><span class="p">(</span><span class="nx">params</span><span class="p">.</span><span class="nx">attrs</span><span class="p">,</span> <span class="p">{</span><span class="nx">style</span><span class="o">:</span> <span class="p">{},</span> <span class="kr">class</span><span class="o">:</span> <span class="p">{},</span> <span class="nx">dataset</span><span class="o">:</span> <span class="p">{}},</span> <span class="nx">push</span><span class="p">);</span>
+  <span class="nx">params</span><span class="p">.</span><span class="nx">children</span> <span class="o">=</span> <span class="nx">params</span><span class="p">.</span><span class="nx">children</span> <span class="o">||</span> <span class="p">[];</span>
+  <span class="nx">observeObjectNow</span><span class="p">(</span><span class="nx">params</span><span class="p">,</span> <span class="nx">paramsObserver</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="k">default</span> <span class="kd">function</span><span class="p">(</span><span class="nx">tagName</span><span class="p">,</span> <span class="nx">children</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">attrs</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">_keepRendered</span><span class="p">(</span><span class="nx">tagName</span><span class="p">,</span> <span class="p">{</span><span class="nx">attrs</span><span class="p">,</span> <span class="nx">children</span><span class="p">});</span>
+<span class="p">}</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

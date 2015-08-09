@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Str.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Str.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h2">
+        <a href="#string%20utilities">String utilities</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="string%20utilities">
+  <h2>
+    <a href="#string%20utilities" name="string%20utilities" class="pilcrow">&#182;</a>
+    String utilities
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="p">{</span><span class="nx">upwardConfig</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Cfg&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p><code>my-class</code> => <code>myClass</code></p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">camelize</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span>
+      <span class="sr">/[-_]+([a-z])/g</span><span class="p">,</span>
+    <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">letter</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">letter</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">());</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p><code>myClass</code> => <code>my-class</code></p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">dasherize</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span>
+      <span class="sr">/([a-z])([A-Z])/g</span><span class="p">,</span>
+    <span class="p">(</span><span class="nx">_</span><span class="p">,</span> <span class="nx">let1</span><span class="p">,</span> <span class="nx">let2</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="err">`</span><span class="nx">$</span><span class="p">{</span><span class="nx">let1</span><span class="p">}</span><span class="o">-</span><span class="nx">$</span><span class="p">{</span><span class="nx">let2</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()}</span><span class="err">`</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">upwardConfig</span><span class="p">.</span><span class="nx">MODIFY_BUILTIN_PROTOTYPE</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">camelize</span> <span class="o">=</span>  <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">camelize</span> <span class="p">(</span><span class="k">this</span><span class="p">);</span> <span class="p">};</span>
+  <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">dasherize</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">dasherize</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kr">export</span> <span class="p">{</span>
+  <span class="nx">camelize</span><span class="p">,</span>
+  <span class="nx">dasherize</span>
+<span class="p">};</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

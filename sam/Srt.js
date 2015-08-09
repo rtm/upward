@@ -14,8 +14,8 @@ var dom, arr;
 
 //===START
 arr = [3, 2, 1];
-function random() { return Math . floor (Math . random() * 10); }
-function add()    { arr . push(random()); }
+function random() { return Math.floor (Math.random() * 10); }
+function add()    { arr.push(random()); }
 
 dom = E('div') . has( [
   E('div') . has(

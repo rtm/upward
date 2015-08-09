@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upw.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Upw.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h1">
+        <a href="#upwardable">Upwardable</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="upwardable">
+  <h1>
+    <a href="#upwardable" name="upwardable" class="pilcrow">&#182;</a>
+    Upwardable
+  </h1>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre></pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>The <strong>upwardable</strong> is the key concept in the upward library.
+Upwardables are returned by upwardable functions,
+represent values in upwawrdable objects,
+and have a <code>change</code> method to change their values.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="p">{</span><span class="nx">create</span><span class="p">,</span> <span class="nx">getNotifier</span><span class="p">,</span> <span class="nx">defineProperty</span><span class="p">}</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">upwardConfig</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Cfg&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Manage upwardables.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">set</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WeakSet</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">is</span> <span class="p">(</span><span class="nx">u</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">u</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">u</span> <span class="o">===</span> <span class="s1">&#39;object&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">set</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">add</span><span class="p">(</span><span class="nx">u</span><span class="p">)</span> <span class="p">{</span> <span class="nx">set</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span> <span class="nx">addId</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span> <span class="k">return</span> <span class="nx">u</span><span class="p">;</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Add ids to upwardables.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">function</span> <span class="nx">addId</span><span class="p">(</span><span class="nx">u</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">upwardConfig</span><span class="p">.</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">defineProperty</span><span class="p">(</span><span class="nx">u</span><span class="p">,</span> <span class="s1">&#39;_upwardableId&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">id</span><span class="o">++</span> <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>Special machinery for upwardable <code>undefined</code> and <code>null</code>.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">nullUpwardablePrototype</span>      <span class="o">=</span> <span class="p">{</span> <span class="nx">valueOf</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="kc">null</span><span class="p">;</span> <span class="p">},</span> <span class="nx">change</span> <span class="p">};</span>
+<span class="kd">var</span> <span class="nx">undefinedUpwardablePrototype</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">valueOf</span><span class="p">()</span> <span class="p">{</span> <span class="p">},</span>              <span class="nx">change</span> <span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">makeNull</span><span class="p">()</span>      <span class="p">{</span> <span class="kd">var</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">create</span><span class="p">(</span><span class="nx">nullUpwardablePrototype</span><span class="p">);</span>      <span class="nx">add</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span> <span class="k">return</span> <span class="nx">u</span><span class="p">;</span> <span class="p">}</span>
+<span class="kd">function</span> <span class="nx">makeUndefined</span><span class="p">()</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">create</span><span class="p">(</span><span class="nx">undefinedUpwardablePrototype</span><span class="p">);</span> <span class="nx">add</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span> <span class="k">return</span> <span class="nx">u</span><span class="p">;</span> <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>Make a new upwardable.
+Register it, and add a <code>change</code> method which notifies when it is to be replaced.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">make</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">u</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">makeUndefined</span><span class="p">();</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="nx">u</span> <span class="o">=</span> <span class="nx">makeNull</span><span class="p">();</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">u</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">is</span><span class="p">(</span><span class="nx">u</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">add</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span>
+      <span class="nx">defineProperty</span><span class="p">(</span><span class="nx">u</span><span class="p">,</span> <span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="nx">value</span><span class="o">:</span> <span class="nx">change</span> <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">u</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>Change an upwardable. Issue notification that it has changed.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">change</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">u</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">!==</span> <span class="k">this</span><span class="p">.</span><span class="nx">valueOf</span><span class="p">())</span> <span class="p">{</span>
+    <span class="nx">u</span> <span class="o">=</span> <span class="nx">make</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    <span class="nx">getNotifier</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">notify</span><span class="p">({</span><span class="nx">object</span><span class="o">:</span> <span class="k">this</span><span class="p">,</span> <span class="nx">newValue</span><span class="o">:</span> <span class="nx">u</span><span class="p">,</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;upward&#39;</span><span class="p">});</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">u</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* JSHint does not like `export as` syntax */</span>
+<span class="cm">/* jshint ignore:start */</span>
+<span class="kr">export</span> <span class="p">{</span><span class="nx">make</span> <span class="nx">as</span> <span class="k">default</span><span class="p">,</span> <span class="nx">is</span> <span class="nx">as</span> <span class="nx">isUpwardable</span><span class="p">};</span>
+<span class="cm">/* jshint ignore:end */</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tem.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../doc-style.css" />
+  <script src="../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../", thisFile = "src/Tem.js", defaultSidebar = true;
+  </script>
+  <script src="../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+      <div class="heading h2">
+        <a href="#string%20templates">String templates</a>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+<div class="pilwrap" id="string%20templates">
+  <h2>
+    <a href="#string%20templates" name="string%20templates" class="pilcrow">&#182;</a>
+    String templates
+  </h2>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">C</span> <span class="nx">from</span> <span class="s1">&#39;./Fun&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">interleave</span><span class="p">}</span> <span class="nx">from</span> <span class="s1">&#39;./Utl&#39;</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>Utility routine to compose a string by interspersing literals and values.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">function</span> <span class="nx">compose</span><span class="p">(</span><span class="nx">strings</span><span class="p">,</span> <span class="p">...</span><span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">strings</span> <span class="o">&amp;&amp;</span> <span class="nx">values</span> <span class="o">&amp;&amp;</span> <span class="nx">interleave</span><span class="p">(</span><span class="nx">strings</span><span class="p">,</span> <span class="nx">values</span><span class="p">).</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>Template helper which handles HTML; return a document fragment.
+Example:</p>
+
+<div class='highlight'><pre><code language=''>document.body.appendChild(HTML`&lt;span&gt;${foo}&lt;/span&gt;&lt;span&gt;${bar}&lt;/span&gt;`);
+</code></pre></div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="cm">/* NEEDS WORK */</span>
+<span class="kd">function</span> <span class="nx">HTML</span><span class="p">(</span><span class="nx">strings</span><span class="p">,</span> <span class="p">...</span><span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">dummy</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">fragment</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createDocumentFragment</span><span class="p">();</span>
+  <span class="nx">dummy</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">compose</span><span class="p">(</span><span class="nx">strings</span><span class="p">,</span> <span class="p">...</span><span class="nx">values</span><span class="p">);</span>
+  <span class="nx">forEach</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">dummy</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">,</span> <span class="nx">appendChild</span><span class="p">,</span> <span class="nx">fragment</span><span class="p">);</span>
+  <span class="k">return</span> <span class="nx">fragment</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>Will often be imported/re-exported as <code>upwardableTemplate</code>, or <code>F</code>.
+Usage:</p>
+
+<div class='highlight'><pre><code language=''>T(F`There are ${model.count} items.`))
+</code></pre></div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kr">export</span> <span class="k">default</span> <span class="nx">C</span><span class="p">(</span><span class="nx">compose</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

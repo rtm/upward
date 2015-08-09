@@ -14,7 +14,8 @@ import butSample from './But';
 import apiSample from './Api';
 import mapSample from './Map';
 import srtSample from './Srt';
-
+import cssSample from './Css';
+import fadSample from './Fad';
 
 var samples = [
   { sample: cntSample, js: 'Cnt' },
@@ -23,7 +24,9 @@ var samples = [
   { sample: butSample, js: 'But' },
   { sample: apiSample, js: 'Api' },
   { sample: mapSample, js: 'Map' },
-  { sample: srtSample, js: 'Srt' }
+  { sample: srtSample, js: 'Srt' },
+  { sample: cssSample, js: 'Css' },
+  { sample: fadSample, js: 'Fad' },
 ];
 
 var div = document.getElementById('samples');
@@ -51,6 +54,7 @@ function oneSample(sample) {
   function append(text)   { code.appendChild(document.createTextNode(getCode(text))); }
 
   var section = document.createElement('section');
+  section.id = sample.js;
   var js = fetch(sample.js + '.js') . then(text);
 
   // description block
