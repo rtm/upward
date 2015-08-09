@@ -8,12 +8,12 @@
 
 // Setup.
 import {wait}                 from './Asy';
-import {E}                    from './Elt';
+import E                      from './Elt';
 import {parseBody}            from './Ify';
 import M                      from './Map';
 import {assignAdd, mapObject} from './Out';
 import R                      from './Ren';
-import {T}                    from './Txt';
+import T                      from './Txt';
 import U                      from './Upw';
 import {makeStopwatch, sum}   from './Utl';
 
@@ -78,17 +78,17 @@ function htmlReporter(reports, options = {}) {
   hide = hide || {};
 
   function htmlReporterOne({children, desc, status, counts, time, code}) {
-    var text = [T(desc)];
+    var text = T(desc);
     var attrs = {class: {[status]: true}};
     if (children) {
       return E('details') .
         has([
-          E('summary') . has(text) . is(attrs),
+          E('summary') . has([text, !hide.counts && T(` (${makeCounts(counts)})`)]) . is(attrs),
           E('div') . has(htmlReporter(children, options))
         ]) .
         is(hide.children ? {} : {open: true});
     } else {
-      return E('div') . is(attrs);
+      return E('div') . has(text) . is(attrs);
     }
   }
 
