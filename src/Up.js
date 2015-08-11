@@ -15,8 +15,8 @@ import C       from './Fun';
 import U       from './Obj';
 import F       from './Tem';
 import T       from './Txt';
+import V       from './Upw';
 
-
-export {U, T, E, F, C, UpCount, UpStyle};
+export {U, T, E, F, C, V, UpCount, UpStyle};
 
 export * from './Tag';

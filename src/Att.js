@@ -4,7 +4,7 @@
 import keepAssigned    from './Ass';
 import C               from './Fun';
 import {invertify}     from './Ify';
-import {observeObject, makeObserver, observeObjectNow} from './Obs';
+import {observeObject, makeObserver} from './Obs';
 import {dasherize}     from './Str';
 
 var {push} = Array.prototype;
@@ -23,7 +23,7 @@ function makeAttrsObserver(e) {
 
 function makeStyleObserver(e) {
   function add(v, k)     { e.style[k] = v; }
-  function _delete(v, k) { e.style[name] = ""; }
+  function _delete(v, k) { e.style[k] = ''; }
   return makeObserver({add, update: add, delete: _delete});
 }
 
