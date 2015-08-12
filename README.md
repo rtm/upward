@@ -74,26 +74,23 @@ The recommended approach to bulding an app is to use browserify:
 Then include the bundle and the babel browser polyfill in your HTML page:
 
 ```html
-<script src="bundle.js"></script>
 <script src="node_modules/babel-core/browser-polyfill.js"></script>
+<script src="bundle.js"></script>
 ```
 
 ### Installation
 
-    npm install upward
+    npm install --save-dev upward
 
 You may now refer to upward modules from inside your app via:
 
-    import {U} from 'upward/src/Up';
-
-Upward has no dependencies, although you should install docker globally to create documentation.
+    import {U} from 'upward';
 
 
 ### Building
 
-You will need the following npm packages installed globally:
-
-    npm install -g docker browserify babelify markdown
+There is nothing to build here, except maybe the docs.
+It's all just source code.
 
 
 ### License

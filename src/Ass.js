@@ -9,7 +9,7 @@
 import {upwardConfig, upwardableId}   from './Cfg';
 import {argify}                       from './Ify';
 import {makeObserver, observeObject}  from './Obs';
-import {isObject, valueize, mapObject, objectFromPairs, propGetter} from './Out';
+import {isObject, valueize, mapObject, propGetter} from './Out';
 import U                              from './Upw';
 import {replace}                      from './Utl';
 

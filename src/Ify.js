@@ -162,6 +162,23 @@ function debugify(fn) {
   };
 }
 
+/**
+ * ## recursify
+ *
+ * Make a recursive version of a functino.
+ * Solves problem of referring to the function itself by passing `self`.
+ *
+ * Usage:
+ * ```
+ * function factorial(self) { return n => n > 1 ? self(n-1) : 1; }
+ * recursify(factorial)(10)
+ * ```
+ */
+function recursify(f) {
+  return f((...args) => recursify(f)(...args));
+}
+
+
 // Return an array of argument names.
 // WARNING: parsing JS with regexps!
 // Will fail on deconstructed parameters.
@@ -193,7 +210,7 @@ function parseBody(fn){
 // Return an object of named function parameters and their values.
 // Invoke as `paramsAsObject(thisFunction, arguments);`.
 function paramsAsObject(fn, args) {
-  return objectFromPairs(paramify(fn), args);
+  return objectFromLists(paramify(fn), args);
 }
 
 // Function which does nothing.
@@ -241,24 +258,26 @@ if (upwardConfig.MODIFY_BUILTIN_PROTOTYPES) {
 export {
   compose,
 
-  tickify,
-  chainify,
-  selfify,
-  memoify,
-  swapify,
-  dropify,
-  argify,
-  invertify,
-  maybeify,
-  selfthisify,
-  repeatify,
-  onceify,
+        tickify,
+       chainify,
+        selfify,
+        memoify,
+        swapify,
+        dropify,
+         argify,
+      invertify,
+       maybeify,
+    selfthisify,
+      repeatify,
+        onceify,
   insertselfify,
-  wrapify,
-  debugify,
-  paramify,
+        wrapify,
+       debugify,
+      recursify,
+       paramify,
+         logify,
+
   parseBody,
-  logify,
 
   noop,
   identity,

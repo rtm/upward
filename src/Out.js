@@ -94,14 +94,27 @@ function reduceObject(o, fn, init) {
   return init;
 }
 
-// Create an object from arrays of keys and values.
-function objectFromPairs(keys, vals) {
+// Create an object from two arrays of keys and values.
+function objectFromLists(keys, vals) {
   var result = {};
   for (let i = 0, len = keys.length; i < len; i++) {
     result[keys[i]] = vals[i];
   }
   return result;
 }
+
+// Create an object from a list of `[key, val]` pairs.
+function objectFromPairs(pairs) {
+  var result = {};
+
+  for (let i = 0, len = pairs.length; i < len; i++) {
+    let pair = pairs[i];
+    result[pair[0]] = pair[1];
+  }
+
+  return result;
+}
+
 
 // Create a value-only property descriptors object from an object.
 function makePropertyDescriptors(o) {
@@ -172,6 +185,8 @@ export {
   invertObject,
   reduceObject,
   objectFromPairs,
+  objectFromLists,
+
   makePropertyDescriptors,
   valueizeObject,
   valueFromPath,

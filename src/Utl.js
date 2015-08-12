@@ -264,6 +264,47 @@ function *interleaveIterables(...iterables) {
   }
 }
 
+// URL-RELATED UTILITIES
+// ---------------------
+
+// Parse a search string into an object.
+function parseUrlSearch(search) {
+  return objectFromPairs(
+    search.replace(/^\?/, '') .
+      split('&') .
+      map(param => (([key, value = '']) => [key, decodeURIComponent(value)])(param))
+  );
+}
+
+if (TEST) {
+  tests.push(function tstParseUrlSearch() {
+    return testGroup("parseUrlSearch", [
+      test("base case", ({assert}) => assert.deepEqual(parseUrlSearch('a=1&b=2'), {a: "1", b: "2"}))
+    ]);
+  });
+}
+
+// Build a search string (with no ?) from an object.
+function buildUrlSearch(query) {
+  return keys(query) .
+    map(
+      key => {
+        let value = query[key];
+        if (value === null || value === undefined) value = '';
+        else value = encodeURIComponent(value);
+        return `${key}=${value}`;
+      }) .
+    join('&');
+}
+
+if (TEST) {
+  tests.push(function tstBuildUrlSearch() {
+    return testGroup("buildUrlSearch", [
+      test("base case", ({assert}) => assert.equal(buildUrlSearch({a: 1, b: 2}), 'a=1&b=2'))
+    ]);
+  });
+}
+
 var prototypeFns = {
   tail, sum, swap, append, replace, mapInPlace, omit, copyOntoArray, uniqueize,
   indexesOf, interleave, runningMap, runningTotal, filterInPlace, chainPromises
@@ -313,6 +354,9 @@ export {
   makeCounterMap,
   interleave,
   interleaveIterables,
+
+  parseUrlSearch,
+  buildUrlSearch,
 
   utlTestGroup as tests
 };

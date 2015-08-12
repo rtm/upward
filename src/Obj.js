@@ -8,7 +8,7 @@
 
 // An upwardable object is created by calling `makeUpwardableObject`,
 // the default export from this module, on an object.
-// In `src/Up.js`, this is aliased to `Up`.
+// In `index.js`, this is aliased to `U`.
 // `a = Up([1, 2, 3])` or `o=Up({x: 1, y: 2}` create upwardables.
 // All accesses to the elements of `a` and `o` continue to function as usual:
 // `a[0]`, `a[0] = 1;`, `o.x`, and `o.x = 1`.
@@ -46,7 +46,7 @@ function get(o) { return o && typeof o === 'object' && upwardifieds.get(o); }
  *
  * Constructor for upwardable object.
  * Default export from this module, often imported as `makeUpwardableObject`,
- * and aliased as `Up` in `src/Up.js`.
+ * and aliased as `U` in `index.js`.
  */
 function make(o) {
   if (is(o)) return o;

@@ -38,7 +38,16 @@ export default testGroup(
       var proxy = dropify(callback);
       proxy(1, 2);
       assert(callback.calledWith(2));
-    })
+    }),
+
+    test("recursify", ({assert}) => {
+      function factorial(self) {
+        return n => n > 1 ? self(n-1) : 1;
+      }
+
+      assert.equal(recursify(factorial)(6), 720);
+    }),
+
 
     // maybeify
     // selfify
