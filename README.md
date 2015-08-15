@@ -1,15 +1,15 @@
 Upward
 ======
 
-Upward is a JavaScript library which lets you declare how things should be,
-and makes sure things are and stay that way.
-With Upward, JavaScript becomes a "declarative" rather than an "imperative" language.
-In Upward, all your CSS and HTML is written in JavaScript as well,
+Upward is a JavaScript library with a declarative style.
+You declare how things should be,
+and it makes sure things are and stay that way.
+All CSS and HTML is written in JavaScript as well,
 so there's a single language to write, preprocess, and run.
 
 ### Introduction
 
-In our struggles to integrate the front-end technologies that have emerged
+In the development community's struggles to integrate the front-end technologies that have emerged
 for mark-up, styling, and program logic, we have created a witches&rsquo; brew.
 We have styles inside logic, logic inside styles,
 logic inside mark-up, and mark-up inside logic.
@@ -89,8 +89,23 @@ You may now refer to upward modules from inside your app via:
 
 ### Building
 
-There is nothing to build here, except maybe the docs.
+There is nothing to build here, except maybe the docs and the tests (see below).
 It's all just source code.
+
+
+### Testing
+
+Upward comes with extensive tests using its own testing harness.
+This testing harness can also be used for testing Upward applications.
+We use the chai library for assertions.
+Tests are located in the `tst` subdirectory.
+To run tests:
+
+    cd tst
+    make
+    bin/serve    # start servers
+
+Now visit `localhost:8081`.
 
 
 ### License

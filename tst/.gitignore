@@ -1,2 +1,5 @@
 dist/
 *.d
+watch.list
+watch.json
+make.d
