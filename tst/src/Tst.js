@@ -1,6 +1,6 @@
 // Unit tests for src/Tst.js.
 
-import {test, testGroup, skip, assert} from '../src/Tst';
+import {test, testGroup, skip, assert} from '..';
 import {noop} from '../src/Ify';
 
 export default testGroup(

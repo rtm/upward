@@ -3,7 +3,7 @@
 
 // Bookkeeping and initialization.
 import {isUpwardable} from './Upw';
-var {defineProperty, observe} = Object;
+var {defineProperties, observe} = Object;
 
 /**
  * ## UpInputs (.sets)
@@ -12,10 +12,10 @@ var {defineProperty, observe} = Object;
  *
  * @param {HTMLInputElement} elt element to associate
  * @param {Upwardable} upwardable upwardable to associate
- * @param {boolean} realtime if true, update upwardable each char
+ * @param [boolean=false] realtime if true, update upwardable each char
  */
 
-function UpInputs(elt, upwardable, realtime) {
+function UpInputs(elt, upwardable, realtime = false) {
   console.assert(elt instanceof HTMLInputElement, "First argument to UpInputs must be input element");
   console.assert(isUpwardable(upwardable), "Second argument to UpInputs (.inputs) must be upwardable");
 
@@ -34,15 +34,18 @@ function UpInputs(elt, upwardable, realtime) {
   return elt;
 }
 
-// Extend HTMLInputElement prototype with `sets` method.
-var prototype = HTMLInputElement.prototype;
-var INPUTSPROP = 'sets';
+// Extend HTMLInputElement prototype with `sets` and `setsImmediate` methods.
+var {prototype} = HTMLInputElement;
+var SETS_PROP = 'sets';
+var SETS_IMMEDIATE_PROP = 'setsImmediate';
 
-if (!prototype[INPUTSPROP]) {
-  defineProperty(prototype, INPUTSPROP, {
-    value(upwardable, realtime) { return UpInputs(this, upwardable, realtime); }
+if (!prototype.hasOwnProperty(SETS_PROP)) {
+  defineProperties(prototype, {
+    [SETS_PROP]:           { value(upwardable) { return UpInputs(this, upwardable, false); } },
+    [SETS_IMMEDIATE_PROP]: { value(upwardable) { return UpInputs(this, upwardable, true ); } }
   });
 }
+
 
 // Normally this module will be imported as `import './src/Inp';`.
 export default UpInputs;

@@ -2,9 +2,10 @@
 // =================
 
 import {testGroup, test, assert} from './Tst';
+import {objectFromPairs} from './Out';
 
 // Setup.
-var {create} = Object;
+var {create, keys} = Object;
 
 var tests = [];
 var TEST = true;
@@ -119,6 +120,40 @@ function reverse(a) {
   }
   return a;
 }
+
+// Flatten an array.
+function flatten(a) {
+  function _reduce(a) { return a.reduce(_flatten, []); }
+
+  function _flatten(a, b) {
+    return a.concat(Array.isArray(b) ? _reduce(b) : b);
+  }
+
+  return _reduce(a);
+}
+
+if (TEST) {
+  tests.push(() => testGroup(
+    "flatten",
+    [
+      test(
+        "simple flatten",
+        ({assert}) => assert.deepEqual(
+          flatten([[1, 2], [3, 4]]),
+          [1, 2, 3, 4]
+        )
+      ),
+      test(
+        "deep flatten",
+        ({assert}) => assert.deepEqual(
+          flatten([1, [2, [3, [4]]]]),
+          [1, 2, 3, 4]
+        )
+      )
+    ]
+  ));
+}
+
 
 function mapInPlace(a, fn, ctxt) {
   for (var i = 0, len = a.length; i < len; i++) {
@@ -269,11 +304,14 @@ function *interleaveIterables(...iterables) {
 
 // Parse a search string into an object.
 function parseUrlSearch(search) {
-  return objectFromPairs(
-    search.replace(/^\?/, '') .
-      split('&') .
-      map(param => (([key, value = '']) => [key, decodeURIComponent(value)])(param))
-  );
+  if (search[0] === '?') search = search.slice(1);
+
+  function splitParam(param) {
+    var [key, value = ''] = param.split('=');
+    return [key, decodeURIComponent(value)];
+  }
+
+  return objectFromPairs(search . split('&') . map(splitParam));
 }
 
 if (TEST) {
@@ -286,15 +324,15 @@ if (TEST) {
 
 // Build a search string (with no ?) from an object.
 function buildUrlSearch(query) {
-  return keys(query) .
-    map(
-      key => {
-        let value = query[key];
-        if (value === null || value === undefined) value = '';
-        else value = encodeURIComponent(value);
-        return `${key}=${value}`;
-      }) .
-    join('&');
+
+  function buildParam(key) {
+    let value = query[key];
+    if (value === null || value === undefined) value = '';
+    else value = encodeURIComponent(value);
+    return `${key}=${value}`;
+  }
+
+  return keys(query) . map(buildParam) . join('&');
 }
 
 if (TEST) {
@@ -339,6 +377,7 @@ export {
   omit,
   replace,
   reverse,
+  flatten,
   mapInPlace,
   repeat,
   makeSortfunc,

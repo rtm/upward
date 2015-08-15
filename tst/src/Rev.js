@@ -2,7 +2,7 @@
 
 import keepReversed from '../src/Rev';
 import {test, testGroup, assert} from '../src/Tst';
-import {U} from '../src/Upw';
+import {U} from '..';
 
 export default testGroup(
   "module Rev (keepReversed, Array#up)",
@@ -14,10 +14,10 @@ export default testGroup(
         [
           test("reversing array",           _ => b = keepReversed(a)),
           test("should reverse it",         _ => assert.deepEqual(b, [3, 2, 1])),
-          
+
           test("element changed",           _ => a[0] = 99),
           test("should change in reversed location", _ => assert.deepEqual(b, [3, 2, 99])),
-          
+
           test("element added at end",      _ => a.push(6)),
           test("should come to front",      _ => assert.propertyVal(b, 0, 6))
         ]
@@ -62,7 +62,7 @@ export default testGroup(
         ]
       );
     }(),
-    
+
     function() {
       var a = [1, 2, 3];
       var hash = U({order: false});

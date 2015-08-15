@@ -1,9 +1,8 @@
-// tsts/style.css
+// tst/src/style.css
 // Styling for (HTML) tst reports.
 
-import {testCssRules} from '../src/Tst';
-import {UpStyle} from '../src/Up';
-
+import {UpStyle} from '..';
+import {testCssRules} from '../../src/Tst';
 
 UpStyle([
   ["detail",        { marginLeft: '24px'    }],

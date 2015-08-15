@@ -1,7 +1,7 @@
 // Unit tests for Upw module.
 
 import {test, testGroup, assert} from '../src/Tst';
-import U from '../src/Upw';
+import {U} from '..';
 import {invert, identity, debugify} from '../src/Ify';
 import {propGetter, propValueGetter, valueize} from '../src/Out';
 import {observeObject} from '../src/Obs';

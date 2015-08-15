@@ -10,9 +10,9 @@ import ifyTests from './Ify';
 //import srtTests from './Srt';
 //import tstTests from './Tst';
 //import upwTests from './Upw';
-import {tests as utlTests} from '../src/Utl';
+import {utlTests} from '..';
 
-import {runTests, testGroup, skip, consoleReporter, htmlReporter} from '../src/Tst';
+import {runTests, testGroup, skip, consoleReporter, htmlReporter} from '../../src/Tst';
 
 import './style';
 
@@ -35,7 +35,7 @@ var tests = testGroup(
   { pause: 1000 }
 );
 
-//runTests(tests) . then(reports => consoleReporter(reports, {hide: {passed: true}}));
+runTests(tests) . then(reports => consoleReporter(reports, {hide: {passed: true}}));
 
 
 var reportsDiv = document.getElementById('reports');

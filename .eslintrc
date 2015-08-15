@@ -1,7 +1,10 @@
 {
+  "parser": "babel-eslint",
+
   "settings": {
     "ecmascript": 6,
   },
+
   "ecmaFeatures": {
     "modules": true,
     "arrowFunctions": true,

@@ -1,0 +1,9 @@
+# tst/bin/serve
+#
+# Start servers necessary for testing.
+
+# Test page server
+python -m SimpleHTTPServer 8081 &
+
+# Reload server
+node ../etc/reload-server.js &

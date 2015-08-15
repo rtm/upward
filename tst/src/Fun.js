@@ -1,8 +1,6 @@
 // Unit tests for Fun module (upwardable functions).
 
-import {test, testGroup} from '../src/Tst';
-import {observeObject}   from '../src/Obs';
-import C                 from '../src/Fun';
+import {C, test, testGroup} from '..';
 
 var {observe} = Object;
 

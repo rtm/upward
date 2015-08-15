@@ -162,22 +162,6 @@ function debugify(fn) {
   };
 }
 
-/**
- * ## recursify
- *
- * Make a recursive version of a functino.
- * Solves problem of referring to the function itself by passing `self`.
- *
- * Usage:
- * ```
- * function factorial(self) { return n => n > 1 ? self(n-1) : 1; }
- * recursify(factorial)(10)
- * ```
- */
-function recursify(f) {
-  return f((...args) => recursify(f)(...args));
-}
-
 
 // Return an array of argument names.
 // WARNING: parsing JS with regexps!
@@ -273,7 +257,6 @@ export {
   insertselfify,
         wrapify,
        debugify,
-      recursify,
        paramify,
          logify,
 

@@ -20,7 +20,7 @@ function upwardableId() {
 
 // Set configuration options.
 function configureUpwardable(opts) {
-  assign (upwardConfig, opts);
+  assign(upwardConfig, opts);
 }
 
 function log(...args) {

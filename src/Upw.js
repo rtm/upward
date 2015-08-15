@@ -5,20 +5,33 @@
 // Upwardables are returned by upwardable functions,
 // represent values in upwawrdable objects,
 // and have a `change` method to change their values.
-var {create, getNotifier, defineProperty} = Object;
+
 import {upwardConfig} from './Cfg';
+import log from './Log';
+
+const DEBUG_ALL = true;
+const DEBUG = upwardConfig.DEBUG;
+
+var {create, getNotifier, defineProperty, defineProperties} = Object;
+
+var channel = log('Upw', { style: { color: 'red' } });
+
 
 // Manage upwardables.
 var set = new WeakSet();
 
 function is (u) { return u && typeof u === 'object' && set.has(u); }
-function add(u) { set.add(u); addId(u); return u; }
+function add(u, debug) { set.add(u); adorn(u, debug); return u; }
 
-// Add ids to upwardables.
+// Add ids and debug flag to upwardables.
 var id = 0;
-function addId(u) {
+
+function adorn(u, debug = false) {
   if (upwardConfig.DEBUG) {
-    defineProperty(u, '_upwardableId', { value: id++ });
+    defineProperties(u, {
+      _upwardableId: { value: id++ },
+      _upwardableDebug: { value: debug }
+    });
   }
 }
 
@@ -31,31 +44,40 @@ function makeUndefined() { var u = create(undefinedUpwardablePrototype); add(u);
 
 // Make a new upwardable.
 // Register it, and add a `change` method which notifies when it is to be replaced.
-function make(x) {
+function make(x, options = {}) {
+  var {debug = DEBUG_ALL} = options;
   var u;
+
+  debug = DEBUG && debug;
+
   if (x === undefined) u = makeUndefined();
   else if (x === null) u = makeNull();
   else {
     u = Object(x);
     if (!is(u)) {
-      add(u);
+      add(u, debug);
       defineProperty(u, 'change', { value: change });
     }
   }
+  if (debug) console.debug(...channel.debug("Created upwardable", u._upwardableId, "from", x));
   return u;
 }
 
 // Change an upwardable. Issue notification that it has changed.
 function change(x) {
   var u = this;
+  var debug = u._upwardableDebug;
+
   if (x !== this.valueOf()) {
-    u = make(x);
+    u = make(x, { debug });
     getNotifier(this).notify({object: this, newValue: u, type: 'upward'});
+
+    if (debug) {
+      console.debug(...channel.debug("Replaced upwardable", this._upwardableId, "with", u._upwardableId));
+    }
   }
   return u;
 }
 
-/* JSHint does not like `export as` syntax */
-/* jshint ignore:start */
+
 export {make as default, is as isUpwardable};
-/* jshint ignore:end */

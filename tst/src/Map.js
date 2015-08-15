@@ -2,7 +2,7 @@
 
 import keepMapped from '../src/Map';
 import {test, testGroup, assert} from '../src/Tst';
-import {U} from '../src/Upw';
+import {U} from '..';
 import {invert, identity, debugify} from '../src/Ify';
 import {propGetter, propValueGetter} from '../src/Out';
 
