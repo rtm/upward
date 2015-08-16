@@ -1,5 +1,4 @@
 dist/
-*.d
+make.d
 watch.list
 watch.json
-make.d
