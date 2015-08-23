@@ -10,8 +10,12 @@ GIT_DIR  	:= $(notdir $(GIT_ROOT))
 NAME 		?= $(GIT_DIR)
 ENTRY 		?= src/main.js
 BUNDLE  	?= assets/bundle.js
+BUNDLE_DIST	?= dist/assets/bundle.js
+
+BUCKET		?= $(NAME)
 
 RELOAD_PORT 	?= 32568
+SERVER_PORT	?= 8081
 
 WATCH_ROOT 	:= $(GIT_ROOT)
 WATCH_TRIGGER 	?= $(NAME)
@@ -19,13 +23,6 @@ WATCH_FILES 	?= $(BUNDLE) index.html
 WATCH_CMD	:= bash node_modules/upward/etc/reload $(RELOAD_PORT)
 
 CLEAN 		:= $(BUNDLE) $(UGLIFIED_BUNDLE)
-
-
-### VARIABLES
-# Assumes the following variables are set correctly:
-# TRIGGER: name of watchman trigger to set
-# BUNDLE:  name of bundle to create
-# ENTRY:   starting point for creating bundle
 
 
 ### BASIC RULES
@@ -45,6 +42,8 @@ uglify:	$(UGLIFED_BUNDLE)
 $(BUNDLE): 	$(ENTRY)
 	watchify --transform babelify --debug $< --outfile $@
 
+$(BUNDLE_DIST):	$(BUNDLE)
+	uglifyjs $< --output $@ --mangle # -c --define TEST=false
 
 ### WATCHING
 
@@ -63,18 +62,22 @@ unwatch:
 ### SERVING
 .PHONY: serve
 serve:
-	python -m SimpleHTTPServer 8081 &
+	python -m SimpleHTTPServer $(SERVER_PORT) &
 	node $(SELF_DIR)reload-server.js $(RELOAD_PORT)&
 
 
 ### UGLIFY
 
 %.min.js:	%.js
-	uglifyjs $< --source-map=$*.min.js.map --output $@ # --mangle -c --define TEST=false
+	uglifyjs $< --output $@ # --mangle -c --define TEST=false --source-map=
 
 
 ### DEPLOY TO AWS
-aws:
+.PHONY: dist aws
+
+dist: $(BUNDLE_DIST)
+
+aws: dist
 	aws s3 sync dist s3://$(BUCKET) --acl public-read
 
 ### CLEAN
