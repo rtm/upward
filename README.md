@@ -89,23 +89,14 @@ You may now refer to upward modules from inside your app via:
 
 ### Building
 
-There is nothing to build here, except maybe the docs and the tests (see below).
-It's all just source code.
+There is nothing to build here, except the docs.
 
 
 ### Testing
 
 Upward comes with extensive tests using its own testing harness.
 This testing harness can also be used for testing Upward applications.
-We use the chai library for assertions.
-Tests are located in the `tst` subdirectory.
-To run tests:
-
-    cd tst
-    make
-    bin/serve    # start servers
-
-Now visit `localhost:8081`.
+The tests are located in the separate [upward-test repo](https://www.github.com/rtm/upward-test).
 
 
 ### License
@@ -113,6 +104,7 @@ Now visit `localhost:8081`.
 Copyright (c) 2014-2015 Bob Myers.
 
 Licensed under the MIT license.
+
 
 ### Acronym
 

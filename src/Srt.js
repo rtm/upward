@@ -11,6 +11,6 @@ export default makeUpwardableFunction(function *UpSort(run) {
 
   while (true) {
     var [a, f, desc] = yield r;
-    copyOntoArray(r, a.slice().sort(makeSortfunc(f, desc)))
+    copyOntoArray(r, a.slice().sort(makeSortfunc(f, desc)));
   }
 });

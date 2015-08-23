@@ -13,10 +13,11 @@ import FADE    from './src/Fad';
 import C       from './src/Fun';
 import U       from './src/Obj';
 import F       from './src/Tem';
-import {test, testGroup, skip, unskip} from './src/Tst';
 import T       from './src/Txt';
 import V       from './src/Upw';
 
-export {U, T, E, F, C, V, UpCount, UpStyle, FADE, test, testGroup, skip, unskip};
+export {U, T, E, F, C, V, UpCount, UpStyle, FADE};
+
+export {test, testGroup, skip, unskip, consoleReporter, htmlReporter} from './src/Tst';
 
 export * from './src/Tag';

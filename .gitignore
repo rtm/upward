@@ -7,4 +7,8 @@ bower_components
 npm-debug.log
 
 # omit build artifacts
-dist/
+bundle.js
+bundle.min.js
+make.d
+watch.json
+watch.list

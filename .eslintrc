@@ -1,22 +1,3 @@
 {
-  "parser": "babel-eslint",
-
-  "settings": {
-    "ecmascript": 6,
-  },
-
-  "ecmaFeatures": {
-    "modules": true,
-    "arrowFunctions": true,
-    "destructuring": true,
-    "templateStrings": true,
-    "spread": true,
-    "blockBindings": true,
-    "objectLiteralShorthandMethods": true,
-    "generators": true,
-    "forOf": true,
-    "objectLiteralComputedProperties": true,
-    "defaultParams": true,
-    "restParams": true
-   }
+  "parser": "babel-eslint"
 }

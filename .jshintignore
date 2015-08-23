@@ -1,2 +1,0 @@
-# JSHint cannot handle `export { foo as bar }`.
-src/U.js
