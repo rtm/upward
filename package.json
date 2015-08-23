@@ -1,8 +1,12 @@
 {
   "name": "upward",
   "description": "The front-end library for modern boys and girls",
-  "version": "0.0.8",
-  "licenses": [{ "type": "MIT" }],
+  "version": "0.0.9",
+  "licenses": [
+    {
+      "type": "MIT"
+    }
+  ],
   "homepage": "https://github.com/rtm/upward",
   "repository": {
     "type": "git",
