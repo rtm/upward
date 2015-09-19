@@ -13,7 +13,7 @@
 
 import UpStyle, {transform} from './Css';
 import E from './Elt';
-import U from './Upw';
+import U from './Upo';
 
 
 const NO_MUTATION_OBSERVER = typeof MutationObserver === 'undefined';

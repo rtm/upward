@@ -1,7 +1,7 @@
 // upChildren
 // ==========
 
-import C from './Fun';
+import C from './Upf';
 import T from './Txt';
 
 var {appendChild, removeChild} = Node.prototype;
@@ -48,4 +48,3 @@ Node.prototype.has = function(children) {
 };
 
 export default UpChildren;
-

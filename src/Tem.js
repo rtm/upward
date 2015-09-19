@@ -1,7 +1,7 @@
 // String templates
 // ----------------
 
-import C from './Fun';
+import makeUpwardableFunction from './Upf';
 import {interleave} from './Utl';
 
 // Utility routine to compose a string by interspersing literals and values.
@@ -28,4 +28,4 @@ function HTML(strings, ...values) {
 // ```
 // T(F`There are ${model.count} items.`))
 // ```
-export default C(compose, "");
+export default makeUpwardableFunction(compose, "");

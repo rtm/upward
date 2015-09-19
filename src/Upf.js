@@ -14,8 +14,8 @@ var {getNotifier, observe, unobserve, defineProperty} = Object;
 import {makeAccessController} from './Acc';
 import {generateForever}      from './Asy';
 import {Observer}             from './Obs';
-import {copyOnto, isObject}   from './Out';
-import makeUpwardable         from './Upw';
+import {copyOnto, isObject}   from './Obj';
+import makeUpwardableValue    from './Upv';
 
 // Keep track of computables, computeds, and computifieds.
 var set = new WeakSet();
@@ -25,15 +25,16 @@ function is (f)    { return set.has(f); }
 function get(g)    { return g && typeof g === 'object' && generators.get(g); }
 function add(f, g) { set.add(f); generators.set(g, f); }
 
-// Convenience constructor for computable when on simple function.
-// To provide your own generator, use `constructComputable`.
+// Construct upwardable function from simple function.
+// To provide your own generator, use `makeUpwardableFunctionFromGenerator`.
 // This is the default export from this module.
-function C(f, init) {
-  return make(generateForever(f, init));
+function makeUpwardableFunction(f, init) {
+  // console.log("Defining C on", f);
+  return makeUpwardableFunctionFromGenerator(generateForever(f, init));
 }
 
 // Construct upwardable function from generator (if not already constructed).
-function make(g) {
+function makeUpwardableFunctionFromGenerator(g) {
   var f = get(g);
   if (!f) {
     f  = _make(g);
@@ -77,7 +78,7 @@ function _make(g) {
     }
 
     var iterator = g(run);
-    var result = makeUpwardable(iterator.next().value);
+    var result = makeUpwardableValue(iterator.next().value);
     var accessController = makeAccessController(run);
     var runner;
 
@@ -122,7 +123,7 @@ function observeArgs(args, run) {
 
 // The ur-upwardable function is to get a property from an object.
 // This version does not support upwardables as arguments.
-var getUpwardableProperty = C(
+var getUpwardableProperty = makeUpwardableFunction(
   function getProperty([object, name], run) {
     observe(object, changes => changes.forEach(change => {
       if (change.name === name) run();
@@ -131,12 +132,10 @@ var getUpwardableProperty = C(
   }
 );
 
-var makeUpwardableFunction = make;
-
-C.is = is;
-export default C;
+makeUpwardableFunction.is = is;
+export default makeUpwardableFunction;
 
 export {
-  makeUpwardableFunction,
+  makeUpwardableFunctionFromGenerator,
   getUpwardableProperty
 };

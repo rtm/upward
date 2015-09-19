@@ -9,8 +9,8 @@
 import {upwardConfig, upwardableId}   from './Cfg';
 import {argify}                       from './Ify';
 import {makeObserver, observeObject}  from './Obs';
-import {isObject, valueize, mapObject, propGetter} from './Out';
-import U                              from './Upw';
+import {isObject, valueize, mapObject, propGetter} from './Obj';
+import makeUpwardableValue            from './Upv';
 import {replace}                      from './Utl';
 
 var {create, assign, defineProperty} = Object;
@@ -54,7 +54,7 @@ function placeKey(ka, v, k, pusher) {
       ka[k].val = calcProp(ka, k);
     } else {
       defineProperty(ka, k, {
-        get() { return U(findFirstProp(ka.objs, k)); },
+        get() { return makeUpwardableValue(findFirstProp(ka.objs, k)); },
         enumerable: true
       });
       //upward(v, ka[k]);

@@ -1,13 +1,23 @@
-// Upwardable
-// ==========
+// Upwardable Values
+// =================
 
-// The **upwardable** is the key concept in the upward library.
-// Upwardables are returned by upwardable functions,
-// represent values in upwawrdable objects,
-// and have a `change` method to change their values.
+// The **upwardable value** is one of the key concepts in the upward library.
+// Upwardable values represent primitive values.
+// They have a `change` method to change their values.
+//
+// The default export from this module is often imported as `makeUpwardable`,
+// and is exposed as `V` in `index.js`.
+//
+// Since the primitive value in an object cannot be changed,
+// When an upwardable value is changed we create a new one,
+// and emit the `upward` notification against the original object.
+//
+// Properties on upwardable objects are represented by upwardable values in an shadow object.
+// Upwardable functions return Upwardable values.
 
 import {upwardConfig} from './Cfg';
 import log from './Log';
+import {isUpwardableObject} from './Upo';
 
 const DEBUG_ALL = true;
 const DEBUG = upwardConfig.DEBUG;
@@ -15,6 +25,7 @@ const DEBUG = upwardConfig.DEBUG;
 var {create, getNotifier, defineProperty, defineProperties} = Object;
 
 var channel = log('Upw', { style: { color: 'red' } });
+channel.disable();
 
 
 // Manage upwardables.
@@ -52,6 +63,7 @@ function make(x, options = {}) {
 
   if (x === undefined) u = makeUndefined();
   else if (x === null) u = makeNull();
+//  else if (isUpwardableObject(x)) u = x;  // TODO: figure this out
   else {
     u = Object(x);
     if (!is(u)) {
@@ -63,7 +75,8 @@ function make(x, options = {}) {
   return u;
 }
 
-// Change an upwardable. Issue notification that it has changed.
+// Change an upwardable.
+// Issue notification of type `upward` that it has changed.
 function change(x) {
   var u = this;
   var debug = u._upwardableDebug;
@@ -80,4 +93,4 @@ function change(x) {
 }
 
 
-export {make as default, is as isUpwardable};
+export {make as default, is as isUpwardableValue};

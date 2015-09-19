@@ -4,7 +4,7 @@
 //import keepUnique   from './Unq';
 //import keepFiltered from './Fil';
 import UpMap       from './Map';
-import {mapObject} from './Out';
+import {mapObject} from './Obj';
 import UpSort      from './Srt';
 //import keepSliced from './Slc';
 

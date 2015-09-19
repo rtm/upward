@@ -2,7 +2,7 @@
 // =================================================
 
 // Bookkeeping and initialization.
-import U from './Upw';
+//import U from './Upw';
 
 import {dasherize}                   from './Str';
 import {mapObject, valueize, valueizeObject}   from './Obj';
@@ -54,11 +54,11 @@ function _keepRendered(tagName, params) {
   // Handle changes to parameters.
   // -----------------------------
   function makeParamsObserver() {
-    
+
     // Observe and unobserve the children.
     function _observeChildren  (v) { observeObjectNow(v, childrenObserver); }
     function _unobserveChildren(v) { unobserveObject (v, childrenObserver); }
-    
+
     function _observeAttrs(v) {
       observeObjectNow(v, attrsObserver);
       subAttrs.forEach(a => observeObjectNow(v[a], subAttrObservers[a]));
@@ -77,7 +77,7 @@ function _keepRendered(tagName, params) {
       case 'attrs':    _observeAttrs   (v); break;
       }
     }
-    
+
     // When parameters change, tear down and resetup observers.
     function update(v, i, params, {oldValue}) {
       switch (i) {
@@ -85,7 +85,7 @@ function _keepRendered(tagName, params) {
       case 'attrs':    _unobserveAttrs   (oldValue); _observeAttrs   (v); break;
       }
     }
-    
+
     return makeObserver({add, update});
   }
 
@@ -98,7 +98,7 @@ function _keepRendered(tagName, params) {
   };
   var attrsObserver = makeAttrsObserver(result);
   var childrenObserver = makeChildrenObserver(result);
-  var paramsObserver = makeParamsObserver();  
+  var paramsObserver = makeParamsObserver();
 
   //mapObject(params, (v, k) => upward(v, vv => params[k] = vv));
   params = valueizeObject(params);

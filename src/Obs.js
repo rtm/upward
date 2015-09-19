@@ -3,7 +3,7 @@
 
 // Setup.
 var {keys, create, assign, observe, unobserve} = Object;
-import {isObject} from './Out';
+import {isObject} from './Obj';
 
 // Make an observation handler, given a target and an object of handlers
 // with function-valued keys such as "add", "delete", and "update".
@@ -76,7 +76,7 @@ function observeObjectNow(o, observer) {
   return o;
 }
 
-// Unobserve something obseved with `observeObject`.
+// Unobserve something observed with `observeObject`.
 function unobserveObject(o, observer) {
   return o && typeof o === 'object' && unobserve(o, observer);
 }

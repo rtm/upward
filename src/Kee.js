@@ -2,9 +2,9 @@
 
 var {observe, defineProperties} = Object;
 
-import C                            from './Fun';
+import C                            from './Upf';
 import {valueize, copyOnto, copyOf} from './Obj';
-import {upwardablePrototype}        from './Upw';
+import {upwardablePrototype}        from './Upo';
 
 // var join   = keepify(function(d)        { return this.join(d);      });
 // var max    = keepify(function()         { return Math.max(...this); });

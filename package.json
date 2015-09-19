@@ -2,16 +2,10 @@
   "name": "upward",
   "description": "The front-end library for modern boys and girls",
   "version": "0.0.9",
-  "licenses": [
-    {
-      "type": "MIT"
-    }
-  ],
+  "keywords": ["JavaScript"],
+  "license": "MIT",
   "homepage": "https://github.com/rtm/upward",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/rtm/upward.git"
-  },
+  "repository": "rtm/upward",
   "bugs": {
     "url": "https://github.com/rtm/upward/issues"
   },

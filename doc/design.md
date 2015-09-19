@@ -54,7 +54,7 @@ data = U({ country: "USA" });
 console.log("I live in " + data.country);
 ```
 
-and all works as expected. 
+and all works as expected.
 
 ### Implementation
 
@@ -62,7 +62,7 @@ Object-valued upwardable values are themselves, with minimal additional features
 
 Upwardable values are identifiable by virtue of being kept in a global WeakMap. For debugging purposes, they are adorned with a unique ID.
 
-A stand-alone upwardable value can be created with the `makeUpwardable` API exported from `'src/Upw/Upw'`, but this will rarely be necessary for the end-developer.
+A stand-alone upwardable value can be created with the `makeUpwardableValue API exported from `'src/Upv'`, but this will rarely be necessary for the end-developer.
 
 Upwardable functions
 --------------------
@@ -71,7 +71,7 @@ Upwardable functions are functions which are capable of watching their parameter
 
 ### Upwardable functions are based on generators
 
- In this simplest case, `C(fn)` simply recomputes the function whenever things change. However, we also would like the the following abilities: 
+ In this simplest case, `C(fn)` simply recomputes the function whenever things change. However, we also would like the the following abilities:
 
  * maintain internal state between recomputations
  * return a promised result
@@ -122,11 +122,11 @@ HTML elements created via `E()` have available to them prototype methods for bas
 * `does`, to set event handlers
 * `sets`, to bind element values
 
-All these setters are upward-aware, so that changes to attributes, children etc. result in automatic updating of the DOM element. A common pattern in Upward is 
+All these setters are upward-aware, so that changes to attributes, children etc. result in automatic updating of the DOM element. A common pattern in Upward is
 
-    dom = E('div') . 
-      has(children) . 
-      is({ class: { list: true } }) . 
+    dom = E('div') .
+      has(children) .
+      is({ class: { list: true } }) .
       does({ click: handler });
 
 In a gratuitous nod to convenience, the `E()` API supports in-line IDs and classes in the form `E('div#id.class')`, which is equivalent to `E('div') . is({ id: 'id' class: { class: true } })`.
@@ -138,7 +138,7 @@ Attributes, including classes, styles, and data attributes, are set using the `.
 Styles, classes, and data attributes are specified as sub-hashes, with full upward treatment.
 
 * The `style` sub-hash uses camelCased style property keys specifying the property values.
-* The `class` sub-hash uses camelCased class names with boolean values (`true` to turn on that class). 
+* The `class` sub-hash uses camelCased class names with boolean values (`true` to turn on that class).
 * The `dataset` sub-hash uses camelCased data attribute names specifying the attribute value.
 
 The design for specifying classes facilitates easily adding and removing classes by simply specifying and modifying boolean-valued properties.
@@ -191,7 +191,7 @@ Upward has a religious aversion to non-JS pseudo-languages which pollute the sta
 
 ```
 UpStyle([
-  ["body", { 
+  ["body", {
 		fontFamily : 'sans-serif',
 		backgroundColor: theme.bodyBackgroundColor
 	}]
@@ -226,4 +226,4 @@ The results may be displayed in the console using "reporters", either
  * `consoleReporter`, displaying the results on the console, or
  * `htmlReporter`, which uses Upward itself in dog-food fashion to display results on the HTML page
 
-Although any assertion library may be used, we prefer `assert`, and that is what is used for Upward's own tests. 
+Although any assertion library may be used, we prefer `assert`, and that is what is used for Upward's own tests.

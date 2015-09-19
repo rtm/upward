@@ -1,10 +1,10 @@
 // Map.js
 // Upward-aware version of Array#map
 
-import {makeUpwardableFunction} from './Fun';
-import {copyOntoArray} from './Out';
+import {makeUpwardableFunctionFromGenerator} from './Upf';
+import {copyOntoArray} from './Obj';
 
-export default makeUpwardableFunction(function *UpMap(run) {
+export default makeUpwardableFunctionFromGenerator(function *UpMap(run) {
   var r = [];
   var a, newa;
   var f, newf;

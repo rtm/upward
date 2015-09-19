@@ -11,10 +11,10 @@ import {wait}                 from './Asy';
 import E                      from './Elt';
 import {parseBody}            from './Ify';
 import M                      from './Map';
-import {assignAdd, mapObject} from './Out';
+import {assignAdd, mapObject} from './Obj';
 import R                      from './Ren';
 import T                      from './Txt';
-import U                      from './Upw';
+import makeUpwardableObject   from './Upo';
 import {makeStopwatch, sum}   from './Utl';
 
 
@@ -110,7 +110,7 @@ function testGroup(desc, tests = [], options = {}) {
     var counts = {fail: 0, pass: 0, skip: 0};
     var children = [];
     const time = 0;
-    var group = {desc, children: U(children), counts, time, status: 'skip'};
+    var group = {desc, children: makeUpwardableObject(children), counts, time, status: 'skip'};
 
     // Run each test in the group.
     for (var t of tests) {

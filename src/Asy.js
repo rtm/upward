@@ -13,7 +13,7 @@ import {upwardConfig} from './Cfg';
 // ```
 function wait(ms = 0) {
   return function(val) {
-    return new Promise(resolve => setTimeout(_ => resolve(val), ms));
+    return new Promise(resolve => setTimeout(() => resolve(val), ms));
   };
 }
 

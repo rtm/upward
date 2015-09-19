@@ -154,7 +154,7 @@ console.log("I live in " + data.country);
 
 <p>Upwardable values are identifiable by virtue of being kept in a global WeakMap. For debugging purposes, they are adorned with a unique ID.</p>
 
-<p>A stand-alone upwardable value can be created with the <code>makeUpwardable</code> API exported from <code>'src/Upw/Upw'</code>, but this will rarely be necessary for the end-developer.</p>
+<p>A stand-alone upwardable value can be created with the <code>makeUpwardable</code> API exported from <code>'src/Upv'</code>, but this will rarely be necessary for the end-developer.</p>
 
 
 <div class="pilwrap" id="upwardable%20functions">
@@ -275,9 +275,9 @@ console.log("I live in " + data.country);
 <p>All these setters are upward-aware, so that changes to attributes, children etc. result in automatic updating of the DOM element. A common pattern in Upward is </p>
 
 
-<div class="highlight"><pre><code><span class="nx">dom</span> <span class="o">=</span> <span class="nx">E</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)</span> <span class="p">.</span> 
-  <span class="nx">has</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">.</span> 
-  <span class="nx">is</span><span class="p">({</span> <span class="kr">class</span><span class="o">:</span> <span class="p">{</span> <span class="nx">list</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">})</span> <span class="p">.</span> 
+<div class="highlight"><pre><code><span class="nx">dom</span> <span class="o">=</span> <span class="nx">E</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">)</span> <span class="p">.</span>
+  <span class="nx">has</span><span class="p">(</span><span class="nx">children</span><span class="p">)</span> <span class="p">.</span>
+  <span class="nx">is</span><span class="p">({</span> <span class="kr">class</span><span class="o">:</span> <span class="p">{</span> <span class="nx">list</span><span class="o">:</span> <span class="kc">true</span> <span class="p">}</span> <span class="p">})</span> <span class="p">.</span>
   <span class="nx">does</span><span class="p">({</span> <span class="nx">click</span><span class="o">:</span> <span class="nx">handler</span> <span class="p">});</span>
 </code></pre></div>
 
@@ -387,7 +387,7 @@ console.log("I live in " + data.country);
 <p>Upward has a religious aversion to non-JS pseudo-languages which pollute the stack, require special preprocessing, and separate logically connected parts of the application. Prime examples include templating languages and CSS languages with underpowered logical constructs and odd syntaxes. For CSS, Upward offers JS-based ways to specify application styles, with the <code>UpStyle</code> API which is the default export from <code>'src/Upw/Css'</code>. This interface simply takes an array of CSS rules, such as</p>
 
 <div class='highlight'><pre><code language=''>UpStyle([
-  ["body", { 
+  ["body", {
         fontFamily : 'sans-serif',
         backgroundColor: theme.bodyBackgroundColor
     }]

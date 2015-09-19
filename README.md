@@ -32,13 +32,13 @@ It is ultimately unopinionated.
 
 ### Basic architecture
 
-The Upward framework is based around
+The Upward library is based around
 
- 1. **Upwardables**, values which observe themselves
+ 1. **Upwardable values**, values which observe themselves
 
- 1. **Upwardable functions**, both built-in and user-defined, which take and return upwardables
+ 1. **Upwardable functions**, both built-in and user-defined, which take and return upwardables and recompute themselves
 
- 1. **Upwardable objects**, whose properties are upwardables
+ 1. **Upwardable objects**, whose properties are upwardables and observe themselves
 
 Other features include:
 
@@ -65,7 +65,6 @@ In progress, bleeding edge, changing frenetically, unusable.
 **Upward** is written completely in ES6 and targeted for compilation by babel.
 The environment it runs in needs to support ES6 features such as `Map` and `Object.observe`.
 It has been tested only in Chrome.
-It will not run in other browsers due to their lack of support for `Object.observe`.
 
 The recommended approach to bulding an app is to use browserify:
 

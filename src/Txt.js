@@ -2,9 +2,9 @@
 // ====================
 
 // Bookkeeping and initialization.
-import {makeUpwardableFunction} from './Fun';
+import {makeUpwardableFunctionFromGenerator} from './Upf';
 
-export default makeUpwardableFunction(function *upText() {
+export default makeUpwardableFunctionFromGenerator(function *upText() {
   var node = document.createTextNode("");
   while (true) {
     let [text] = yield node;
@@ -19,7 +19,7 @@ export default makeUpwardableFunction(function *upText() {
 // These are methods that overwrite the node value.
 ['concat', 'replace', 'slice', 'substr', 'substring', 'toUpperCase', 'toLowerCase', 'toLocaleUpperCase', 'toLocaleLowerCase', 'trim', 'trimLeft', 'trimRight', 'revese']
   .forEach(method => Text.prototype[method] = function() {
-    return (this.nodeValue = String.prototype[method].apply(this.nodeValue, arguments));
+    return this.nodeValue = String.prototype[method].apply(this.nodeValue, arguments);
   })
 ;
 

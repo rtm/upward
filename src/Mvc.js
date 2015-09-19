@@ -5,7 +5,7 @@
 // but rather a set of concepts and recommendations and minimal sugar.
 // For more information, see doc/Mvc.md.
 
-import C from './Fun';
+import C from './Upf';
 var createElement = document.createElement.bind(document);
 
 /**

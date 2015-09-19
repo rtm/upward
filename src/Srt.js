@@ -1,12 +1,12 @@
 // UpSort: upward-aware version of Array#sort
 // ==========================================
 
-import {makeUpwardableFunction} from './Fun';
-import makeUpwardableObject from './Obj';
-import {copyOntoArray} from './Out';
+import {makeUpwardableFunctionFromGenerator} from './Upf';
+import makeUpwardableObject from './Upo';
+import {copyOntoArray} from './Obj';
 import {makeSortfunc} from './Utl';
 
-export default makeUpwardableFunction(function *UpSort(run) {
+export default makeUpwardableFunctionFromGenerator(function *UpSort(run) {
   var r = [];
 
   while (true) {

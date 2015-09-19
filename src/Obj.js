@@ -1,143 +1,199 @@
-// Upwardable Objects
-// ===================
+// Object utilities
+// ===============
 
-// Upwardable objects are one of the three key components of the upward library,
-// along with upwardable values and upwardable functions.
-// An **upwardable object** is an enhanced object which can detect and and act on
-// accesses to its properties.
+// Setup. No dependencies, and keep it that way.
+var {keys, assign, observe, unobserve} = Object;
 
-// An upwardable object is created by calling `makeUpwardableObject`,
-// the default export from this module, on an object.
-// In `index.js`, this is aliased to `U`.
-// `a = Up([1, 2, 3])` or `o=Up({x: 1, y: 2}` create upwardables.
-// All accesses to the elements of `a` and `o` continue to function as usual:
-// `a[0]`, `a[0] = 1;`, `o.x`, and `o.x = 1`.
-// Newly added properties are also immediately observable.
-
-// Convenience.
-import {accessNotifier}        from './Acc';
-import {Observer}              from './Obs';
-import makeUpwardable          from './Upw';
-import {isUpwardable}          from './Upw';
-
-var {create, keys, getNotifier, observe, unobserve, defineProperty} = Object;
-
-// Lists of all upwardables, and objects which have been upwardified.
-var set          = new WeakSet();
-var upwardifieds = new WeakMap();
-
-/**
-* ## is
-*
-* Check if an object is upwardified.
-* Exported as `isUpwardableObject`.
-*/
-function is(u) { return u && typeof u === 'object' && set.has(u); }
-
-/**
- * ## get
- *
- * Get the upwardable version of an object.
- */
-function get(o) { return o && typeof o === 'object' && upwardifieds.get(o); }
-
-/**
- * ## make
- *
- * Constructor for upwardable object.
- * Default export from this module, often imported as `makeUpwardableObject`,
- * and aliased as `U` in `index.js`.
- */
-function make(o) {
-  if (is(o)) return o;
-  var u = get(o);
-  if (!u) {
-    u = _make(o);
-    set.add(u);
-    upwardifieds.set(o, u);
-  }
-  return u;
+function isObject(o) {
+  return o && typeof o === 'object';
 }
 
-/**
- * ## _make
- *
- * Low-level constructor for upwardable object.
- */
-function _make(o) {
+// Generic version of `valueOf` which works for anything.
+function valueize(v) { return isObject(v) ? v.valueOf() : v; }
 
-  var shadow = {};
-  var observers = {};
-  var actions = {add, update, delete: _delete};
-
-  // Delete a property. Unobserve it, delete shadow and proxy entries.
-  function _delete(name) {
-    observers[name].unobserve();
-    delete observers[name];
-    delete u        [name];
-    delete shadow   [name];
-  }
-
-  // Update a property by reobserving.
-  function update(name) {
-    observers[name].reobserve(shadow[name]);
-  }
-
-  // Add a property. Set up getter and setter, Observe. Populate shadow.
-  function add(name) {
-
-    function set(v) {
-      var oldValue = shadow[name];
-      if (oldValue === v) return;
-      o[name] = v;
-      notifier.notify({type: 'update', object: u, name, oldValue});
-      shadow[name] = oldValue.change(v);
-    }
-
-    // When property on upwardable object is accessed, report it and return shadow value.
-    function get() {
-      accessNotifier.notify({type: 'access', object: u, name});
-      return shadow[name];
-    }
-
-    function observe(changes) {
-//      changes.forEach(change => shadow[name] = shadow[name].change(change.newValue));
-//      observers[name].reobserve(shadow[name]);
-    }
-
-    shadow[name] = makeUpwardable(o[name]);
-    observers[name] = Observer(shadow[name], observe, ['upward']).observe();
-    defineProperty(u, name, {set: set, get: get, enumerable: true});
-  }
-
-  // Observer to handle new or deleted properties on the object.
-  // Pass through to underlying object, which will cause the right things to happen.
-  function objectObserver(changes) {
-    changes.forEach(({type, name}) => {
-      switch (type) {
-      case 'add':    o[name] = u[name]; break;
-      case 'delete': delete o[name];    break;
-      }
-    });
-  }
-
-  // Observer to handle new, deleted or updated properties on the target.
-  function targetObserver(changes) {
-    changes.forEach(({type, name}) => actions[type](name));
-    //notifier.notify(change); // TODO: figure out what this line was suppsoed to do
-  }
-
-  var u = create({}); // null?
-  var notifier = getNotifier(u);
-  keys(o).forEach(add);
-  observe(o, targetObserver);
-  observe(u, objectObserver);
-  return u;
+// User-friendly representation of an object.
+function objectToString(o) {
+  return '{' + keys(o).map(k => `${k}: ${o[k]}`).join(', ') + '}';
 }
 
-// Exports.
-export default make;
-var isUpwardableObject = is;
+// Make functions to return properties, in various flavors.
+function propGetter         (v) { return o => o[v]; }
+function propValueGetter    (v) { return o => valueize(o[v]); }
+function thisPropGetter     (v) { return function() { return this[v]; }; }
+function thisPropValueGetter(v) { return function() { return valueize(this[v]); }; }
+
+// Analog of `Array#map` for objects.
+function mapObject(o, fn, ctxt) {
+  var result = {};
+  for (var key in o) {
+    if (o.hasOwnProperty(key)) {
+      result[key] = fn.call(ctxt, o[key], key, o);
+    }
+  }
+  return result;
+}
+
+// Map an object's values, replacing existing ones.
+function mapObjectInPlace(o, fn, ctxt) {
+  for (let key in o) {
+    if (o.hasOwnProperty(key)) {
+      o[key] = fn.call(ctxt, o[key], key, o);
+    }
+  }
+  return o;
+}
+
+// Make a copy of something.
+function copyOf(o) {
+  if (Array.isArray(o)) return o.slice();
+  if (isObject(o)) return assign({}, o);
+  return o;
+}
+
+// Copy a second array onto a first one destructively.
+function copyOntoArray(a1, a2) {
+  for (let i = 0; i < a2.length; i++) {
+    a1[i] = a2[i];
+  }
+  a1.length = a2.length;
+  return a1;
+}
+
+// Overwrite a first object entirely with a second one.
+function copyOntoObject(o1, o2) {
+  assign(o1, o2);
+  keys(o1)
+    .filter(key => !(key in o2))
+    .forEach(key => delete o1[key]);
+  return o1;
+}
+
+// Copy a second object or array destructively onto a first one.
+function copyOnto(a1, a2) {
+  if (Array.isArray(a1) && Array.isArray(a2)) return copyOntoArray (a1, a2);
+  if (isObject     (a1) && isObject     (a2)) return copyOntoObject(a1, a2);
+  return a1 = a2;
+}
+
+// "Invert" an object, swapping keys and values.
+function invertObject(o) {
+  var result = {};
+  for (let pair of objectPairs(o)) {
+    let [key, val] = pair;
+    result[val] = key;
+  }
+  return result;
+}
+
+// Analog of `Array#reduce` for objects.
+function reduceObject(o, fn, init) {
+  for (let pair of objectPairs(o)) {
+    let [key, val] = pair;
+    init = fn(init, val, key, o);
+  }
+  return init;
+}
+
+// Create an object from two arrays of keys and values.
+function objectFromLists(keys, vals) {
+  var result = {};
+  for (let i = 0, len = keys.length; i < len; i++) {
+    result[keys[i]] = vals[i];
+  }
+  return result;
+}
+
+// Create an object from a list of `[key, val]` pairs.
+function objectFromPairs(pairs) {
+  var result = {};
+
+  for (let i = 0, len = pairs.length; i < len; i++) {
+    let pair = pairs[i];
+    result[pair[0]] = pair[1];
+  }
+
+  return result;
+}
+
+
+// Create a value-only property descriptors object from an object.
+function makePropertyDescriptors(o) {
+  return mapObject(o, v => ({ value: v }));
+}
+
+// Return an object all of the values of which are evaluated.
+function valueizeObject(o) { return mapObject(o, valueize); }
+
+// Get a value down inside an object, based on a "path" (array of property names).
+function valueFromPath(o, path = []) {
+  return path.reduce((ret, seg) => isObject(ret) && ret[seg], o);
+}
+
+// Return an aray all of the values of which are evaluated.
+function valueArray(a) { return a.map(valueize); }
+
+// Return an array of the object's values.
+function objectValues(o) { return keys(o).map(k => o[k]); }
+
+// Generator for object's key/value pairs. Usage: `for ([key, val] of objectPairs(o))`.
+function *objectPairs(o) {
+  for (var k in o) {
+    if (o.hasOwnProperty(k)) { yield [k, o[k]]; }
+  }
+}
+
+// "Empty" the object, optionally keeping structure of subobjects with `{keep: true}` option.
+// Numbers turn to zero, booleans to false, arrays are emptied, etc.
+function emptyObject(o, {keep}) {
+  keep = keep || {};
+  for (let pair of objectPairs(o)) {
+    let [k, v] = pair;
+    var ctor = v && v.constructor;
+    if (keep && ctor === Object) emptyObject(v);
+    else o[k] = ctor && ctor();
+  }
+}
+
+// Create a function which combines properties from two objects using a function.
+// If the property doesn't exist in the first object, just copy.
+function makeAssigner(fn) {
+  return function(o1, o2) {
+    assign(o1, mapObject(o2, (v, k) => o1.hasOwnProperty(k) ? fn(o1[k], v) : v));
+  };
+}
+
+// Add the values of properties in one array to the same property in another.
+var assignAdd = makeAssigner((a, b) => a + b);
+
 export {
-  isUpwardableObject
+  isObject,
+  objectToString,
+
+  propGetter,
+  propValueGetter,
+  thisPropGetter,
+  thisPropValueGetter,
+
+  mapObject,
+  mapObjectInPlace,
+
+  copyOf,
+  copyOntoObject,
+  copyOnto,
+  copyOntoArray,
+
+  invertObject,
+  reduceObject,
+  objectFromPairs,
+  objectFromLists,
+
+  makePropertyDescriptors,
+  valueizeObject,
+  valueFromPath,
+  valueArray,
+  objectValues,
+  valueize,
+  emptyObject,
+  makeAssigner,
+  assignAdd
 };

@@ -2,7 +2,7 @@
 // =================
 
 import {testGroup, test, assert} from './Tst';
-import {objectFromPairs} from './Out';
+import {objectFromPairs} from './Obj';
 
 // Setup.
 var {create, keys} = Object;

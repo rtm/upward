@@ -2,9 +2,9 @@
 // =======
 
 import C from './Com';
-import U from './Obj';
+import U from './Upo';
 import {parseUrlSearch} from './Utl';
-import {copyOntoObject} from './Out';
+import {copyOntoObject} from './Obj';
 
 var {keys} = Object;
 

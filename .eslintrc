@@ -1,3 +1,11 @@
 {
-  "parser": "babel-eslint"
+  "parser": "babel-eslint",
+  "rules": {
+    "no-unused-vars": [2, {"vars": "all", "args": "after-used"}],
+    "no-dupe-keys": 1,
+    "no-extra-parens": 1,
+    "no-extra-semi": 1,
+    "no-unreachable": 1,
+    "no-redeclare": 1
+  }
 }

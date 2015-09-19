@@ -1,10 +1,10 @@
 // Counter as computable.
 // ======================
 
-import {makeUpwardableFunction} from './Fun';
+import {makeUpwardableFunctionFromGenerator} from './Upf';
 
 // Counts up by one every `tick` ms.
-export default makeUpwardableFunction(
+export default makeUpwardableFunctionFromGenerator(
   function *(run) {
     var timer;
     var start = 0;
@@ -15,4 +15,4 @@ export default makeUpwardableFunction(
       timer = setTimeout(run, tick);
     }
   }
-);                          
+);

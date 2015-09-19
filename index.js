@@ -10,11 +10,11 @@ import UpStyle from './src/Css';
 import UpCount from './src/Cnt';
 import E       from './src/Elt';
 import FADE    from './src/Fad';
-import C       from './src/Fun';
-import U       from './src/Obj';
+import C       from './src/Upf';
+import U       from './src/Upo';
 import F       from './src/Tem';
 import T       from './src/Txt';
-import V       from './src/Upw';
+import V       from './src/Upv';
 
 export {U, T, E, F, C, V, UpCount, UpStyle, FADE};
 

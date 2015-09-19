@@ -40,7 +40,7 @@ uglify:	$(UGLIFED_BUNDLE)
 ### BUNDLING
 
 $(BUNDLE): 	$(ENTRY)
-	watchify --transform babelify --debug $< --outfile $@
+	watchify --transform babelify --debug $< --outfile $@ &
 
 $(BUNDLE_DIST):	$(BUNDLE)
 	uglifyjs $< --output $@ --mangle # -c --define TEST=false
@@ -60,10 +60,14 @@ unwatch:
 
 
 ### SERVING
-.PHONY: serve
-serve:
+.PHONY: serve reload-server web-server
+serve: reload-server web-server
+
+web-server:
 	python -m SimpleHTTPServer $(SERVER_PORT) &
-	node $(SELF_DIR)reload-server.js $(RELOAD_PORT)&
+
+reload-server:
+	node $(SELF_DIR)reload-server.js $(RELOAD_PORT) &
 
 
 ### UGLIFY
