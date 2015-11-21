@@ -1,141 +1,66 @@
 // Upwardable Functions
 // ====================
 
-// The **upwardable function** is one of the two key components of the upward library,
-// along with the **upwardable object**.
+// The **upwardable function** is one of the three key components of the upward library,
+// along with the **upwardable value** and **upwardable object**.
 // An **upwardable function** is an enhanced function which recomputes itself
 // when its inputs or dependencies change.
-// Inovking an upwardable function results in a **upwardable**, which holds the value.
-// An upwardable is always an object; if primitive, it is wrapped.
-
-// Convenience.
-var {getNotifier, observe, unobserve, defineProperty} = Object;
+// Inovking an upwardable function results in a **upwardable value**.
+//
+// Options:
+//   raw:     Arguments are passed directly to underlying function, without dereferencing.
+//            Useful if function intends to call other upwardable functions with these arguments.
+//   async:   Underlying function is re-executed on next tick.
+//            Useful if it is desired to delay re-execution after multiple changes.
+//   context: Underlying function takes a `context` argument.
+//            Useful if function needs to maintain state across executions.
 
 import {makeAccessController} from './Acc';
-import {generateForever}      from './Asy';
-import {Observer}             from './Obs';
-import {copyOnto, isObject}   from './Obj';
-import makeUpwardableValue    from './Upv';
+import makeUpwardableValue, {isUpwardableValue, getUpwardableValue} from './Upv';
 
-// Keep track of computables, computeds, and computifieds.
-var set = new WeakSet();
-var generators = new WeakMap();
 
-function is (f)    { return set.has(f); }
-function get(g)    { return g && typeof g === 'object' && generators.get(g); }
-function add(f, g) { set.add(f); generators.set(g, f); }
-
-// Construct upwardable function from simple function.
-// To provide your own generator, use `makeUpwardableFunctionFromGenerator`.
-// This is the default export from this module.
-function makeUpwardableFunction(f, init) {
-  // console.log("Defining C on", f);
-  return makeUpwardableFunctionFromGenerator(generateForever(f, init));
-}
-
-// Construct upwardable function from generator (if not already constructed).
-function makeUpwardableFunctionFromGenerator(g) {
-  var f = get(g);
-  if (!f) {
-    f  = _make(g);
-    add(f, g);
-  }
-  return f;
-}
-
-// Create an upwardable function based on a generator.
-// The generator must provide the following behavior.
-// The first `iterator.next()` is invoked synchronously, and must yield a neutral, default, safe value.
-// Following `iterator.next()` calls are passed function arguments as an array.
-// In other words, `yield` statements should be written as `args = yield x;`,
-// where `args` will be/should be/might be used in deriving the next value to yield.
-// The yielded value may be (but not need be) be a promise to be waited for.
-function _make(g) {
+// Create an upwardable function based on an underlying function.
+export default function(fn, options = {}) {
 
   function f(...args) {
 
-    // Resolve the promise which will trigger recomputation.
-    function run()         { runner(); }
     function accessStart() { accessController.start(); }
     function accessStop()  { accessController.stop(); }
 
-    function iterate() {
-      var change = new Promise(resolve => runner = resolve);
-      function reiterate() { change.then(iterate); }
-
-      accessStart();
-      var {done, value} = iterator.next(args);
-      console.assert(!done, "Iterator underlying computable ran out of gas.");
-
-      var promise = Promise.resolve(value);
-      promise.then(accessStop, accessStop); // should this be synchronous?
-      promise
-        .then(
-          newValue => result = result.change(newValue),
-          reason => { console.log(reason); }
-        )
-        .then(reiterate);
+    // Run the function and report the reulst.
+    function run() {
+      result.change(evaluate());
+      scheduled = false;
     }
 
-    var iterator = g(run);
-    var result = makeUpwardableValue(iterator.next().value);
-    var accessController = makeAccessController(run);
-    var runner;
+    // Re-evaulate the underlying function.
+    function evaluate() {
+      var call = options.context ? fn(context) : fn;
+      return call(...args.map(options.raw ? x => x : getUpwardableValue));
+    }
 
-//    if (computed) {
-//      accessNotifier.notify({type: 'update',  object: computed});
-//    }
+    // Schedule a re-execution (or do it right way if not async).
+    function schedule()  {
+      if (!options.async) run();
+      else if (!scheduled) setTimeout(run);
+      scheduled = true;
+    }
 
-    observeArgs(args, run);
-    iterate();
+    // Observe changes to arguments and trigger recomputation of function.
+    function observe(arg, i) {
+      if (!isUpwardableValue(arg)) return;
+      arg.observe(newv => { args[i] = newv; schedule(); });
+    }
+
+    var scheduled;
+    var context = {change: v => result.change(v)};
+    var accessController = makeAccessController();
+    var result = makeUpwardableValue(evaluate());
+
+    args.forEach(observe);
+
     return result;
   }
 
   return f;
 }
-
-// Observe changes to arguments.
-// This will handle 'compute' changes, and trigger recomputation of function.
-// When args changes, the new value is reobserved.
-function observeArgs(args, run) {
-
-  function observeArg(arg, i, args) {
-    var observer = Observer(
-      arg,
-      function argObserver(changes) {
-        changes.forEach(({type, newValue}) => {
-          if (type === 'upward') {
-            args[i] = newValue;
-            observer.reobserve(newValue);
-          }
-        });
-
-        run();
-      },
-      // @TODO: consider whether to check for D/A/U here, or use 'modify' change type
-      ['upward', 'delete', 'add', 'update'] // @TODO: check all these are necessary
-    );
-    observer.observe();
-  }
-
-  args.forEach(observeArg);
-}
-
-// The ur-upwardable function is to get a property from an object.
-// This version does not support upwardables as arguments.
-var getUpwardableProperty = makeUpwardableFunction(
-  function getProperty([object, name], run) {
-    observe(object, changes => changes.forEach(change => {
-      if (change.name === name) run();
-    }));
-    return object[name];
-  }
-);
-
-makeUpwardableFunction.is = is;
-export default makeUpwardableFunction;
-
-export {
-  makeUpwardableFunctionFromGenerator,
-  getUpwardableProperty
-};

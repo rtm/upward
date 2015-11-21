@@ -3,7 +3,9 @@
 
 // Bookkeeping and initialization.
 import {isUpwardableValue} from './Upv';
+
 var {defineProperties, observe} = Object;
+
 
 /**
  * ## UpInputs (.sets)
@@ -17,7 +19,7 @@ var {defineProperties, observe} = Object;
 
 function UpInputs(elt, upwardable, realtime = false) {
   console.assert(elt instanceof HTMLInputElement, "First argument to UpInputs must be input element");
-  console.assert(isUpwardableValue(upwardable), "Second argument to UpInputs (.inputs) must be upwardable");
+  console.assert(isUpwardableValue(upwardable), "Second argument to UpInputs (.inputs) must be upwardable value");
 
   function observeUpwardable() {
     observe(upwardable, changes => changes.forEach(
@@ -25,7 +27,7 @@ function UpInputs(elt, upwardable, realtime = false) {
   }
 
   elt.addEventListener(realtime ? 'input' : 'change', () => {
-    upwardable = upwardable.change(elt.value);
+    upwardable.change(elt.value);
     observeUpwardable();
   });
 
