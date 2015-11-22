@@ -13,6 +13,7 @@
 //   async:   Underlying function is re-executed on next tick.
 //            Useful if it is desired to delay re-execution after multiple changes.
 //   context: Underlying function takes a `context` argument.
+//            Calling it with this context argument should return the function upwardize.
 //            Useful if function needs to maintain state across executions.
 
 import {makeAccessController} from './Acc';

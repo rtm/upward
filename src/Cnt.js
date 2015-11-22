@@ -12,6 +12,9 @@ var Counter = makeUpwardableFunction(
 
     return function(tick = 1000, start = 0, step = 1) {
 
+      // Retain previous start if start is missing or null.
+      start = start || context.start || 0;
+
       function set() {
         clearTimeout(context.timer);
         context.timer = setTimeout(run, tick);
@@ -38,7 +41,7 @@ export default Counter;
 import makeUpwardableValue from './Upv';
 if (false) {
   var v = makeUpwardableValue(2);
-  var x = Counter(1000, 0, v);
+  var x = Counter(1000, null, v);
   console.log(+x);
   x.observe(v => console.log(+v));
   setTimeout(() => v.change(5), 5000);
