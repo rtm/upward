@@ -2,9 +2,6 @@
 
 # omit imported components
 node_modules
-bower_components
-
-npm-debug.log
 
 # omit build artifacts
 bundle.js
@@ -12,3 +9,6 @@ bundle.min.js
 make.d
 watch.json
 watch.list
+
+yarn-error.log
+npm-debug.log

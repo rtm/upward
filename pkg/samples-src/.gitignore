@@ -1,0 +1,8 @@
+# .gitignore for upward-samples
+
+# omit imported components
+node_modules
+npm-debug.log
+
+# omit build artifacts
+bundle.js

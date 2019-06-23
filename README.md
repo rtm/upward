@@ -62,25 +62,36 @@ In progress, bleeding edge, changing frenetically, unusable.
 
 ### Environment
 
-**Upward** is written completely in ES6 and targeted for compilation by babel.
+**Upward** is written completely in TypeScrsipt.
 The environment it runs in needs to support ES6 features such as `Map` and `Object.observe`.
 It has been tested only in Chrome.
-It will not run in other browsers due to their lack of support for `Object.observe`.
 
-The recommended approach to bulding an app is to use browserify:
-
-    browserify -t babelify main.js -o bundle.js
+The recommended approach to bulding an app is to `rollup`.
 
 Then include the bundle and the babel browser polyfill in your HTML page:
 
 ```html
-<script src="node_modules/babel-core/browser-polyfill.js"></script>
 <script src="bundle.js"></script>
 ```
 
+TODO: Figure out how to use the `module` attribute to script tags supported by recent browsers.
+
+### Repo structure
+
+Upward is help in a mono-repo (a set of yarn "workspaces" inside a single repo),
+containing the following sub-repos:
+
+* @upward/core: core run-tiem
+* @upward/core-src: source for core. Core is compiled from this
+* @upward/tests
+* @upward/samples
+* @upward/samples-src
+
+`oao` is used to help manage the monorepo. You can try things like `oao status`.
+
 ### Installation
 
-    npm install --save-dev upward
+    npm install --save-dev @upward/core
 
 You may now refer to upward modules from inside your app via:
 

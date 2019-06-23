@@ -13,7 +13,7 @@ import './Att';
  * Create an element.
  * Support low-level sugar in form of `div#id.class`.
  */
-function UpElement(tag) {
+export function E(tag) {
   var parts = tag.split(/([#.])/);
   tag = parts.shift();
   var elt = document.createElement(tag);
@@ -26,7 +26,7 @@ function UpElement(tag) {
     case '.': elt.classList.add(val); break;
     }
   }
-  
+
   return elt;
 }
 

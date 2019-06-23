@@ -1,0 +1,26 @@
+{
+  "name":         "@upward/samples-src",
+  "description":  "Samples for Upward, the front-end library for modern boys and girls",
+  "version":      "1.0.0",
+
+  "licenses":     [{ "type": "MIT" }],
+
+  "homepage":     "https://github.com/rtm/upward",
+  "repository":   { "type": "git", "url": "https://github.com/rtm/upward/pkg/samples.git" },
+  "bugs":         { "url": "https://github.com/rtm/upward/issues" },
+  "author":       { "name": "Bob Myers", "email": "rtm@gol.com" },
+  "contributors": [],
+
+  "dependencies": {
+    "@upward/core": "^1.0.0"
+  },
+
+  "devDependencies": {
+    "babel-core": "^5.8.20",
+    "babelify": "^6.1.3",
+    "markdown": "^0.5.0"
+  },
+
+  "main":         "index.html",
+  "scripts":      {}
+}
